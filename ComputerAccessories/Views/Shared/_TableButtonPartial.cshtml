@@ -1,0 +1,13 @@
+﻿@model int
+
+     @{
+         string urlEdit = @"Edit" + @ViewBag.controller+@"/"; 
+         string urlDelete = @"Delete" + @ViewBag.controller+@"/";
+      }
+
+    <td>
+        <div class="btn-group" role="group" style="height:44px; ">
+            <a type="button" class="btn btn-success" href="@Url.Action(urlEdit + Model)"><i class="icon-edit"></i></a>
+            <a type="button" class="btn btn-danger" href="@Url.Action(urlDelete + Model)" onclick="$('.top-alert').notify('Delete success', {position: 'top center'});"><i class="icon-remove"></i></a>
+        </div>
+    </td>

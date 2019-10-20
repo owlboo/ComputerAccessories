@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\file\\aaa\\trunk\\ComputerAccessories\\ComputerAccessories.csproj": {}
+    "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\ComputerAccessories.csproj": {}
   },
   "projects": {
-    "D:\\file\\aaa\\trunk\\ComputerAccessories\\ComputerAccessories.csproj": {
+    "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\ComputerAccessories.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\file\\aaa\\trunk\\ComputerAccessories\\ComputerAccessories.csproj",
+        "projectUniqueName": "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\ComputerAccessories.csproj",
         "projectName": "ComputerAccessories",
-        "projectPath": "D:\\file\\aaa\\trunk\\ComputerAccessories\\ComputerAccessories.csproj",
+        "projectPath": "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\ComputerAccessories.csproj",
         "packagesPath": "C:\\Users\\MR-BOO\\.nuget\\packages\\",
-        "outputPath": "D:\\file\\aaa\\trunk\\ComputerAccessories\\obj\\",
+        "outputPath": "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
