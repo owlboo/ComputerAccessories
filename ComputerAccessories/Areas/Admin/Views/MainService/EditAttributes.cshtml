@@ -1,0 +1,59 @@
+﻿@model ComputerAccessories.ViewModels.AttributeViewModel
+@using ComputerAccessories.Extensions
+@{
+    ViewData["Title"] = "CreateNewAttribute";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+    List<Category> categories = new List<Category>();
+    categories = ViewBag.lstCategory;
+}
+
+<br />
+
+
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Chỉnh sửa thuộc tính</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    <form role="form" method="post" action="EditAttribute">
+        <div class="box-body">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Tên danh mục</label>
+                <input class="form-control" placeholder="Nhập tên danh mục" asp-for="AttributeName">
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Danh mục</label>
+                @*<input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">*@
+                @*<select class="form-control">
+                        @foreach (var item in categories)
+                        {
+                            <option value="@item.Id">@item.CategoryName</option>
+                        }
+                    </select>*@
+
+                <select asp-for="CategoryId" asp-items="@categories.ToSelectListItem("CategoryName",categories.FirstOrDefault().Id)" class="form-control"></select>
+            </div>
+        </div>
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Cập nhất</button>
+            <a class="btn btn-warning" asp-action="Attributes" asp-controller="MainService">Quay lại</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts{ 
+<script>
+    var value = "@Model.CategoryId";
+    $("#CategoryId").val(value);
+</script>
+}
+
+
+
+

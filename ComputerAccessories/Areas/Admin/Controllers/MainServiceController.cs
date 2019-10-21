@@ -14,6 +14,8 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         private readonly ComputerAccessoriesContext _db;
         [BindProperty]
         public CategoryViewModel CategoryVM { get; set; }
+        [BindProperty]
+        public AttributeViewModel AttributeVM { get; set; }
         public MainServiceController(ComputerAccessoriesContext db)
         {
             _db = db;
@@ -21,15 +23,95 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             {
                 listParent = _db.TblCategory.ToList()
             };
+            AttributeVM = new AttributeViewModel();
         }
         #region Front
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult Category()
+        [HttpGet]
+        public IActionResult Attributes(string categoryId = null, string fromTime = null, string toTime=null)
+        {
+            ViewBag.controller = "Attributes";
+            var listCategory = _db.TblCategory.ToList();
+            ViewBag.lstCategory = listCategory;
+            if (string.IsNullOrEmpty(categoryId))
+            {
+                if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
+                {
+                    var lstAttributes = _db.TblAttribute.Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+                }
+                else
+                {
+                    DateTime from = DateTime.Parse(fromTime);
+                    DateTime to = DateTime.Parse(toTime + " 23:59:59");
+                    var lstAttributes = _db.TblAttribute.Where(x=>x.CreatedDate>=from && x.CreatedDate<=to).Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+                }
+            }
+            else
+            {
+                var categoryid = Convert.ToInt32(categoryId);
+                if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
+                {
+                    var lstAttributes = _db.TblAttribute.Where(x=>x.CategoryId == categoryid).Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+                }
+                else
+                {
+                    DateTime from = DateTime.Parse(fromTime);
+                    DateTime to = DateTime.Parse(toTime + "23:59:59");
+                    var lstAttributes = _db.TblAttribute.Where(x => x.CreatedDate >= from && x.CreatedDate <= to&&x.CategoryId==categoryid).Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+
+                }
+            }
+            return View();
+
+        }
+        public PartialViewResult _GetCategory()
         {
             var listCategory = _db.TblCategory.ToList();
+            ViewBag.lstCategory = listCategory;
+            return PartialView("~/Views/Admin/_GetCategory.cshtml", listCategory);
+        }
+        public IActionResult Category()
+        {
+            var listCategory = _db.TblCategory.Where(x=>x.Id !=2).ToList();
             List<CategoryViewModel> lstCategory = new List<CategoryViewModel>();
 
             foreach (var item in listCategory)
@@ -64,6 +146,12 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             ViewBag.controller = "Category";
             return View(lstCategory);
         }
+        [Route("/[controller]/GetCategory")]
+        [HttpGet]
+        public JsonResult GetCategory()
+        {
+            return Json(_db.TblCategory.Where(x=>x.Id !=2).ToList());
+        }
         public IActionResult Brand()
         {
             return View();
@@ -72,6 +160,13 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         {
 
             return View(CategoryVM);
+        }
+
+        public IActionResult CreateNewAttribute()
+        {
+            var categories = _db.TblCategory.ToList();
+            ViewBag.lstCategory = categories;
+            return View(AttributeVM);
         }
         public IActionResult EditCategory(int? id)
         {
@@ -91,6 +186,26 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             CategoryVM.Id = categoryFromDb.Id;
  
             return View(CategoryVM);
+        }
+
+        public IActionResult EditAttributes(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+            var attributeFromDb = _db.TblAttribute.Where(x => x.Id == id).FirstOrDefault();
+            if(attributeFromDb == null)
+            {
+                return NotFound();
+            }
+            var categories = _db.TblCategory.ToList();
+            ViewBag.lstCategory = categories;
+            AttributeVM.Id = attributeFromDb.Id;
+            AttributeVM.CategoryId = attributeFromDb.CategoryId;
+            AttributeVM.CreatedDate = attributeFromDb.CreatedDate;
+            AttributeVM.ModifiedDate = attributeFromDb.ModifiedDate;
+            return View(AttributeVM);
         }
         #endregion
         [HttpPost]
@@ -122,6 +237,26 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Category));
             }
             return null;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateNewAttribute(AttributeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+
+            Models.Attribute att = new Models.Attribute
+            {
+                AttributeName = model.AttributeName,
+                CategoryId = model.CategoryId,
+                CreatedDate = DateTime.Now
+            };
+
+            _db.TblAttribute.Add(att);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Attributes));
         }
     }
 }

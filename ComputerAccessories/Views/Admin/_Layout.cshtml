@@ -350,26 +350,26 @@
                     </a>
                 </li>
                 <li>
-                    <a asp-controller="MainService" asp-action="Category"  >
+                    <a asp-controller="MainService" asp-action="Category">
                         <i class="fa fa-files-o"></i>
                         <span>Product Category</span>
                         @*<span class="pull-right-container">
-                            <span class="label label-primary pull-right">4</span>
-                        </span>*@
+                                <span class="label label-primary pull-right">4</span>
+                            </span>*@
                     </a>
                     @*<ul class="treeview-menu">
-                        <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
-                        <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
-                        <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
-                        <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
-                    </ul>*@
+                            <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
+                            <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
+                            <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
+                            <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
+                        </ul>*@
                 </li>
                 <li>
                     <a asp-controller="MainService" asp-action="Brand">
                         <i class="fa fa-th"></i> <span>Brand</span>
                         @*<span class="pull-right-container">
-                            <small class="label pull-right bg-green">new</small>
-                        </span>*@
+                                <small class="label pull-right bg-green">new</small>
+                            </span>*@
                     </a>
                 </li>
                 <li class="treeview">
@@ -518,10 +518,10 @@
                         </li>
 
                         @*<li><a href="pages/UI/icons.html"><i class="fa fa-circle-o"></i> CPU</a></li>
-        <li><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> RAM</a></li>
-        <li><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Disk</a></li>
-        <li><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Monitor</a></li>
-        <li><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> GPU</a></li>*@
+                            <li><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> RAM</a></li>
+                            <li><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Disk</a></li>
+                            <li><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Monitor</a></li>
+                            <li><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> GPU</a></li>*@
                     </ul>
                 </li>
                 <li class="treeview">
@@ -532,21 +532,37 @@
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
-                    <ul class="treeview-menu">
-                        <li><a href="pages/UI/general.html"><i class="fa fa-circle-o"></i> Mainboards</a></li>
-                        <li><a href="pages/UI/icons.html"><i class="fa fa-circle-o"></i> CPU</a></li>
-                        <li><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> RAM</a></li>
-                        <li><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Disk</a></li>
-                        <li><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Monitor</a></li>
-                        <li><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> GPU</a></li>
+                    
+                    <ul class="treeview-menu" >
+                        <li><a asp-area="Admin" asp-controller="MainService" asp-action="CreateNewProduct"><i class="fa fa-circle-o"></i> Thêm mới</a></li>
+                        <li class="treeview" >
+                            <a href="#">
+                                <i class="fa fa-circle-o"></i>
+                                <span>Danh mục sản phẩm</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu" id="groupCategory">
+                                @*<li><a href="pages/UI/general.html"><i class="fa fa-circle-o"></i> Mainboards</a></li>*@
+                            </ul>
+                        </li>
+
+                        @*<partial name="~/Views/Admin/_GetCategory.cshtml" />*@
+                        @*<li><a href="pages/UI/general.html"><i class="fa fa-circle-o"></i> Mainboards</a></li>
+                            <li><a href="pages/UI/icons.html"><i class="fa fa-circle-o"></i> CPU</a></li>
+                            <li><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> RAM</a></li>
+                            <li><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Disk</a></li>
+                            <li><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Monitor</a></li>
+                            <li><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> GPU</a></li>*@
                     </ul>
                 </li>
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-edit"></i> <span>Forms</span>
-                        <span class="pull-right-container">
+                <li>
+                    <a asp-area="Admin" asp-controller="MainService" asp-action="Attributes">
+                        <i class="fa fa-edit"></i> <span>Attributes</span>
+                        @*<span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                        </span>*@
                     </a>
                     <ul class="treeview-menu">
                         <li><a href="pages/forms/general.html"><i class="fa fa-circle-o"></i> General Elements</a></li>
@@ -665,6 +681,7 @@
         <strong>Copyright &copy; 2014-2018 <a target="_blank" href="https://www.templateshub.net">Templates Hub</a>.</strong> All rights
         reserved.
     </footer>
+
     <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
     <!-- jQuery UI 1.11.4 -->
     <script src="~/bower_components/jquery-ui/jquery-ui.min.js"></script>
@@ -701,6 +718,7 @@
     <script src="~/dist/js/pages/dashboard.js"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="~/dist/js/demo.js" asp-append-version="true"></script>
+    <script src="~/js/CustomJS.js" type="text/javascript"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
