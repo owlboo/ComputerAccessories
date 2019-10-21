@@ -1,7 +1,10 @@
-﻿@model Category
+﻿@using ComputerAccessories.Extensions
+@model ComputerAccessories.ViewModels.CategoryViewModel
 @{
     ViewData["Title"] = "EditCategory";
     Layout = "~/Views/Admin/_Layout.cshtml";
+    List<Category> categories = new List<Category>();
+    categories = ViewBag.lstCategory;
 }
 <br />
 
@@ -18,6 +21,44 @@
                     <label for="exampleInputEmail1">Tên danh mục</label>
                     <input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">
                 </div>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Danh mục cha</label>
+                    @*<input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">*@
+                    @*<select class="form-control" name="parentId" id="parentId">
+                    @foreach (var item in categories)
+                    {
+                        <option asp-for="@Model.ParentCateId" value="@item.Id">@item.CategoryName</option>
+                    }
+                </select>*@
+                    <select asp-for="ParentCateId" asp-items="@Model.listParent.ToSelectListItem("CategoryName",Model.Id)" class="form-control"></select>
+
+                </div>
+            </div>
+
+            <div class="box-body">
+                <label>Created Date:</label>
+
+                <div class="input-group date">
+                    <div class="input-group-addon">
+                        <i class="icon-calendar-empty"></i>
+                    </div>
+                    <input type="text" asp-for="CreatedDate" class="form-control pull-right" id="datepicker" readonly>
+                </div>
+                <!-- /.input group -->
+            </div>
+
+            <div class="box-body">
+                <label>Last Modify:</label>
+
+                <div class="input-group date">
+                    <div class="input-group-addon">
+                        <i class="icon-calendar-empty"></i>
+                    </div>
+                    <input type="text" asp-for="ModifiedDate" readonly class="form-control pull-right" id="datepicker">
+                </div>
+                <!-- /.input group -->
             </div>
             <!-- /.box-body -->
 

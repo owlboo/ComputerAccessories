@@ -1,4 +1,5 @@
-﻿@model ComputerAccessories.Models.Category
+﻿@using ComputerAccessories.Extensions;
+@model ComputerAccessories.ViewModels.CategoryViewModel
 @{
     ViewData["Title"] = "CreateNewCategory";
     Layout = "~/Views/Admin/_Layout.cshtml";
@@ -18,8 +19,22 @@
                 <div class="box-body">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Tên danh mục</label>
-                        <input  class="form-control"  placeholder="Nhập tên danh mục" asp-for="CategoryName">
-                    </div>                    
+                        <input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Danh mục cha</label>
+                        @*<input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">*@
+                        @*<select class="form-control">
+                            @foreach (var item in categories)
+                            {
+                                <option value="@item.Id">@item.CategoryName</option>
+                            }
+                        </select>*@
+
+                        <select asp-for="ParentCateId" asp-items="@Model.listParent.ToSelectListItem("CategoryName",Model.Id)" class="form-control"></select>
+                    </div>
                 </div>
                 <!-- /.box-body -->
 

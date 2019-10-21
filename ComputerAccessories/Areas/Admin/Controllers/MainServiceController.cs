@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ComputerAccessories.Models;
+using ComputerAccessories.ViewModels;
 
 namespace ComputerAccessories.Areas.Admin.Controllers
 {
@@ -11,9 +12,15 @@ namespace ComputerAccessories.Areas.Admin.Controllers
     public class MainServiceController : Controller
     {
         private readonly ComputerAccessoriesContext _db;
+        [BindProperty]
+        public CategoryViewModel CategoryVM { get; set; }
         public MainServiceController(ComputerAccessoriesContext db)
         {
             _db = db;
+            CategoryVM = new CategoryViewModel
+            {
+                listParent = _db.TblCategory.ToList()
+            };
         }
         #region Front
         public IActionResult Index()
@@ -23,8 +30,39 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         public IActionResult Category()
         {
             var listCategory = _db.TblCategory.ToList();
+            List<CategoryViewModel> lstCategory = new List<CategoryViewModel>();
+
+            foreach (var item in listCategory)
+            {
+                if(item.ParentCateId != null)
+                {
+                    var parentName = _db.TblCategory.Where(x => x.Id == item.ParentCateId).Select(x => x.CategoryName).FirstOrDefault();
+
+                    CategoryViewModel category = new CategoryViewModel()
+                    {
+                        CategoryName = item.CategoryName,
+                        CreatedDate = item.CreatedDate,
+                        ModifiedDate = item.ModifiedDate,
+                        ParentName = parentName,
+                        Id = item.Id
+                    };
+                    lstCategory.Add(category);
+                }
+                else
+                {
+                    CategoryViewModel category = new CategoryViewModel()
+                    {
+                        CategoryName = item.CategoryName,
+                        CreatedDate = item.CreatedDate,
+                        ModifiedDate = item.ModifiedDate,
+                        Id = item.Id
+                    };
+                    lstCategory.Add(category);
+                }
+                
+            }
             ViewBag.controller = "Category";
-            return View(listCategory);
+            return View(lstCategory);
         }
         public IActionResult Brand()
         {
@@ -32,7 +70,8 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         }
         public IActionResult CreateNewCategory()
         {
-            return View();
+
+            return View(CategoryVM);
         }
         public IActionResult EditCategory(int? id)
         {
@@ -45,17 +84,24 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(categoryFromDb);
+            CategoryVM.CategoryName = categoryFromDb.CategoryName;
+            CategoryVM.ParentCateId = categoryFromDb.ParentCateId;
+            CategoryVM.CreatedDate = categoryFromDb.CreatedDate;
+            CategoryVM.ModifiedDate = categoryFromDb.ModifiedDate;
+            CategoryVM.Id = categoryFromDb.Id;
+ 
+            return View(CategoryVM);
         }
         #endregion
         [HttpPost]
-        public async Task<IActionResult> CreateNewCategory(Category category)
+        public async Task<IActionResult> CreateNewCategory(CategoryViewModel categoryView)
         {
             _db.TblCategory.Add(new Category
             {
-                CategoryName = category.CategoryName,
-                CreatedDate = DateTime.Now
-            });
+                CategoryName = categoryView.CategoryName,
+                CreatedDate = DateTime.Now,
+                ParentCateId = categoryView.ParentCateId,
+            }) ;
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Category));
         }
@@ -69,6 +115,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             var categoryFromDb = _db.TblCategory.Where(x => x.Id == category.Id).FirstOrDefault();
             categoryFromDb.CategoryName = category.CategoryName;
             categoryFromDb.ModifiedDate = DateTime.Now;
+            categoryFromDb.ParentCateId = category.ParentCateId;
             var result = await _db.SaveChangesAsync();
             if(result > 0)
             {

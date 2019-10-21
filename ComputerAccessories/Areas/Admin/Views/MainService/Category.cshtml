@@ -1,4 +1,4 @@
-﻿@model List<Category>
+﻿@model List<ComputerAccessories.ViewModels.CategoryViewModel>
 @{
     ViewData["Title"] = "Category";
     Layout = "~/Views/Admin/_Layout.cshtml";
@@ -12,7 +12,7 @@
                 <h3>Danh mục sản phẩm</h3>
             </div>
             <div class="col-lg-1">
-                <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewCategory" ><span><i class="fas fa-plus"></i></span> Thêm sản danh mục</a>
+                <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewCategory" ><span><i class="icon-plus"></i></span> Thêm sản danh mục</a>
             </div>
         </div>
     </div>
@@ -27,7 +27,7 @@
                 <!-- /.box-header -->
                 <div class="box-body">
                     <table id="example2" class="table table-bordered table-hover">
-                        <thead>
+                        <thead style="color:darkcyan">
                             <tr>
                                 <th>Mã</th>
                                 <th>Tên danh mục</th>
@@ -43,13 +43,13 @@
                             <tr>
                                 <th>@item.Id</th>
                                 <th>@item.CategoryName</th>
-                                @if (item.ParentCateId == null)
+                                @if (item.ParentName == null)
                                 {
                                     <th>Trống</th>
                                 }
                                 else
                                 {
-                                    <th>@item.ParentCateId</th>
+                                    <th>@item.ParentName</th>
 
                                 }
                                 <th>@item.CreatedDate</th>
@@ -62,13 +62,13 @@
                                     <th>@item.ModifiedDate</th>
                                 }
                                 <th style="text-align:center;">
-                                    <partial name="~/Views/Shared/_TableButtonPartial.cshtml" model="Convert.ToInt32(item.Id)" />
+                                    <partial name="~/Views/Shared/_TableButtonPartial.cshtml" model="item.Id" />
                                 </th>
 
                             </tr>
                             }
                         </tbody>
-                        <tfoot>
+                        @*<tfoot>
                             <tr>
                                 <th>Rendering engine</th>
                                 <th>Browser</th>
@@ -76,7 +76,7 @@
                                 <th>Engine version</th>
                                 <th>CSS grade</th>
                             </tr>
-                        </tfoot>
+                        </tfoot>*@
                     </table>
                 </div>
                 <!-- /.box-body -->
