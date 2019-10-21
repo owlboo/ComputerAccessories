@@ -1,13 +1,16 @@
 ﻿@model int
 
      @{
-         string urlEdit = @"Edit" + @ViewBag.controller+@"/"; 
-         string urlDelete = @"Delete" + @ViewBag.controller+@"/";
+         string model = Model.ToString();
+         string edit = @"Edit" + @ViewBag.controller+@"/"+model;
+         string delete = @"Delete" + @ViewBag.controller+@"/"+model;
+
+
       }
 
-    <td>
+
         <div class="btn-group" role="group" style="height:44px; ">
-            <a type="button" class="btn btn-success" href="@Url.Action(urlEdit + Model)"><i class="icon-edit"></i></a>
-            <a type="button" class="btn btn-danger" href="@Url.Action(urlDelete + Model)" onclick="$('.top-alert').notify('Delete success', {position: 'top center'});"><i class="icon-remove"></i></a>
+            <a type="button" class="btn btn-success" href="@Url.Action(edit).Replace("%2F",@"/")"><i class="icon-edit"></i></a>
+            <a type="button" class="btn btn-danger" href="@Url.Action(delete).Replace("%2F",@"/")" onclick="$('.top-alert').notify('Delete success', {position: 'top center'});"><i class="icon-remove"></i></a>
         </div>
-    </td>
+  

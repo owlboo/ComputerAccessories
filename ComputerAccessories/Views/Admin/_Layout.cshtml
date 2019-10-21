@@ -9,7 +9,7 @@
     <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="~/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <!-- Font Awesome -->
-    @*<link rel="stylesheet" href="~/bower_components/font-awesome/css/font-awesome.min.css">*@
+    <link rel="stylesheet" href="~/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="~/bower_components/Ionicons/css/ionicons.min.css">
     <!-- Theme style -->
@@ -31,8 +31,6 @@
     @*<link rel="stylesheet" href="~/fontawesome-free-5.11.2-web/css/fontawesome.css" />
         <link rel="stylesheet" href="~/fontawesome-free-5.11.2-web/css/fontawesome.min.css" />*@
 
-    <link rel="stylesheet" href="~/font-awesome/font-awesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="~/font-awesome/font-awesome/css/font-awesome.css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -344,7 +342,7 @@
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">MAIN MENU</li>
                 <li>
-                    <a class="nav-link" @*href="/MainService/Index"*@ asp-controller="MainService" asp-action="Index">
+                    <a asp-area="Admin" asp-controller="MainService" asp-action="Index">
                         <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
