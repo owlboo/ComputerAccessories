@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComputerAccessories.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,5 +14,6 @@ namespace ComputerAccessories.ViewModels
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string ParentName { get; set; }
+        public List<Category> listParent { get; set; }
     }
 }
