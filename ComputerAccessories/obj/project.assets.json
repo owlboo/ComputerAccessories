@@ -8391,23 +8391,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\MR-BOO\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\metajet\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\ComputerAccessories.csproj",
+      "projectUniqueName": "D:\\HK7\\git\\ComputerAccessories\\ComputerAccessories\\ComputerAccessories.csproj",
       "projectName": "ComputerAccessories",
-      "projectPath": "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\ComputerAccessories.csproj",
-      "packagesPath": "C:\\Users\\MR-BOO\\.nuget\\packages\\",
-      "outputPath": "D:\\Coding\\ASP.NET\\HK7\\SourceCode\\trunk\\ComputerAccessories\\obj\\",
+      "projectPath": "D:\\HK7\\git\\ComputerAccessories\\ComputerAccessories\\ComputerAccessories.csproj",
+      "packagesPath": "C:\\Users\\metajet\\.nuget\\packages\\",
+      "outputPath": "D:\\HK7\\git\\ComputerAccessories\\ComputerAccessories\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\MR-BOO\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\metajet\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

@@ -16,6 +16,8 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         public CategoryViewModel CategoryVM { get; set; }
         [BindProperty]
         public AttributeViewModel AttributeVM { get; set; }
+        [BindProperty]
+        public BrandViewModel BrandVM { get; set; }
         public MainServiceController(ComputerAccessoriesContext db)
         {
             _db = db;
@@ -109,6 +111,18 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             ViewBag.lstCategory = listCategory;
             return PartialView("~/Views/Admin/_GetCategory.cshtml", listCategory);
         }
+
+        public IActionResult Brand()
+        {
+            var listBrand = _db.TblBrand.ToList();
+            return View(listBrand);
+        }
+
+        public IActionResult CreateNewBrand()
+        {
+            return View();
+        }
+
         public IActionResult Category()
         {
             var listCategory = _db.TblCategory.Where(x=>x.Id !=2).ToList();
@@ -152,10 +166,13 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         {
             return Json(_db.TblCategory.Where(x=>x.Id !=2).ToList());
         }
-        public IActionResult Brand()
+
+/*        public IActionResult CreateNewBranch()
         {
-            return View();
-        }
+
+            return View(Brand);
+        }*/
+
         public IActionResult CreateNewCategory()
         {
 
@@ -257,6 +274,18 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             _db.TblAttribute.Add(att);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Attributes));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateNewBrand(Brand brand)
+        {
+            _db.TblBrand.Add(new Brand
+            {
+                BrandName = brand.BrandName,
+                CreatedDate = DateTime.Now,
+            });
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Brand));
         }
     }
 }
