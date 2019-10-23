@@ -228,7 +228,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNewCategory(CategoryViewModel categoryView)
         {
-            _db.TblCategory.Add(new Category
+            _db.TblCategory.Add(new TblCategory
             {
                 CategoryName = categoryView.CategoryName,
                 CreatedDate = DateTime.Now,
@@ -238,7 +238,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             return RedirectToAction(nameof(Category));
         }
         [HttpPost]
-        public async Task<IActionResult> EditCategory(Category category)
+        public async Task<IActionResult> EditCategory(TblCategory category)
         {
             if(category == null)
             {
@@ -264,7 +264,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            Models.Attribute att = new Models.Attribute
+            Models.TblAttribute att = new Models.TblAttribute
             {
                 AttributeName = model.AttributeName,
                 CategoryId = model.CategoryId,

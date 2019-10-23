@@ -15,10 +15,10 @@ namespace ComputerAccessories.Models
         {
         }
 
-        public virtual DbSet<Attribute> TblAttribute { get; set; }
-        public virtual DbSet<Brand> TblBrand { get; set; }
-        public virtual DbSet<Category> TblCategory { get; set; }
-        public virtual DbSet<Product> TblProduct { get; set; }
+        public virtual DbSet<TblAttribute> TblAttribute { get; set; }
+        public virtual DbSet<TblBrand> TblBrand { get; set; }
+        public virtual DbSet<TblCategory> TblCategory { get; set; }
+        public virtual DbSet<TblProduct> TblProduct { get; set; }
         public virtual DbSet<TblProductAttributes> TblProductAttributes { get; set; }
         public virtual DbSet<TblRoles> TblRoles { get; set; }
         public virtual DbSet<TblUserRole> TblUserRole { get; set; }
@@ -29,13 +29,13 @@ namespace ComputerAccessories.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-QNFSUCJ\\SQLEXPRESS;Database=ComputerAccessories;Trusted_Connection=True;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer("Server=104.211.43.223,1433;Initial Catalog=ComputerAccessories;Persist Security Info=False;User ID=sa;Password=SiO4B3@M$*bBSO&6;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Attribute>(entity =>
+            modelBuilder.Entity<TblAttribute>(entity =>
             {
                 entity.ToTable("tbl_Attribute");
 
@@ -51,7 +51,7 @@ namespace ComputerAccessories.Models
                     .HasConstraintName("FK_tbl_Attribute_tbl_Category");
             });
 
-            modelBuilder.Entity<Brand>(entity =>
+            modelBuilder.Entity<TblBrand>(entity =>
             {
                 entity.ToTable("tbl_Brand");
 
@@ -64,7 +64,7 @@ namespace ComputerAccessories.Models
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<Category>(entity =>
+            modelBuilder.Entity<TblCategory>(entity =>
             {
                 entity.ToTable("tbl_Category");
 
@@ -75,7 +75,7 @@ namespace ComputerAccessories.Models
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<Product>(entity =>
+            modelBuilder.Entity<TblProduct>(entity =>
             {
                 entity.ToTable("tbl_Product");
 
@@ -131,11 +131,6 @@ namespace ComputerAccessories.Models
             {
                 entity.ToTable("tbl_Roles");
 
-                entity.HasIndex(e => e.NormalizedName)
-                    .HasName("RoleNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedName] IS NOT NULL)");
-
                 entity.Property(e => e.Name).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedName).HasMaxLength(256);
@@ -143,13 +138,9 @@ namespace ComputerAccessories.Models
 
             modelBuilder.Entity<TblUserRole>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.RoleId })
-                    .HasName("PK_AspNetUserRoles");
+                entity.HasKey(e => new { e.UserId, e.RoleId });
 
                 entity.ToTable("tbl_User_Role");
-
-                entity.HasIndex(e => e.RoleId)
-                    .HasName("IX_AspNetUserRoles_RoleId");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.TblUserRole)
@@ -166,19 +157,17 @@ namespace ComputerAccessories.Models
             {
                 entity.ToTable("tbl_Users");
 
-                entity.HasIndex(e => e.NormalizedEmail)
-                    .HasName("EmailIndex");
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.HasIndex(e => e.NormalizedUserName)
-                    .HasName("UserNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
+                entity.Property(e => e.DisplayName).HasMaxLength(100);
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.Password).HasMaxLength(30);
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
             });

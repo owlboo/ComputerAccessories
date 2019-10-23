@@ -14,6 +14,6 @@ namespace ComputerAccessories.ViewModels
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string ParentName { get; set; }
-        public List<Category> listParent { get; set; }
+        public List<TblCategory> listParent { get; set; }
     }
 }

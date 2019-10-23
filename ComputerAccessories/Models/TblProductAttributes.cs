@@ -10,7 +10,7 @@ namespace ComputerAccessories.Models
         public int? AttributeId { get; set; }
         public string Value { get; set; }
 
-        public virtual Attribute Attribute { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual TblAttribute Attribute { get; set; }
+        public virtual TblProduct Product { get; set; }
     }
 }

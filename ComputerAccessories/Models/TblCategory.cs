@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace ComputerAccessories.Models
 {
-    public partial class Category
+    public partial class TblCategory
     {
-        public Category()
+        public TblCategory()
         {
-            TblAttribute = new HashSet<Attribute>();
-            TblProduct = new HashSet<Product>();
+            TblAttribute = new HashSet<TblAttribute>();
+            TblProduct = new HashSet<TblProduct>();
         }
 
         public int Id { get; set; }
@@ -17,7 +17,7 @@ namespace ComputerAccessories.Models
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
 
-        public virtual ICollection<Attribute> TblAttribute { get; set; }
-        public virtual ICollection<Product> TblProduct { get; set; }
+        public virtual ICollection<TblAttribute> TblAttribute { get; set; }
+        public virtual ICollection<TblProduct> TblProduct { get; set; }
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace ComputerAccessories.Models
 {
-    public partial class Brand
+    public partial class TblBrand
     {
-        public Brand()
+        public TblBrand()
         {
-            TblProduct = new HashSet<Product>();
+            TblProduct = new HashSet<TblProduct>();
         }
 
         public int Id { get; set; }
@@ -16,6 +16,6 @@ namespace ComputerAccessories.Models
         public DateTime? ModifiedDate { get; set; }
         public string Logo { get; set; }
 
-        public virtual ICollection<Product> TblProduct { get; set; }
+        public virtual ICollection<TblProduct> TblProduct { get; set; }
     }
 }

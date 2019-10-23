@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace ComputerAccessories.Models
 {
-    public partial class Product
+    public partial class TblProduct
     {
-        public Product()
+        public TblProduct()
         {
             TblProductAttributes = new HashSet<TblProductAttributes>();
         }
@@ -23,8 +23,8 @@ namespace ComputerAccessories.Models
         public int? CategoryId { get; set; }
         public int? BrandId { get; set; }
 
-        public virtual Brand Brand { get; set; }
-        public virtual Category Category { get; set; }
+        public virtual TblBrand Brand { get; set; }
+        public virtual TblCategory Category { get; set; }
         public virtual ICollection<TblProductAttributes> TblProductAttributes { get; set; }
     }
 }

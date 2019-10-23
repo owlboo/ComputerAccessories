@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ComputerAccessories.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace ComputerAccessories
 {
@@ -33,11 +34,18 @@ namespace ComputerAccessories
                     Configuration.GetConnectionString("DefaultConnection")));
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //    .AddEntityFrameworkStores<ComputerAccessoriesContext>();
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ComputerAccessoriesContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
+
+            services.AddAntiforgery(o => o.HeaderName = "CSRF-TOKEN");
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
