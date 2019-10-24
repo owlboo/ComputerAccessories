@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ComputerAccessories.Models;
 using ComputerAccessories.ViewModels;
+using System.IO;
 
 namespace ComputerAccessories.Areas.Admin.Controllers
 {
@@ -114,8 +115,20 @@ namespace ComputerAccessories.Areas.Admin.Controllers
 
         public IActionResult Brand()
         {
+            ViewBag.controller = "Brand";
             var listBrand = _db.TblBrand.ToList();
             return View(listBrand);
+        }
+
+        public IActionResult EditBrand(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var brandFromDb = _db.TblBrand.Where(x => x.Id == id).FirstOrDefault();
+            return View(brandFromDb);
         }
 
         public IActionResult CreateNewBrand()
@@ -166,12 +179,6 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         {
             return Json(_db.TblCategory.Where(x=>x.Id !=2).ToList());
         }
-
-/*        public IActionResult CreateNewBranch()
-        {
-
-            return View(Brand);
-        }*/
 
         public IActionResult CreateNewCategory()
         {
@@ -276,16 +283,89 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             return RedirectToAction(nameof(Attributes));
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> EditBrand(TblBrand brand)
+        {
+            if (ModelState.IsValid)
+            {
+                String currentDir = Directory.GetCurrentDirectory();
+                String webRootPath = Path.Combine(currentDir, "wwwroot");
+                var file = HttpContext.Request.Form.Files;
+
+                if (file.Count != 0)
+                {
+                    var upload = Path.Combine(webRootPath, @"image");
+                    var extension = Path.GetExtension(file[0].FileName);
+                    var fileName = file[0].FileName;
+                    var newFileDir = Path.Combine(upload, fileName);
+                    using (var fileStream = new FileStream(newFileDir, FileMode.Create))
+                    {
+                        await file[0].CopyToAsync(fileStream);
+                    }
+
+                    var currentBrandFromBd = _db.TblBrand.Where(x => x.Id == brand.Id).FirstOrDefault();
+                    currentBrandFromBd.Logo = Path.GetFileName(fileName);
+                    currentBrandFromBd.BrandName = brand.BrandName;
+                    currentBrandFromBd.ModifiedDate = DateTime.Now;
+
+                    var result = await _db.SaveChangesAsync();
+                    if (result > 0)
+                    {
+                        return RedirectToAction(nameof(Brand));
+                    }
+                    return null;
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateNewBrand(TblBrand brand)
         {
-            _db.TblBrand.Add(new TblBrand
+            if (ModelState.IsValid)
             {
-                BrandName = brand.BrandName,
-                CreatedDate = DateTime.Now,
-            });
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Brand));
+                String currentDir = Directory.GetCurrentDirectory();
+                String webRootPath = Path.Combine(currentDir, "wwwroot");
+                var file = HttpContext.Request.Form.Files;
+
+                if (file.Count != 0)
+                {
+                    var upload = Path.Combine(webRootPath, @"image");
+                    var extension = Path.GetExtension(file[0].FileName);
+                    var fileName = file[0].FileName;
+                    var newFileDir = Path.Combine(upload, fileName);
+                    using (var fileStream = new FileStream(newFileDir, FileMode.Create))
+                    {
+                        await file[0].CopyToAsync(fileStream);
+                    }
+
+                    _db.TblBrand.Add(new TblBrand
+                    {
+                        BrandName = brand.BrandName,
+                        CreatedDate = DateTime.Now,
+                        Logo = Path.GetFileName(fileName)
+                    });
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Brand));
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+
         }
     }
 }
