@@ -1,6 +1,5 @@
 ﻿using ComputerAccessories.Helpers;
 using ComputerAccessories.Models;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

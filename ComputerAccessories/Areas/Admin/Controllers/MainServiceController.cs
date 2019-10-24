@@ -277,9 +277,9 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewBrand(Brand brand)
+        public async Task<IActionResult> CreateNewBrand(TblBrand brand)
         {
-            _db.TblBrand.Add(new Brand
+            _db.TblBrand.Add(new TblBrand
             {
                 BrandName = brand.BrandName,
                 CreatedDate = DateTime.Now,
