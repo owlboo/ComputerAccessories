@@ -22,6 +22,7 @@ namespace ComputerAccessories.Models
         public decimal? Price { get; set; }
         public int? CategoryId { get; set; }
         public int? BrandId { get; set; }
+        public decimal? PromotionPrice { get; set; }
 
         public virtual TblBrand Brand { get; set; }
         public virtual TblCategory Category { get; set; }

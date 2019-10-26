@@ -95,6 +95,8 @@ namespace ComputerAccessories.Models
 
                 entity.Property(e => e.ProductName).HasMaxLength(100);
 
+                entity.Property(e => e.PromotionPrice).HasColumnType("money");
+
                 entity.Property(e => e.Quantity).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ShortDescription).HasMaxLength(200);
@@ -157,6 +159,8 @@ namespace ComputerAccessories.Models
             {
                 entity.ToTable("tbl_Users");
 
+                entity.Property(e => e.CodeConfirm).HasMaxLength(10);
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.DisplayName).HasMaxLength(100);
@@ -166,8 +170,6 @@ namespace ComputerAccessories.Models
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
-
-                entity.Property(e => e.Password).HasMaxLength(30);
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
             });

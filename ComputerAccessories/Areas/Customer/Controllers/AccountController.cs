@@ -92,7 +92,7 @@ namespace ComputerAccessories.Areas.Customer.Controllers
                     var result = signInHelper.PasswordSignInAsync( user, model.Password, true, shouldLockout: false);
                     if (result == SignInStatus.Success)
                     {
-                        return RedirectToAction("Index", "MainService");
+                        return RedirectToAction("Index", "Home", new {userId = user.Id});
                     }
                     else
                     {

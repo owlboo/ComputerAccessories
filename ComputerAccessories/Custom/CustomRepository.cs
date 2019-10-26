@@ -31,6 +31,12 @@ namespace ComputerAccessories.Helpers
                     user.IsActivated = true;
                     user.LockoutEnabled = false;
                     user.UserName = email;
+                    Random rand = new Random();
+                    var str = "ABCDEFGHIKLMNOPQZXVJRTWS1234567890";
+
+                    var code = Enumerable.Repeat(str, 6).Select(x => x[rand.Next(x.Length)]).ToString();
+
+                    user.CodeConfirm = code;
 
                     user.SecurityStamp = Guid.NewGuid().ToString();
 

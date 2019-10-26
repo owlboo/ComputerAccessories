@@ -16,6 +16,7 @@ namespace ComputerAccessories.Models
         public int? ParentCateId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public bool? Status { get; set; }
 
         public virtual ICollection<TblAttribute> TblAttribute { get; set; }
         public virtual ICollection<TblProduct> TblProduct { get; set; }

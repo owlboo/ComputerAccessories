@@ -30,6 +30,7 @@ namespace ComputerAccessories.Models
         public bool? IsActivated { get; set; }
         public string PasswordSalt { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string CodeConfirm { get; set; }
 
         public virtual ICollection<TblUserRole> TblUserRole { get; set; }
     }

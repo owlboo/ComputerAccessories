@@ -28,113 +28,33 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             };
             AttributeVM = new AttributeViewModel();
         }
-        #region Front
+        
         public IActionResult Index()
         {
             return View();
         }
-        [HttpGet]
-        public IActionResult Attributes(string categoryId = null, string fromTime = null, string toTime=null)
-        {
-            ViewBag.controller = "Attributes";
-            var listCategory = _db.TblCategory.ToList();
-            ViewBag.lstCategory = listCategory;
-            if (string.IsNullOrEmpty(categoryId))
-            {
-                if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
-                {
-                    var lstAttributes = _db.TblAttribute.Select(x => new AttributeViewModel
-                    {
-                        Id = x.Id,
-                        CategoryId = x.CategoryId,
-                        AttributeName = x.AttributeName,
-                        CreatedDate = x.CreatedDate,
-                        ModifiedDate = x.ModifiedDate,
-                        CategoryName = x.Category.CategoryName
-                    }).ToList();
-                    return View(lstAttributes);
-                }
-                else
-                {
-                    DateTime from = DateTime.Parse(fromTime);
-                    DateTime to = DateTime.Parse(toTime + " 23:59:59");
-                    var lstAttributes = _db.TblAttribute.Where(x=>x.CreatedDate>=from && x.CreatedDate<=to).Select(x => new AttributeViewModel
-                    {
-                        Id = x.Id,
-                        CategoryId = x.CategoryId,
-                        AttributeName = x.AttributeName,
-                        CreatedDate = x.CreatedDate,
-                        ModifiedDate = x.ModifiedDate,
-                        CategoryName = x.Category.CategoryName
-                    }).ToList();
-                    return View(lstAttributes);
-                }
-            }
-            else
-            {
-                var categoryid = Convert.ToInt32(categoryId);
-                if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
-                {
-                    var lstAttributes = _db.TblAttribute.Where(x=>x.CategoryId == categoryid).Select(x => new AttributeViewModel
-                    {
-                        Id = x.Id,
-                        CategoryId = x.CategoryId,
-                        AttributeName = x.AttributeName,
-                        CreatedDate = x.CreatedDate,
-                        ModifiedDate = x.ModifiedDate,
-                        CategoryName = x.Category.CategoryName
-                    }).ToList();
-                    return View(lstAttributes);
-                }
-                else
-                {
-                    DateTime from = DateTime.Parse(fromTime);
-                    DateTime to = DateTime.Parse(toTime + "23:59:59");
-                    var lstAttributes = _db.TblAttribute.Where(x => x.CreatedDate >= from && x.CreatedDate <= to&&x.CategoryId==categoryid).Select(x => new AttributeViewModel
-                    {
-                        Id = x.Id,
-                        CategoryId = x.CategoryId,
-                        AttributeName = x.AttributeName,
-                        CreatedDate = x.CreatedDate,
-                        ModifiedDate = x.ModifiedDate,
-                        CategoryName = x.Category.CategoryName
-                    }).ToList();
-                    return View(lstAttributes);
-
-                }
-            }
-            return View();
-
-        }
+        #region Category
+        
         public PartialViewResult _GetCategory()
         {
             var listCategory = _db.TblCategory.ToList();
             ViewBag.lstCategory = listCategory;
             return PartialView("~/Views/Admin/_GetCategory.cshtml", listCategory);
         }
-
-        public IActionResult Brand()
+        [HttpPost]
+        public async Task<IActionResult> CreateNewCategory(CategoryViewModel categoryView)
         {
-            ViewBag.controller = "Brand";
-            var listBrand = _db.TblBrand.ToList();
-            return View(listBrand);
-        }
-
-        public IActionResult EditBrand(int? id)
-        {
-            if (id == null)
+            _db.TblCategory.Add(new TblCategory
             {
-                return NotFound();
-            }
-
-            var brandFromDb = _db.TblBrand.Where(x => x.Id == id).FirstOrDefault();
-            return View(brandFromDb);
+                CategoryName = categoryView.CategoryName,
+                CreatedDate = DateTime.Now,
+                ParentCateId = categoryView.ParentCateId,
+            });
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Category));
         }
 
-        public IActionResult CreateNewBrand()
-        {
-            return View();
-        }
+        
 
         public IActionResult Category()
         {
@@ -212,42 +132,10 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             return View(CategoryVM);
         }
 
-        public IActionResult EditAttributes(int? id)
-        {
-            if(id == null)
-            {
-                return NotFound();
-            }
-            var attributeFromDb = _db.TblAttribute.Where(x => x.Id == id).FirstOrDefault();
-            if(attributeFromDb == null)
-            {
-                return NotFound();
-            }
-            var categories = _db.TblCategory.ToList();
-            ViewBag.lstCategory = categories;
-            AttributeVM.Id = attributeFromDb.Id;
-            AttributeVM.CategoryId = attributeFromDb.CategoryId;
-            AttributeVM.CreatedDate = attributeFromDb.CreatedDate;
-            AttributeVM.ModifiedDate = attributeFromDb.ModifiedDate;
-            return View(AttributeVM);
-        }
-        #endregion
-        [HttpPost]
-        public async Task<IActionResult> CreateNewCategory(CategoryViewModel categoryView)
-        {
-            _db.TblCategory.Add(new TblCategory
-            {
-                CategoryName = categoryView.CategoryName,
-                CreatedDate = DateTime.Now,
-                ParentCateId = categoryView.ParentCateId,
-            }) ;
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Category));
-        }
         [HttpPost]
         public async Task<IActionResult> EditCategory(TblCategory category)
         {
-            if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
@@ -256,11 +144,87 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             categoryFromDb.ModifiedDate = DateTime.Now;
             categoryFromDb.ParentCateId = category.ParentCateId;
             var result = await _db.SaveChangesAsync();
-            if(result > 0)
+            if (result > 0)
             {
                 return RedirectToAction(nameof(Category));
             }
             return null;
+        }
+        
+        #endregion
+        #region Attribute
+        [HttpGet]
+        public IActionResult Attributes(string categoryId = null, string fromTime = null, string toTime = null)
+        {
+            ViewBag.controller = "Attributes";
+            var listCategory = _db.TblCategory.ToList();
+            ViewBag.lstCategory = listCategory;
+            if (string.IsNullOrEmpty(categoryId))
+            {
+                if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
+                {
+                    var lstAttributes = _db.TblAttribute.Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+                }
+                else
+                {
+                    DateTime from = DateTime.Parse(fromTime);
+                    DateTime to = DateTime.Parse(toTime + " 23:59:59");
+                    var lstAttributes = _db.TblAttribute.Where(x => x.CreatedDate >= from && x.CreatedDate <= to).Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+                }
+            }
+            else
+            {
+                var categoryid = Convert.ToInt32(categoryId);
+                if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
+                {
+                    var lstAttributes = _db.TblAttribute.Where(x => x.CategoryId == categoryid).Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+                }
+                else
+                {
+                    DateTime from = DateTime.Parse(fromTime);
+                    DateTime to = DateTime.Parse(toTime + "23:59:59");
+                    var lstAttributes = _db.TblAttribute.Where(x => x.CreatedDate >= from && x.CreatedDate <= to && x.CategoryId == categoryid).Select(x => new AttributeViewModel
+                    {
+                        Id = x.Id,
+                        CategoryId = x.CategoryId,
+                        AttributeName = x.AttributeName,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        CategoryName = x.Category.CategoryName
+                    }).ToList();
+                    return View(lstAttributes);
+
+                }
+            }
+            return View();
+
         }
 
         [HttpPost]
@@ -283,6 +247,50 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             return RedirectToAction(nameof(Attributes));
         }
 
+
+        public IActionResult EditAttributes(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var attributeFromDb = _db.TblAttribute.Where(x => x.Id == id).FirstOrDefault();
+            if (attributeFromDb == null)
+            {
+                return NotFound();
+            }
+            var categories = _db.TblCategory.ToList();
+            ViewBag.lstCategory = categories;
+            AttributeVM.Id = attributeFromDb.Id;
+            AttributeVM.CategoryId = attributeFromDb.CategoryId;
+            AttributeVM.CreatedDate = attributeFromDb.CreatedDate;
+            AttributeVM.ModifiedDate = attributeFromDb.ModifiedDate;
+            return View(AttributeVM);
+        }
+        #endregion
+        #region Brand
+        public IActionResult Brand()
+        {
+            ViewBag.controller = "Brand";
+            var listBrand = _db.TblBrand.ToList();
+            return View(listBrand);
+        }
+
+        public IActionResult EditBrand(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var brandFromDb = _db.TblBrand.Where(x => x.Id == id).FirstOrDefault();
+            return View(brandFromDb);
+        }
+
+        public IActionResult CreateNewBrand()
+        {
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> EditBrand(TblBrand brand)
@@ -367,5 +375,51 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             }
 
         }
+        #endregion
+        #region AccountManger
+        public IActionResult AccountManager(int? role)
+        {
+            if(role == null)
+            {
+                var listUser = (IEnumerable<AccountViewModel>)(from us in _db.TblUsers
+                                                               join us_role in _db.TblUserRole
+                                                               on us.Id equals us_role.UserId
+                                                               select new AccountViewModel
+                                                               {
+                                                                   Id = us.Id,
+                                                                   DisplayName = us.DisplayName,
+                                                                   IsActivated = us.IsActivated.Value == true ? "Kích hoạt" : "Khóa/Chưa kích hoạt",
+                                                                   Email = us.Email,
+                                                                   Role = us_role.RoleId,
+                                                                   RoleName = _db.TblRoles.Where(x => x.Id == us_role.RoleId).Select(x => x.NormalizedName).FirstOrDefault(),
+                                                                   CreatedDate = us.CreatedDate
+                                                               }).ToList();
+                return View(listUser);
+            }else
+            {
+                var listUser = (from us in _db.TblUsers
+                                                               join us_role in _db.TblUserRole
+                                                               on us.Id equals us_role.UserId
+                                                               where us_role.RoleId == role
+                                                               select new AccountViewModel
+                                                               {
+                                                                   Id = us.Id,
+                                                                   DisplayName = us.DisplayName,
+                                                                   IsActivated = us.IsActivated.Value == true ? "Kích hoạt" : "Khóa/Chưa kích hoạt",
+                                                                   Email = us.Email,
+                                                                   Role = us_role.RoleId,
+                                                                   RoleName = _db.TblRoles.Where(x => x.Id == us_role.RoleId).Select(x => x.NormalizedName).FirstOrDefault(),
+                                                                   CreatedDate = us.CreatedDate
+                                                               }).AsQueryable();
+                return View(listUser.ToList()); ;
+            }
+            
+        }
+        #endregion
+
+
+
+
+
     }
 }
