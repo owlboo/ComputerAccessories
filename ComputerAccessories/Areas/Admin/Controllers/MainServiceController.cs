@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ComputerAccessories.Models;
 using ComputerAccessories.ViewModels;
 using System.IO;
+using ComputerAccessories.Helpers;
 
 namespace ComputerAccessories.Areas.Admin.Controllers
 {
@@ -309,6 +310,47 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                 return View(listUser.ToList()); ;
             }
             
+        }
+
+        [HttpPost]
+        [Route("MainService/CreateNewUser")]
+        public async Task<IActionResult> CreateNewUser([FromBody]RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //Regex regex = new Regex(@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+                //Match match = regex.Match(model.Email.Trim().ToLower());
+                //if (!match.Success)
+                //{
+                //    return new JsonResult(new { code = 0, Err = "" });
+                //}
+                //var user = new TblUsers
+                //{
+                //    UserName = model.UserName,
+                //    Email = model.Email,
+                //    PhoneNumber = model.PhoneNumber,
+                //    Password = model.Password
+                //    //DisplayName = model.FullName                   
+                //};
+                var result = CustomRepository.CreateUser(model.Email, model.Password, model.FullName);
+                if (result == true)
+                {
+
+                    var user = _db.TblUsers.Where(x => x.Email.Equals(model.Email)).FirstOrDefault();
+                    var re = await CustomRepository.AddUserToRoleAsync(user, 3);
+                    if (re == true)
+                    {
+                        return new JsonResult(new { code = 1, Err = "Thêm thành công" });
+                    }
+                }
+                else
+                {
+                    ViewBag.Error = "Người dùng đã tồn tại";
+                    return new JsonResult(new { code = 0, Err = "*Người dùng đã tồn tại" });
+                }
+
+            }
+            return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
         }
         #endregion
 
