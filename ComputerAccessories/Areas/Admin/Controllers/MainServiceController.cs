@@ -49,6 +49,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                 CategoryName = categoryView.CategoryName,
                 CreatedDate = DateTime.Now,
                 ParentCateId = categoryView.ParentCateId,
+                Status = categoryView.Status
             });
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Category));
@@ -73,7 +74,8 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                         CreatedDate = item.CreatedDate,
                         ModifiedDate = item.ModifiedDate,
                         ParentName = parentName,
-                        Id = item.Id
+                        Id = item.Id,
+                        Status = item.Status == null ? false : item.Status.Value
                     };
                     lstCategory.Add(category);
                 }
@@ -101,8 +103,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
         }
 
         public IActionResult CreateNewCategory()
-        {
-
+        { 
             return View(CategoryVM);
         }
 
@@ -128,6 +129,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             CategoryVM.CreatedDate = categoryFromDb.CreatedDate;
             CategoryVM.ModifiedDate = categoryFromDb.ModifiedDate;
             CategoryVM.Id = categoryFromDb.Id;
+            CategoryVM.Status = categoryFromDb.Status == null ? false : categoryFromDb.Status.Value;
  
             return View(CategoryVM);
         }
@@ -143,6 +145,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             categoryFromDb.CategoryName = category.CategoryName;
             categoryFromDb.ModifiedDate = DateTime.Now;
             categoryFromDb.ParentCateId = category.ParentCateId;
+            categoryFromDb.Status = category.Status;
             var result = await _db.SaveChangesAsync();
             if (result > 0)
             {
@@ -266,114 +269,6 @@ namespace ComputerAccessories.Areas.Admin.Controllers
             AttributeVM.CreatedDate = attributeFromDb.CreatedDate;
             AttributeVM.ModifiedDate = attributeFromDb.ModifiedDate;
             return View(AttributeVM);
-        }
-        #endregion
-        #region Brand
-        public IActionResult Brand()
-        {
-            ViewBag.controller = "Brand";
-            var listBrand = _db.TblBrand.ToList();
-            return View(listBrand);
-        }
-
-        public IActionResult EditBrand(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var brandFromDb = _db.TblBrand.Where(x => x.Id == id).FirstOrDefault();
-            return View(brandFromDb);
-        }
-
-        public IActionResult CreateNewBrand()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditBrand(TblBrand brand)
-        {
-            if (ModelState.IsValid)
-            {
-                String currentDir = Directory.GetCurrentDirectory();
-                String webRootPath = Path.Combine(currentDir, "wwwroot");
-                var file = HttpContext.Request.Form.Files;
-
-                if (file.Count != 0)
-                {
-                    var upload = Path.Combine(webRootPath, @"image");
-                    var extension = Path.GetExtension(file[0].FileName);
-                    var fileName = file[0].FileName;
-                    var newFileDir = Path.Combine(upload, fileName);
-                    using (var fileStream = new FileStream(newFileDir, FileMode.Create))
-                    {
-                        await file[0].CopyToAsync(fileStream);
-                    }
-
-                    var currentBrandFromBd = _db.TblBrand.Where(x => x.Id == brand.Id).FirstOrDefault();
-                    currentBrandFromBd.Logo = Path.GetFileName(fileName);
-                    currentBrandFromBd.BrandName = brand.BrandName;
-                    currentBrandFromBd.ModifiedDate = DateTime.Now;
-
-                    var result = await _db.SaveChangesAsync();
-                    if (result > 0)
-                    {
-                        return RedirectToAction(nameof(Brand));
-                    }
-                    return null;
-                }
-                else
-                {
-                    return NotFound();
-                }
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateNewBrand(TblBrand brand)
-        {
-            if (ModelState.IsValid)
-            {
-                String currentDir = Directory.GetCurrentDirectory();
-                String webRootPath = Path.Combine(currentDir, "wwwroot");
-                var file = HttpContext.Request.Form.Files;
-
-                if (file.Count != 0)
-                {
-                    var upload = Path.Combine(webRootPath, @"image");
-                    var extension = Path.GetExtension(file[0].FileName);
-                    var fileName = file[0].FileName;
-                    var newFileDir = Path.Combine(upload, fileName);
-                    using (var fileStream = new FileStream(newFileDir, FileMode.Create))
-                    {
-                        await file[0].CopyToAsync(fileStream);
-                    }
-
-                    _db.TblBrand.Add(new TblBrand
-                    {
-                        BrandName = brand.BrandName,
-                        CreatedDate = DateTime.Now,
-                        Logo = Path.GetFileName(fileName)
-                    });
-                    await _db.SaveChangesAsync();
-                    return RedirectToAction(nameof(Brand));
-                }
-                else
-                {
-                    return NotFound();
-                }
-            }
-            else
-            {
-                return NotFound();
-            }
-
         }
         #endregion
         #region AccountManger

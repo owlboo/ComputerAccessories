@@ -1,15 +1,12 @@
 ﻿@using ComputerAccessories.Extensions;
 
-@model ComputerAccessories.Models.TblBrand
+@model ComputerAccessories.ViewModels.BrandViewModel
 @{
     ViewData["Title"] = "CreateNewBrand";
     Layout = "~/Views/Admin/_Layout.cshtml";
 }
 
 <br />
-
-
-
 <div class="box box-primary">
     <div class="box-header with-border">
         <h3 class="box-title">Thêm Brand mới</h3>
@@ -27,13 +24,14 @@
                 <label for="exampleInputEmail1">Upload Logo</label>
                 <input class="form-control" type="file" name="files">
             </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <input type="checkbox" asp-for="Status"/>
+            </div>
         </div>
         
         <!-- /.box-body -->
-
-
-
-       
 
         <div class="box-footer">
             <button type="submit" class="btn btn-primary">Tạo</button>

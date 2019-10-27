@@ -12,7 +12,7 @@
                 <h3>Danh mục thương hiệu</h3>
             </div>
             <div class="col-lg-1">
-                <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewBranch" ><span><i class="fa fa-plus"></i></span> Thêm thương hiệu mới</a>
+                <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewCategory" ><span><i class="fa fa-plus"></i></span> Thêm thương hiệu mới</a>
             </div>
         </div>
     </div>
@@ -30,7 +30,8 @@
                         <thead style="color:darkcyan">
                             <tr>
                                 <th>Mã</th>
-                                <th>Tên danh mục</th>
+                                <th>Tên danh mục</th>\
+                                <td>Active</td>
                                 <th>Danh mục cha</th>
                                 <th>Ngày tạo </th>
                                 <th>Ngày chỉnh sửa</th>
@@ -43,6 +44,7 @@
                             <tr>
                                 <th>@item.Id</th>
                                 <th>@item.CategoryName</th>
+                                <th>@item.Status</th>
                                 @if (item.ParentName == null)
                                 {
                                     <th>Trống</th>

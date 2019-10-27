@@ -33,6 +33,11 @@
                         <select asp-for="ParentCateId" asp-items="@Model.listParent.ToSelectListItem("CategoryName",Model.Id)" class="form-control"></select>
                     </div>
                 </div>
+                
+                <div>
+                    <label>Active</label>
+                    <input type="checkbox" asp-for="Status"/>
+                </div>
                 <!-- /.box-body -->
 
                 <div class="box-footer">

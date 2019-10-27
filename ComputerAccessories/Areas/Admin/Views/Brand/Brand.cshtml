@@ -12,7 +12,7 @@
             <h3>Danh mục brand</h3>
         </div>
         <div class="col-lg-1">
-            <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewBrand"><span><i class="fa fa-plus"></i></span> Thêm brand mới</a>
+            <a class="btn btn-default" asp-area="Admin" asp-controller="Brand" asp-action="CreateNewBrand"><span><i class="fa fa-plus"></i></span> Thêm brand mới</a>
         </div>
     </div>
 </div>
@@ -31,6 +31,7 @@
                         <tr>
                             <th>Mã</th>
                             <th>Tên brand</th>
+                            <th>Active</th>
                             <th>Logo</th>
                             <th>Ngày tạo </th>
                             <th>Ngày chỉnh sửa</th>
@@ -43,6 +44,14 @@
                             <tr>
                                 <th>@item.Id</th>
                                 <th>@item.BrandName</th>
+                                @if(item.Status == null)
+                                {
+                                    <th>N/A</th>
+                                }
+                                else
+                                {
+                                    <th>@item.Status</th>
+                                }
                                 <th>
                                     <img src="~/image/@item.Logo"/>
                                 </th>
