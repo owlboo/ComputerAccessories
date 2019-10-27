@@ -27,7 +27,11 @@ namespace ComputerAccessories.Areas.Customer.Controllers
         //[Route("/[controller]/SignUp")]
         public IActionResult SignUp()
         {
+
+            var provinces = _db.TblProvince.ToList();
+            ViewBag.lstProvince = provinces;
             return View();
+
         }
 
         [HttpPost]

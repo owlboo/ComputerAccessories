@@ -7,6 +7,7 @@ namespace ComputerAccessories.Models
     {
         public TblUsers()
         {
+            TblUserAddress = new HashSet<TblUserAddress>();
             TblUserRole = new HashSet<TblUserRole>();
         }
 
@@ -32,6 +33,7 @@ namespace ComputerAccessories.Models
         public DateTime? CreatedDate { get; set; }
         public string CodeConfirm { get; set; }
 
+        public virtual ICollection<TblUserAddress> TblUserAddress { get; set; }
         public virtual ICollection<TblUserRole> TblUserRole { get; set; }
     }
 }
