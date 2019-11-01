@@ -35,10 +35,6 @@ namespace ComputerAccessories.Extensions
 
         public static IEnumerable<SelectListItem> ToSelectListItemProvince<T>(this IEnumerable<T> items, string propertyName, int selectedValue)
         {
-            if (selectedValue == null)
-            {
-                selectedValue = 0;
-            }
             return from item in items
                    select new SelectListItem
                    {

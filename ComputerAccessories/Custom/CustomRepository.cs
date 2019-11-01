@@ -11,7 +11,7 @@ namespace ComputerAccessories.Helpers
 {
     public static class CustomRepository
     {
-        public static bool CreateUser(string email, string password, string fullname)
+        public static bool CreateUser(string email, string phoneNumber, string password, string fullname, int provinceId, int districtId, int wardId, string place)
         {
             using (ComputerAccessoriesContext db = new ComputerAccessoriesContext())
             {
@@ -31,10 +31,19 @@ namespace ComputerAccessories.Helpers
                     user.IsActivated = true;
                     user.LockoutEnabled = false;
                     user.UserName = email;
+                    user.PhoneNumber = phoneNumber;
+                    user.EmailConfirmed = false;
+                    user.PhoneNumberConfirmed = false;
+                    user.TwoFactorEnabled = false;
+                    user.LockoutEnabled = false;
+                    user.AccessFailedCount = 0;
                     Random rand = new Random();
-                    var str = "ABCDEFGHIKLMNOPQZXVJRTWS1234567890";
 
-                    var code = Enumerable.Repeat(str, 6).Select(x => x[rand.Next(x.Length)]).ToString();
+                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    var code = new string(Enumerable.Repeat(chars, 6)
+                      .Select(s => s[rand.Next(s.Length)]).ToArray());
+
+                    //var code = Enumerable.Repeat(str, 6).Select(x => x[rand.Next(x.Length)]).ToString();
 
                     user.CodeConfirm = code;
 
@@ -47,6 +56,16 @@ namespace ComputerAccessories.Helpers
                     {
                         return false;
                     }
+
+                    TblUserAddress tblUserAddress = new TblUserAddress();
+                    tblUserAddress.UserId = result.Id;
+                    tblUserAddress.ProvinceId = provinceId;
+                    tblUserAddress.DistrictId = districtId;
+                    tblUserAddress.WardId = wardId;
+                    tblUserAddress.PlaceDetail = place;
+
+                    db.TblUserAddress.Add(tblUserAddress);
+                    db.SaveChanges();
                     return true;
                 }
                 catch(Exception e)
