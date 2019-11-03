@@ -352,7 +352,7 @@
                     <li>
                         <a asp-controller="MainService" asp-action="Category">
                             <i class="fa fa-files-o"></i>
-                            <span>Product Category</span>
+                            <span>Danh mục sản phẩm</span>
                             @*<span class="pull-right-container">
                                 <span class="label label-primary pull-right">4</span>
                             </span>*@
@@ -524,8 +524,8 @@
                             <li><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> GPU</a></li>*@
                         </ul>
                     </li>
-                    <li class="treeview">
-                        <a asp-controller="MainService" asp-action="Product">
+                    <li @*class="treeview"*@>
+                        <a asp-controller="Product" asp-action="ProductManagement">
                             <i class="fa fa-laptop"></i>
                             <span>Sản phẩm</span>
                             <span class="pull-right-container">
@@ -533,7 +533,7 @@
                             </span>
                         </a>
 
-                        <ul class="treeview-menu">
+                        @*<ul class="treeview-menu">
                             <li><a asp-area="Admin" asp-controller="MainService" asp-action="CreateNewProduct"><i class="fa fa-circle-o"></i> Thêm mới</a></li>
                             <li class="treeview">
                                 <a href="#">
@@ -547,7 +547,7 @@
                                 </ul>
                             </li>
 
-                        </ul>
+                        </ul>*@
                     </li>
                     <li>
                         <a asp-area="Admin" asp-controller="MainService" asp-action="Attributes">
@@ -721,6 +721,7 @@
     <!-- AdminLTE for demo purposes -->
     <script src="~/dist/js/demo.js" asp-append-version="true"></script>
     <script src="~/js/CustomJS.js" type="text/javascript"></script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -32,9 +32,9 @@ namespace ComputerAccessories.Helpers
                     user.LockoutEnabled = false;
                     user.UserName = email;
                     Random rand = new Random();
-                    var str = "ABCDEFGHIKLMNOPQZXVJRTWS1234567890";
 
-                    var code = Enumerable.Repeat(str, 6).Select(x => x[rand.Next(x.Length)]).ToString();
+
+                    var code = rand.Next(100000, 999999).ToString();
 
                     user.CodeConfirm = code;
 
