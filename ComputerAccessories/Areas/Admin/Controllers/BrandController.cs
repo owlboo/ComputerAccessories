@@ -66,7 +66,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
 
                 if (file.Count != 0)
                 {
-                    var upload = Path.Combine(webRootPath, @"image");
+                    var upload = Path.Combine(webRootPath, @"image/BrandImage");
                     var extension = Path.GetExtension(file[0].FileName);
                     var fileName = file[0].FileName;
                     var newFileDir = Path.Combine(upload, fileName);
@@ -109,7 +109,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
 
                 if (file.Count != 0)
                 {
-                    var upload = Path.Combine(webRootPath, @"image");
+                    var upload = Path.Combine(webRootPath, @"image/BrandImage");
                     var extension = Path.GetExtension(file[0].FileName);
                     var fileName = file[0].FileName;
                     var newFileDir = Path.Combine(upload, fileName);

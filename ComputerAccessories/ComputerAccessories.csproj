@@ -19,6 +19,7 @@
 
 
   <ItemGroup>
+    <Folder Include="wwwroot\image\BrandImage\" />
     <Folder Include="wwwroot\image\ProductImages\" />
   </ItemGroup>
 

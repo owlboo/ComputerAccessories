@@ -1,4 +1,11 @@
 ﻿@model ComputerAccessories.ViewModels.RegisterViewModel
+@using ComputerAccessories.Extensions
+
+@{
+    List<TblProvince> provinces = new List<TblProvince>();
+    provinces = ViewBag.lstProvince;
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,6 +58,33 @@
                     <input type="email" id="email" asp-for="Email" class="form-control" required placeholder="Email">
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
+
+                <div>
+                    <label>Tỉnh, Thành Phố</label>
+                    <select id="provinceSelector" asp-for="ProvinceId" asp-items="@provinces.ToSelectListItemProvince("ProvinceName",provinces.FirstOrDefault().ProvinceId)" class="form-control"></select>
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+
+                <div>
+                    <label>Huyện, Quận</label>
+                    <select id="districtSelector" asp-for="DistricId" class="form-control"></select>
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+
+                <div>
+                    <label>Xã, Phường</label>
+                    <select id="wardSelector" asp-for="WardId" class="form-control"></select>
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+
+                <div>
+                    <label>Số nhà, Đường</label>
+                    <input type="text" id="placeDetailText" asp-for="PlaceDetail" class="form-control">
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+
+                <br />
+
                 <div class="form-group has-feedback">
                     <input type="tel" class="form-control" id="phonenumber" asp-for="PhoneNumber" required placeholder="Số điện thoại">
                     <span class="glyphicon glyphicon-phone form-control-feedback"></span>
@@ -73,7 +107,7 @@
                     </div>
                     <!-- /.col -->
                     <div class="col-xs-4">
-                        <button class="btn btn-primary btn-block btn-flat" id="submit" @*type="submit"*@>Đăng ký</button>
+                        <button asp-action="SignUp" class="btn btn-primary btn-block btn-flat" id="submit" type="submit">Đăng ký</button>
                     </div>
                     <!-- /.col -->
                 </div>
@@ -124,76 +158,8 @@
                 $('#submit').attr("disabled", false);
             }
         }
-         //$('#submit').click(function (e) {
-         //    debugger;
-         //    var form = $('#__AjaxAntiForgeryForm');
-         //    var token = $('input[name="__RequestVerificationToken"]', form).val();
-         //       e.preventDefault();
-         //       if ($('#fullname').val().trim() == "") {
-         //               $("#validation").text("*Vui lòng nhập họ và tên của bạn");
-         //           $('#fullname').focus();
-         //           return;
-         //       }
-         //       if ($('#username').val().trim() == "") {
-         //               $("#validation").text("*Vui lòng nhập tên đăng nhập của bạn");
-         //           $('#username').focus();
-         //           return;
-         //       }
-
-         //       if ($('#email').val().trim() == "") {
-         //           $("#validation").text("*Vui lòng nhập Email của bạn");
-         //       $('#email').focus();
-         //       return;
-         //       }
-
-         //       if ($('#phonenumber').val().trim() == "") {
-         //                   $("#validation").text("*Vui lòng nhập Email của bạn");
-         //               $('#phonenumber').focus();
-         //               return;
-         //           }
-
-         //       if ($('#Pwd').val().length < 8) {
-         //               $("#validation").text("*Mật khẩu phải có ít nhất 8 ký tự");
-         //           $('#Pwd').focus();
-         //           return;
-         //       }
-
-         //       if ($('#Pwd').val() != $('#confirmPwd').val()) {
-         //           $("#validation").text("*Nhập lại mật khẩu không chính xác");
-         //       $('#Pwd').text("");
-         //       $('#confirmPwd').text("");
-         //       return;
-         //           }
-         //       var data = {
-         //           FullName: $('#fullname').val(),
-         //           UserName: $('#username').val(),
-         //           Email: $('#email').val(),
-         //           PhoneNumber: $('#phonenumber').val(),
-         //           Password: $('#Pwd').val()
-         //       }
-
-         //    $.ajax({
-         //        //url: "/Customer/Account/SignUpPost?FullName=" + $('#fullname').val()
-         //        //    + "&UserName=" + $('#username').val() + "&Email=" + $('#email').val() +
-         //        //    "&PhoneNumber=" + $('#phonenumber').val() + "&Password="+$('#Pwd').val()+"",
-         //        url: "/Account/SignUpPost",
-         //        type: "get",
-         //        dataType: "json",
-         //        data: {
-         //            __RequestVerificationToken: token,
-         //            data: JSON.stringify(data)
-         //        },
-         //           contentType:"application/json",
-         //           success: function (result) {
-
-         //           },
-         //                       error: function (err) {
-         //               console.log(err);
-         //       }
-         //               });
-
-         //});
     </script>
     <script src="~/js/AccountValidate.js" type="text/javascript"></script>
+    <script src="~/js/SignUp.js" type="text/javascript"></script>
 </body>
 </html>

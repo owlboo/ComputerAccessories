@@ -11,7 +11,7 @@ namespace ComputerAccessories.Helpers
 {
     public static class CustomRepository
     {
-        public static bool CreateUser(string email, string password, string fullname)
+        public static bool CreateUser(string email, string phoneNumber, string password, string fullname, int provinceId, int districtId, int wardId, string place)
         {
             using (ComputerAccessoriesContext db = new ComputerAccessoriesContext())
             {
@@ -31,11 +31,15 @@ namespace ComputerAccessories.Helpers
                     user.IsActivated = true;
                     user.LockoutEnabled = false;
                     user.UserName = email;
+                    user.PhoneNumber = phoneNumber;
+                    user.EmailConfirmed = false;
+                    user.PhoneNumberConfirmed = false;
+                    user.TwoFactorEnabled = false;
+                    user.LockoutEnabled = false;
+                    user.AccessFailedCount = 0;
                     Random rand = new Random();
-
-
                     var code = rand.Next(100000, 999999).ToString();
-
+                  
                     user.CodeConfirm = code;
 
                     user.SecurityStamp = Guid.NewGuid().ToString();
@@ -47,6 +51,16 @@ namespace ComputerAccessories.Helpers
                     {
                         return false;
                     }
+
+                    TblUserAddress tblUserAddress = new TblUserAddress();
+                    tblUserAddress.UserId = result.Id;
+                    tblUserAddress.ProvinceId = provinceId;
+                    tblUserAddress.DistrictId = districtId;
+                    tblUserAddress.WardId = wardId;
+                    tblUserAddress.PlaceDetail = place;
+
+                    db.TblUserAddress.Add(tblUserAddress);
+                    db.SaveChanges();
                     return true;
                 }
                 catch(Exception e)

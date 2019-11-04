@@ -27,7 +27,11 @@ namespace ComputerAccessories.Areas.Customer.Controllers
         //[Route("/[controller]/SignUp")]
         public IActionResult SignUp()
         {
+
+            var provinces = _db.TblProvince.ToList();
+            ViewBag.lstProvince = provinces;
             return View();
+
         }
 
         [HttpPost]
@@ -45,18 +49,10 @@ namespace ComputerAccessories.Areas.Customer.Controllers
                 {
                     return new JsonResult(new { code = 0, Err = "" });
                 }
-                //var user = new TblUsers
-                //{
-                //    UserName = model.UserName,
-                //    Email = model.Email,
-                //    PhoneNumber = model.PhoneNumber,
-                //    Password = model.Password
-                //    //DisplayName = model.FullName                   
-                //};
-                var result = CustomRepository.CreateUser(model.Email, model.Password,  model.FullName);
+
+                var result = CustomRepository.CreateUser(model.Email, model.PhoneNumber, model.Password,  model.FullName, model.ProvinceId, model.DistricId, model.WardId, model.PlaceDetail);
                 if (result == true)
                 {
-
                     var user = _db.TblUsers.Where(x => x.Email.Equals(model.Email)).FirstOrDefault();
                     var re = await CustomRepository.AddUserToRoleAsync(user, 3);
                     if (re == true)

@@ -1,11 +1,11 @@
 ﻿$(document).ready(function () {
-    debugger;
+    //debugger;
     GetCategory();
     
 });
 
 function GetCategory() {
-    debugger;
+    //debugger;
     $.ajax({
         url: "/MainService/GetCategory",
         type: "get",
