@@ -332,7 +332,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                 //    Password = model.Password
                 //    //DisplayName = model.FullName                   
                 //};
-                var result = CustomRepository.CreateUser(model.Email, model.Password, model.FullName);
+                var result = CustomRepository.CreateUser(model.Email, model.PhoneNumber, model.Password, model.FullName, model.ProvinceId, model.DistricId, model.WardId, model.PlaceDetail);
                 if (result == true)
                 {
 

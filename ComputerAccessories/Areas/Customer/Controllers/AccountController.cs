@@ -8,6 +8,7 @@ using ComputerAccessories.Helpers;
 using ComputerAccessories.Models;
 using ComputerAccessories.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using SignInHelper = ComputerAccessories.Custom.SignInHelper;
 
 namespace ComputerAccessories.Areas.Customer.Controllers
 {
@@ -86,7 +87,7 @@ namespace ComputerAccessories.Areas.Customer.Controllers
                 if(user != null)
                 {
                     var result = signInHelper.PasswordSignInAsync( user, model.Password, true, shouldLockout: false);
-                    if (result == SignInStatus.Success)
+                    if (result == Custom.SignInStatus.Success)
                     {
                         return RedirectToAction("Index", "Home", new {userId = user.Id});
                     }
