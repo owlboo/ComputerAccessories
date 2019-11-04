@@ -39,11 +39,9 @@ namespace ComputerAccessories.Helpers
                     user.AccessFailedCount = 0;
                     Random rand = new Random();
 
-                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    const string chars = "0123456789";
                     var code = new string(Enumerable.Repeat(chars, 6)
                       .Select(s => s[rand.Next(s.Length)]).ToArray());
-
-                    //var code = Enumerable.Repeat(str, 6).Select(x => x[rand.Next(x.Length)]).ToString();
 
                     user.CodeConfirm = code;
 
