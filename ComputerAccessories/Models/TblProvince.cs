@@ -19,3 +19,4 @@ namespace ComputerAccessories.Models
         public virtual ICollection<TblUserAddress> TblUserAddress { get; set; }
     }
 }
+

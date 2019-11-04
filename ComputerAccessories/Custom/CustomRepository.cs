@@ -38,11 +38,8 @@ namespace ComputerAccessories.Helpers
                     user.LockoutEnabled = false;
                     user.AccessFailedCount = 0;
                     Random rand = new Random();
-
-                    const string chars = "0123456789";
-                    var code = new string(Enumerable.Repeat(chars, 6)
-                      .Select(s => s[rand.Next(s.Length)]).ToArray());
-
+                    var code = rand.Next(100000, 999999).ToString();
+                  
                     user.CodeConfirm = code;
 
                     user.SecurityStamp = Guid.NewGuid().ToString();

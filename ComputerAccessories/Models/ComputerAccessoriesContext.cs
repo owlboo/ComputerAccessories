@@ -21,6 +21,7 @@ namespace ComputerAccessories.Models
         public virtual DbSet<TblDistrict> TblDistrict { get; set; }
         public virtual DbSet<TblProduct> TblProduct { get; set; }
         public virtual DbSet<TblProductAttributes> TblProductAttributes { get; set; }
+        public virtual DbSet<TblProductImages> TblProductImages { get; set; }
         public virtual DbSet<TblProvince> TblProvince { get; set; }
         public virtual DbSet<TblRoles> TblRoles { get; set; }
         public virtual DbSet<TblUserAddress> TblUserAddress { get; set; }
@@ -102,6 +103,8 @@ namespace ComputerAccessories.Models
             {
                 entity.ToTable("tbl_Product");
 
+                entity.Property(e => e.Code).HasMaxLength(20);
+
                 entity.Property(e => e.Color).HasMaxLength(50);
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
@@ -124,14 +127,18 @@ namespace ComputerAccessories.Models
 
                 entity.Property(e => e.ShortDescription).HasMaxLength(200);
 
+                entity.Property(e => e.Thumnail).HasMaxLength(100);
+
                 entity.HasOne(d => d.Brand)
                     .WithMany(p => p.TblProduct)
                     .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tbl_Product_tbl_Brand");
 
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.TblProduct)
                     .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tbl_Product_tbl_Category");
             });
 
@@ -150,6 +157,18 @@ namespace ComputerAccessories.Models
                     .WithMany(p => p.TblProductAttributes)
                     .HasForeignKey(d => d.ProductId)
                     .HasConstraintName("FK_tbl_Product_Attributes_tbl_Product");
+            });
+
+            modelBuilder.Entity<TblProductImages>(entity =>
+            {
+                entity.ToTable("tbl_Product_Images");
+
+                entity.Property(e => e.ImageUrl).HasMaxLength(50);
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.TblProductImages)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK_tbl_Product_Images_tbl_Product");
             });
 
             modelBuilder.Entity<TblProvince>(entity =>

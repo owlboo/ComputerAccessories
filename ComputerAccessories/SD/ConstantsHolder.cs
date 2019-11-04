@@ -11,5 +11,6 @@ namespace ComputerAccessories.SD
         public const string Sale = "Sale";
         public const string Customer = "Customer";
         public const string Shipper = "Shipper";
+        public const string ProductImages = @"image/ProductImages";
     }
 }
