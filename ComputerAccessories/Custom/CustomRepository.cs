@@ -11,7 +11,7 @@ namespace ComputerAccessories.Helpers
 {
     public static class CustomRepository
     {
-        public static bool CreateUser(string email, string phoneNumber, string password, string fullname, int provinceId, int districtId, int wardId, string place)
+        public static TblUsers CreateUser(string email, string phoneNumber, string password, string fullname, int provinceId, int districtId, int wardId, string place)
         {
             using (ComputerAccessoriesContext db = new ComputerAccessoriesContext())
             {
@@ -20,7 +20,7 @@ namespace ComputerAccessories.Helpers
                     var checkUser = db.TblUsers.Where(x => x.UserName.Equals(email)).FirstOrDefault();
                     if(checkUser != null)
                     {
-                        return false;
+                        return null;
                     }
                     TblUsers user = new TblUsers();
                     user.Email = email;
@@ -49,7 +49,7 @@ namespace ComputerAccessories.Helpers
                     var result = GetUser(user.Email);
                     if(result == null)
                     {
-                        return false;
+                        return null;
                     }
 
                     TblUserAddress tblUserAddress = new TblUserAddress();
@@ -61,11 +61,11 @@ namespace ComputerAccessories.Helpers
 
                     db.TblUserAddress.Add(tblUserAddress);
                     db.SaveChanges();
-                    return true;
+                    return user;
                 }
                 catch(Exception e)
                 {
-                    return false;
+                    return null;
                     throw;
                 }
             }

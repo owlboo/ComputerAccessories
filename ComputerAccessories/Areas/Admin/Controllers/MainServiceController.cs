@@ -333,7 +333,7 @@ namespace ComputerAccessories.Areas.Admin.Controllers
                 //    //DisplayName = model.FullName                   
                 //};
                 var result = CustomRepository.CreateUser(model.Email, model.PhoneNumber, model.Password, model.FullName, model.ProvinceId, model.DistricId, model.WardId, model.PlaceDetail);
-                if (result == true)
+                if (result != null)
                 {
 
                     var user = _db.TblUsers.Where(x => x.Email.Equals(model.Email)).FirstOrDefault();

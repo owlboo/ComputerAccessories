@@ -35,6 +35,34 @@ namespace ComputerAccessories.Areas.Customer.Controllers
 
         }
 
+        public IActionResult ConfirmEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailViewModel confirmInfo)
+        {
+            var user = _db.TblUsers.Where(x => x.Email == confirmInfo.Email).FirstOrDefault();
+            if (user == null)
+            {
+                ViewBag.ErrorMes = "Không tìm thấy Email!";
+                return View();
+            }
+            else if (user.CodeConfirm == confirmInfo.ConfirmCode)
+            {
+                user.IsActivated = true;
+                user.LockoutEnabled = false;
+                _db.SaveChanges();
+                return RedirectToAction("Index", "HomeController", new { userId = user.Id });
+            } 
+            else
+            {
+                ViewBag.ErrorMes = "Không đúng mã code xác nhận!";
+                return View();
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         //[Route("/[controller]/SignUpPost")]
@@ -52,8 +80,9 @@ namespace ComputerAccessories.Areas.Customer.Controllers
                 }
 
                 var result = CustomRepository.CreateUser(model.Email, model.PhoneNumber, model.Password,  model.FullName, model.ProvinceId, model.DistricId, model.WardId, model.PlaceDetail);
-                if (result == true)
+                if (result != null)
                 {
+                    EmailHelper.SendConfirmEmail(result);
                     var user = _db.TblUsers.Where(x => x.Email.Equals(model.Email)).FirstOrDefault();
                     var re = await CustomRepository.AddUserToRoleAsync(user, 3);
                     if (re == true)
@@ -104,6 +133,7 @@ namespace ComputerAccessories.Areas.Customer.Controllers
             }
             return RedirectToAction("SignIn", "Account", new { err = "Có lỗi xảy ra, vui lòng thử lại" });
         }
-        
+     
+           
     }
 }
