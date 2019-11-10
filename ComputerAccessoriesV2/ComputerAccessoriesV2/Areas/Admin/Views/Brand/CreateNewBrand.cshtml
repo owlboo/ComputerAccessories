@@ -1,0 +1,42 @@
+﻿@using ComputerAccessoriesV2.Extensions;
+
+@model ComputerAccessoriesV2.ViewModels.BrandViewModel
+@{
+    ViewData["Title"] = "CreateNewBrand";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<br />
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Thêm Brand mới</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    <form role="form" method="post" action="CreateNewBrand" enctype="multipart/form-data">
+        <div class="box-body">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Tên Brand</label>
+                <input class="form-control" placeholder="Nhập tên Brand" asp-for="BrandName">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputEmail1">Upload Logo</label>
+                <input class="form-control" type="file" name="files">
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <input type="checkbox" asp-for="Status"/>
+            </div>
+        </div>
+        
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Tạo</button>
+        </div>
+    </form>
+</div>
+
+

@@ -1,0 +1,86 @@
+﻿@*@model List<ComputerAccessories.Models.TblBrand>*@
+@using ComputerAccessoriesV2.Models
+@model List<Products>
+@{
+    ViewData["Title"] = "Branch";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/font-awesome/font-awesome/css/font-awesome.css" />
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-lg-10">
+            <h3>Danh mục brand</h3>
+        </div>
+        <div class="col-lg-1">
+            <a class="btn btn-default" asp-area="Admin" asp-controller="Product" asp-action="CreateNewProduct"><span><i class="fa fa-plus"></i></span> Thêm sản phẩm mới</a>
+        </div>
+    </div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Hover Data Table</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="example2" class="table table-bordered table-hover">
+                    <thead style="color:darkcyan">
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width:20%">Thumbnail</th>
+                            <th>Danh mục</th>
+                            <th>Thương hiệu</th>
+                            <th>Giá gốc </th>
+                            <th>Giá khuyến mãi</th>
+                            <th>Số lượng</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <th>@item.Id</th>
+                            <th>@item.ProductName</th>
+                            <th style="width:20%">
+                                <img src="@item.Thumnail" width="40%" />
+                            </th>
+                            <th>@item.Category.CategoryName</th>
+                            <th>@item.Brand.BrandName</th>
+                            <th>@item.OriginalPrice</th>
+                            <th>@item.PromotionPrice</th>
+                            <th>@item.Quantity</th>
+                            @if (item.IsAvailable.Value)
+                            {
+                                <th>Còn hàng</th>
+                            }
+                            else
+                            {
+                                <th>Hết hàng</th>
+                            }                            
+                            <th>
+                                @*<div class="btn-group" role="group" style="height:44px; ">
+                                    <a type="button" class="btn btn-success" asp-action="ProductDetails" asp-route-id="@item.Id"><i class="fa fa-eye"></i></a>
+                                    <a type="button" class="btn btn-success" asp-action="EditProducts" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+                                </div>*@
+                                <partial name="~/Views/Shared/_TableButtonPartial.cshtml" model="@item.Id" />
+                            </th>
+                        </tr>
+                        }
+                    </tbody>
+                   
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+
+</div>
+
