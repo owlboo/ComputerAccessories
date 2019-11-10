@@ -40,7 +40,7 @@ namespace ComputerAccessoriesV2
 
             services.AddIdentity<MyUsers,IdentityRole<int>>(options => {
                 //options.SignIn.RequireConfirmedAccount = true;
-                options.Password.RequiredLength = 10;
+                options.Password.RequiredLength = 6;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;

@@ -194,6 +194,11 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             if (ModelState.IsValid)
             {
                 var userFromDb = _db.AspNetUsers.Where(x => x.Email == model.Email).SingleOrDefault();
+                if(userFromDb == null)
+                {
+                    return RedirectToAction("SignIn", "Account", new { err = "Không tìm thấy tài khoản!" });
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(userFromDb.Email, model.Password, model.isRemember, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
