@@ -25,12 +25,14 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         private readonly UserManager<MyUsers> _userManager;
         private readonly SignInManager<MyUsers> _signInManager;
         private readonly ILogger<LoginViewModel> _logger;
-        public AccountController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager, SignInManager<MyUsers> signInManager, ILogger<LoginViewModel> logger)
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        public AccountController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager, SignInManager<MyUsers> signInManager, ILogger<LoginViewModel> logger, RoleManager<IdentityRole<int>> roleManager)
         {
             _db = db;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
         }
         public IActionResult Index()
         {
@@ -114,6 +116,12 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 if (result.Succeeded)
                 {
                     //var userFromDb = _db.AspNetUsers.Where(x => x.Email == model.Email).FirstOrDefault();
+                    if(!await _roleManager.RoleExistsAsync(SD.Customer))
+                    {
+                       await _roleManager.CreateAsync(new IdentityRole<int> { 
+                           Name=SD.Customer
+                       });
+                    }
                     await _userManager.AddToRoleAsync(user, SD.Customer);
 
                     var userAddress = new UserAddress
@@ -128,17 +136,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     _db.UserAddress.Add(userAddress);
                     await _db.SaveChangesAsync();
 
-                    //var user = _db.TblUsers.Where(x => x.Email.Equals(model.Email)).FirstOrDefault();
-                    //var re = await CustomRepository.AddUserToRoleAsync(user, 3);
-                    //TblUserAddress tblUserAddress = new TblUserAddress();
-                    //tblUserAddress.UserId = user.Id;
-                    //tblUserAddress.ProvinceId = model.ProvinceId;
-                    //tblUserAddress.DistrictId = districtId;
-                    //tblUserAddress.WardId = wardId;
-                    //tblUserAddress.PlaceDetail = place;
-
-                    //db.TblUserAddress.Add(tblUserAddress);
-                    //db.SaveChanges();
+                   
                     return RedirectToAction("SignIn", "Account");
 
                 }

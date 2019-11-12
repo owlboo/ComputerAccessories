@@ -5,6 +5,13 @@
     <UserSecretsId>aspnet-ComputerAccessoriesV2-4E2731AD-E53F-47B7-A483-0EF10AE65AAB</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\**" />
+    <Content Remove="Controllers\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <None Remove="Controllers\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.4.0.1" />
@@ -19,9 +26,7 @@
 
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\" />
     <Folder Include="Areas\Customer\Views\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Views\Admin\" />
   </ItemGroup>
 

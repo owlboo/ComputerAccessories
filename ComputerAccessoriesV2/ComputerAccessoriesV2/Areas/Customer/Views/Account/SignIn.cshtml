@@ -1,4 +1,14 @@
 ﻿@model ComputerAccessoriesV2.ViewModels.LoginViewModel
+@using Microsoft.AspNetCore.Identity
+@using ComputerAccessoriesV2.Ultilities
+@using Microsoft.AspNetCore.Http
+@using ComputerAccessoriesV2.Extensions
+@using ComputerAccessoriesV2.Helpers
+@using ComputerAccessoriesV2.Models
+@inject SignInManager<ComputerAccessoriesV2.Data.MyUsers> SignInManager
+@inject UserManager<ComputerAccessoriesV2.Data.MyUsers> UserManager
+@inject RoleManager<IdentityRole<int>> roleManager
+@inject IHttpContextAccessor HttpContextAccessor
 <!DOCTYPE html>
 <html>
 <head>
@@ -76,7 +86,7 @@
             <!-- /.social-auth-links -->
 
             <a href="#">Quên mật khẩu</a><br>
-            <a  asp-area="Customer" asp-controller="Account" asp-action="SignUp" class="text-center">Register a new membership</a>
+            <a asp-area="Customer" asp-controller="Account" asp-action="SignUp" class="text-center">Register a new membership</a>
 
         </div>
         <!-- /.login-box-body -->
@@ -88,12 +98,13 @@
     <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- iCheck -->
     <script src="../../plugins/iCheck/icheck.min.js"></script>
-    <script>$(function () {
-    $('input').iCheck({
-      checkboxClass: 'icheckbox_square-blue',
-      radioClass: 'iradio_square-blue',
-      increaseArea: '20%' /* optional */
-    });
-  });</script>
+    <script>
+    $(function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' /* optional */
+            });
+        });</script>
 </body>
 </html>

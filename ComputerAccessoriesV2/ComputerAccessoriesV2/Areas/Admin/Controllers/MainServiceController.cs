@@ -24,7 +24,9 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         [BindProperty]
         public BrandViewModel BrandVM { get; set; }
         private readonly UserManager<MyUsers> _userManager;
-        public MainServiceController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager)
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        public AccountViewModel AccountVM { get; set; }
+        public MainServiceController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _db = db;
             CategoryVM = new CategoryViewModel
@@ -33,6 +35,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             };
             AttributeVM = new AttributeViewModel();
             _userManager = userManager;
+            _roleManager = roleManager;
+            //AccountVM.Roles = _db.AspNetRoles.ToList();
         }
 
         public IActionResult Index()
@@ -278,8 +282,32 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         }
         #endregion
         #region AccountManger
-        public IActionResult AccountManager(int? role)
+        [Route("MainService/GetRoles")]
+        public JsonResult GetRoles()
         {
+            return Json(_db.AspNetRoles.ToArray());
+        }
+        public IActionResult AccountManager(string role)
+        {
+
+            List<AspNetRoles> lstRoles = new List<AspNetRoles>();
+            lstRoles =_db.AspNetRoles.ToList();
+            if (lstRoles.Count > 0)
+            {
+                ViewBag.listRole = lstRoles;
+            }
+            else
+            {
+                var r = new AspNetRoles
+                {
+                    Name = "",
+                    Id = 0
+                };
+                lstRoles.Add(r);
+                ViewBag.listRole = lstRoles;
+                
+            }
+            ViewBag.controller = "CustomerAccount";
             if (role == null)
             {
                 var listUser = (IEnumerable<AccountViewModel>)(from us in _db.AspNetUsers
@@ -293,7 +321,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                                                                    Email = us.Email,
                                                                    Role = us_role.RoleId,
                                                                    RoleName = _db.AspNetRoles.Where(x => x.Id == us_role.RoleId).Select(x => x.NormalizedName).FirstOrDefault(),
-                                                                   CreatedDate = us.CreatedDate
+                                                                   CreatedDate = us.CreatedDate                                                                  
                                                                }).ToList();
                 return View(listUser);
             }
@@ -302,7 +330,9 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 var listUser = (from us in _db.AspNetUsers
                                 join us_role in _db.AspNetUserRoles
                                 on us.Id equals us_role.UserId
-                                where us_role.RoleId == role
+                                join r in _db.AspNetRoles
+                                on us_role.RoleId equals r.Id
+                                where r.Name.Equals(role)
                                 select new AccountViewModel
                                 {
                                     Id = us.Id,
@@ -342,10 +372,12 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     CreatedDate =DateTime.Now
                     //DisplayName = model.FullName                   
                 };
-
+                var roleInDb = _db.AspNetRoles.Where(x => x.Id == Int32.Parse(model.RoleId)).FirstOrDefault();
+                
                 var result = await _userManager.CreateAsync(user, model.Password).ConfigureAwait(true);
                 if (result.Succeeded)
                 {
+
                     var useraddress = new UserAddress
                     {
                         UserId = user.Id,
@@ -357,22 +389,64 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     _db.UserAddress.Add(useraddress);
                     await _db.SaveChangesAsync();
                     #region Assign to Role, default Customer
-                    var resultRole = await _userManager.AddToRoleAsync(user, SD.Customer);
-
-                    if (result.Succeeded)
+                    var resultRole = new IdentityResult();
+                    if (roleInDb == null)
                     {
-                        
-                        return RedirectToAction(nameof(AccountManager));
+                        if (!await _roleManager.RoleExistsAsync(SD.Customer))
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole<int> { Name = SD.Customer });
+                        }
+                        resultRole = await _userManager.AddToRoleAsync(user, SD.Customer);
+                        if (resultRole.Succeeded)
+                        {
+
+                            return RedirectToAction(nameof(AccountManager));
+                        }
+                        else
+                        {
+                            return Json(new { code = 0, Err = "Không thể gán role cho user:" + user.UserName + "" });
+                        }
                     }
                     else
                     {
-                        return Json(new { code = 0, Err = "Không thể gán role cho user:" + user.UserName + "" });
+                        resultRole = await _userManager.AddToRoleAsync(user, roleInDb.Name);
+                        if (resultRole.Succeeded)
+                        {
+
+                            return RedirectToAction(nameof(AccountManager));
+                        }
+                        else
+                        {
+                            return Json(new { code = 0, Err = "Không thể gán role cho user:" + user.UserName + "" });
+                        }
                     }
+                                                        
                     #endregion
                 }
 
             }
             return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
+        }
+
+        public IActionResult EditCustomerAccount(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var accountFromDb = _db.AspNetUsers.Join(_db.AspNetUserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { Users = u, UserRole = ur }).Join(_db.AspNetRoles, f => f.UserRole.RoleId, r => r.Id, (f, r) => new { UserRole = f, Role = r }).Where(z => z.UserRole.Users.Id == id).Select(z=>new AccountViewModel { 
+                Id = z.UserRole.Users.Id,
+                DisplayName =z.UserRole.Users.DisplayName,
+                Email =z.UserRole.Users.Email,
+                IsActivated = z.UserRole.Users.IsActivated.Value ==true? "Kích hoạt" : "Ẩn/Chưa kích hoạt",
+                CreatedDate = z.UserRole.Users.CreatedDate,
+                RoleName = z.Role.Name
+            }).FirstOrDefault();
+            if(accountFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(accountFromDb);
         }
         #endregion
     }

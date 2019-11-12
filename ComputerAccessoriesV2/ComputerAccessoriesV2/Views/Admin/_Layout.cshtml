@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+@using ComputerAccessoriesV2.Ultilities
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -578,9 +580,9 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a asp-area="Admin" asp-controller="MainService" asp-action="AccountManager"><i class="fa fa-circle-o"></i> Tất cả</a></li>
-                            <li><a href="@Url.Action("AccountManager","MainService",new {role = 1 })"><i class="fa fa-circle-o"></i> Admin Users</a></li>
-                            <li><a href="@Url.Action("AccountManager","MainService",new {role = 2 })"><i class="fa fa-circle-o"></i>Customers</a></li>
-                            <li><a href="@Url.Action("AccountManager","MainService",new {role = 3 })"><i class="fa fa-circle-o"></i> Shipper</a></li>
+                            <li><a href="@Url.Action("AccountManager","MainService",new {role = SD.SupperAdmin })"><i class="fa fa-circle-o"></i> Admin Users</a></li>
+                            <li><a href="@Url.Action("AccountManager","MainService",new {role = SD.Customer })"><i class="fa fa-circle-o"></i>Customers</a></li>
+                            <li><a href="@Url.Action("AccountManager","MainService",new {role = SD.Shipper })"><i class="fa fa-circle-o"></i> Shipper</a></li>
                         </ul>
                     </li>
                     <li>

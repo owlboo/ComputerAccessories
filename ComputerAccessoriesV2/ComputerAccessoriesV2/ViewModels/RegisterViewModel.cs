@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComputerAccessoriesV2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace ComputerAccessoriesV2.ViewModels
         public int WardId { get; set; }
 
         public string PlaceDetail { get; set; }
+        public string RoleId { get; set; }
         //public string ConfirmPwd { get; set; }
+        
     }
 }
