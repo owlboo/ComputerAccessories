@@ -363,14 +363,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 
                 var user = new MyUsers
                 {
-                    UserName = model.UserName,
+                    UserName = model.Email,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     CodeConfirm = AccountHelpers.GenerateCodeConfirm(),
                     IsActivated=true,
                     LockoutEnabled=false,
-                    CreatedDate =DateTime.Now
-                    //DisplayName = model.FullName                   
+                    CreatedDate =DateTime.Now,
+                    DisplayName = model.FullName                   
                 };
                 var roleInDb = _db.AspNetRoles.Where(x => x.Id == Int32.Parse(model.RoleId)).FirstOrDefault();
                 
@@ -378,16 +378,16 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 if (result.Succeeded)
                 {
 
-                    var useraddress = new UserAddress
-                    {
-                        UserId = user.Id,
-                        WardId = model.WardId,
-                        ProvinceId = model.ProvinceId,
-                        DistrictId = model.DistricId,
-                        PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistricId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
-                    };
-                    _db.UserAddress.Add(useraddress);
-                    await _db.SaveChangesAsync();
+                    //var useraddress = new UserAddress
+                    //{
+                    //    UserId = user.Id,
+                    //    WardId = model.WardId,
+                    //    ProvinceId = model.ProvinceId,
+                    //    DistrictId = model.DistricId,
+                    //    PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistricId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
+                    //};
+                    //_db.UserAddress.Add(useraddress);
+                    //await _db.SaveChangesAsync();
                     #region Assign to Role, default Customer
                     var resultRole = new IdentityResult();
                     if (roleInDb == null)

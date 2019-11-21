@@ -11,6 +11,8 @@ namespace ComputerAccessoriesV2.Models
             AspNetUserLogins = new HashSet<AspNetUserLogins>();
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
             AspNetUserTokens = new HashSet<AspNetUserTokens>();
+            Bills = new HashSet<Bills>();
+            TransactionHistory = new HashSet<TransactionHistory>();
             UserAddress = new HashSet<UserAddress>();
         }
 
@@ -40,6 +42,8 @@ namespace ComputerAccessoriesV2.Models
         public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
+        public virtual ICollection<Bills> Bills { get; set; }
+        public virtual ICollection<TransactionHistory> TransactionHistory { get; set; }
         public virtual ICollection<UserAddress> UserAddress { get; set; }
     }
 }

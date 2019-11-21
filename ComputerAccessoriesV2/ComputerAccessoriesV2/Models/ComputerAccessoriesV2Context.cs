@@ -23,14 +23,20 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
+        public virtual DbSet<BillDetails> BillDetails { get; set; }
+        public virtual DbSet<Bills> Bills { get; set; }
         public virtual DbSet<Brand> Brand { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
+        public virtual DbSet<PaymentType> PaymentType { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
         public virtual DbSet<ProductImages> ProductImages { get; set; }
         public virtual DbSet<Products> Products { get; set; }
         public virtual DbSet<Provinces> Provinces { get; set; }
+        public virtual DbSet<SystemConfig> SystemConfig { get; set; }
+        public virtual DbSet<TransactionHistory> TransactionHistory { get; set; }
         public virtual DbSet<UserAddress> UserAddress { get; set; }
+        public virtual DbSet<Vouchers> Vouchers { get; set; }
         public virtual DbSet<Ward> Ward { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -142,6 +148,43 @@ namespace ComputerAccessoriesV2.Models
                     .HasConstraintName("FK_Attributes_Category");
             });
 
+            modelBuilder.Entity<BillDetails>(entity =>
+            {
+                entity.HasKey(e => new { e.ProductId, e.BillId });
+
+                entity.HasOne(d => d.Bill)
+                    .WithMany(p => p.BillDetails)
+                    .HasForeignKey(d => d.BillId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BillDetails_Bills");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.BillDetails)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BillDetails_Products");
+            });
+
+            modelBuilder.Entity<Bills>(entity =>
+            {
+                entity.HasKey(e => e.BillId);
+
+                entity.Property(e => e.BillId).ValueGeneratedNever();
+
+                entity.Property(e => e.BillName).HasMaxLength(50);
+
+                entity.Property(e => e.CreateDate).HasMaxLength(50);
+
+                entity.Property(e => e.LastPrice).HasColumnType("money");
+
+                entity.Property(e => e.TotalPrice).HasColumnType("money");
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.Bills)
+                    .HasForeignKey(d => d.CustomerId)
+                    .HasConstraintName("FK_Bills_AspNetUsers");
+            });
+
             modelBuilder.Entity<Brand>(entity =>
             {
                 entity.Property(e => e.BrandName).HasMaxLength(100);
@@ -171,6 +214,8 @@ namespace ComputerAccessoriesV2.Models
             {
                 entity.HasKey(e => e.DistrictId);
 
+                entity.Property(e => e.DistrictId).ValueGeneratedNever();
+
                 entity.Property(e => e.DistrictName).HasMaxLength(50);
 
                 entity.Property(e => e.DistrictType).HasMaxLength(50);
@@ -178,7 +223,17 @@ namespace ComputerAccessoriesV2.Models
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Districts)
                     .HasForeignKey(d => d.ProvinceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Districts_Provinces");
+            });
+
+            modelBuilder.Entity<PaymentType>(entity =>
+            {
+                entity.HasKey(e => e.PaymentId);
+
+                entity.Property(e => e.PaymentId).ValueGeneratedNever();
+
+                entity.Property(e => e.Description).HasMaxLength(50);
             });
 
             modelBuilder.Entity<ProductAttribute>(entity =>
@@ -254,6 +309,53 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.ProvinceType).HasMaxLength(50);
             });
 
+            modelBuilder.Entity<SystemConfig>(entity =>
+            {
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Facebook).HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ShopAddress).HasMaxLength(256);
+
+                entity.Property(e => e.ShopName).HasMaxLength(100);
+
+                entity.Property(e => e.Skype).HasMaxLength(50);
+
+                entity.Property(e => e.SystemEmail).HasMaxLength(50);
+
+                entity.Property(e => e.SystemPhone).HasMaxLength(20);
+
+                entity.Property(e => e.Zalo).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<TransactionHistory>(entity =>
+            {
+                entity.HasKey(e => e.TransactionId);
+
+                entity.Property(e => e.TransactionId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PaymentAmout).HasColumnType("money");
+
+                entity.HasOne(d => d.Bill)
+                    .WithMany(p => p.TransactionHistory)
+                    .HasForeignKey(d => d.BillId)
+                    .HasConstraintName("FK_TransactionHistory_Bills");
+
+                entity.HasOne(d => d.PaymentTypeNavigation)
+                    .WithMany(p => p.TransactionHistory)
+                    .HasForeignKey(d => d.PaymentType)
+                    .HasConstraintName("FK_TransactionHistory_PaymentType");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.TransactionHistory)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_TransactionHistory_AspNetUsers");
+            });
+
             modelBuilder.Entity<UserAddress>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.ProvinceId, e.DistrictId, e.WardId });
@@ -285,8 +387,28 @@ namespace ComputerAccessoriesV2.Models
                     .HasConstraintName("FK_UserAddress_Ward");
             });
 
+            modelBuilder.Entity<Vouchers>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.DateActive).HasColumnType("datetime");
+
+                entity.Property(e => e.ExpiredDate).HasColumnType("datetime");
+
+                entity.Property(e => e.VoucherName).HasMaxLength(50);
+
+                entity.HasOne(d => d.Voucher)
+                    .WithMany(p => p.Vouchers)
+                    .HasForeignKey(d => d.VoucherId)
+                    .HasConstraintName("FK_Vouchers_Bills");
+            });
+
             modelBuilder.Entity<Ward>(entity =>
             {
+                entity.Property(e => e.WardId).ValueGeneratedNever();
+
                 entity.Property(e => e.WardName).HasMaxLength(50);
 
                 entity.Property(e => e.WardType).HasMaxLength(50);
@@ -294,6 +416,7 @@ namespace ComputerAccessoriesV2.Models
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Ward)
                     .HasForeignKey(d => d.DistrictId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Ward_Districts");
             });
 

@@ -7,6 +7,7 @@ namespace ComputerAccessoriesV2.Models
     {
         public Products()
         {
+            BillDetails = new HashSet<BillDetails>();
             ProductAttribute = new HashSet<ProductAttribute>();
             ProductImages = new HashSet<ProductImages>();
         }
@@ -30,6 +31,7 @@ namespace ComputerAccessoriesV2.Models
 
         public virtual Brand Brand { get; set; }
         public virtual Category Category { get; set; }
+        public virtual ICollection<BillDetails> BillDetails { get; set; }
         public virtual ICollection<ProductAttribute> ProductAttribute { get; set; }
         public virtual ICollection<ProductImages> ProductImages { get; set; }
     }
