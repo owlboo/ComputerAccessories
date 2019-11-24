@@ -5,7 +5,7 @@ namespace ComputerAccessoriesV2.Models
 {
     public partial class Vouchers
     {
-        public int? VoucherId { get; set; }
+        public int VoucherId { get; set; }
         public string VoucherName { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? ExpiredDate { get; set; }

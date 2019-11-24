@@ -6,7 +6,7 @@
 @using ComputerAccessoriesV2.Models
 @inject SignInManager<ComputerAccessoriesV2.Data.MyUsers> SignInManager
 @inject UserManager<ComputerAccessoriesV2.Data.MyUsers> UserManager
-@inject RoleManager<IdentityRole> roleManager
+@inject RoleManager<IdentityRole<int>> roleManager
 @inject IHttpContextAccessor HttpContextAccessor
 @{ 
     var Name = "";

@@ -9,7 +9,6 @@ namespace ComputerAccessoriesV2.Models
         {
             BillDetails = new HashSet<BillDetails>();
             TransactionHistory = new HashSet<TransactionHistory>();
-            Vouchers = new HashSet<Vouchers>();
         }
 
         public int BillId { get; set; }
@@ -22,8 +21,8 @@ namespace ComputerAccessoriesV2.Models
         public decimal? LastPrice { get; set; }
 
         public virtual AspNetUsers Customer { get; set; }
+        public virtual Vouchers Vouchers { get; set; }
         public virtual ICollection<BillDetails> BillDetails { get; set; }
         public virtual ICollection<TransactionHistory> TransactionHistory { get; set; }
-        public virtual ICollection<Vouchers> Vouchers { get; set; }
     }
 }

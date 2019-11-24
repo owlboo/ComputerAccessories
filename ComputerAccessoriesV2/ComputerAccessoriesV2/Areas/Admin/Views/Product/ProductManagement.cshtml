@@ -57,7 +57,7 @@
                             <th>@item.OriginalPrice</th>
                             <th>@item.PromotionPrice</th>
                             <th>@item.Quantity</th>
-                            @if (item.IsAvailable.Value)
+                            @if (item.IsAvailable != null && item.IsAvailable.Value)
                             {
                                 <th>Còn hàng</th>
                             }
