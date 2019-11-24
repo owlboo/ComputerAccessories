@@ -28,6 +28,7 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<Brand> Brand { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
+        public virtual DbSet<ErrLogs> ErrLogs { get; set; }
         public virtual DbSet<PaymentType> PaymentType { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
         public virtual DbSet<ProductImages> ProductImages { get; set; }
@@ -227,6 +228,15 @@ namespace ComputerAccessoriesV2.Models
                     .HasConstraintName("FK_Districts_Provinces");
             });
 
+            modelBuilder.Entity<ErrLogs>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Url).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<PaymentType>(entity =>
             {
                 entity.HasKey(e => e.PaymentId);
@@ -389,7 +399,9 @@ namespace ComputerAccessoriesV2.Models
 
             modelBuilder.Entity<Vouchers>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.VoucherId);
+
+                entity.Property(e => e.VoucherId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -400,8 +412,9 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.VoucherName).HasMaxLength(50);
 
                 entity.HasOne(d => d.Voucher)
-                    .WithMany(p => p.Vouchers)
-                    .HasForeignKey(d => d.VoucherId)
+                    .WithOne(p => p.Vouchers)
+                    .HasForeignKey<Vouchers>(d => d.VoucherId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Vouchers_Bills");
             });
 

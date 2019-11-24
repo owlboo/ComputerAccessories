@@ -45,12 +45,13 @@ namespace ComputerAccessoriesV2
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
-            }
-            
-            )
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
+
+            services.AddSession();
+
             services.AddAntiforgery(o => o.HeaderName = "CSRF-TOKEN");
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

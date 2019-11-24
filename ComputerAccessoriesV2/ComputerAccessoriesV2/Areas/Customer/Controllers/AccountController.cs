@@ -129,8 +129,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         UserId = user.Id,
                         WardId = model.WardId,
                         ProvinceId = model.ProvinceId,
-                        DistrictId = model.DistricId,
-                        PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistricId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
+                        DistrictId = model.DistrictId,
+                        PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistrictId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
 
                     };
                     _db.UserAddress.Add(userAddress);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Data;
@@ -291,7 +292,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
 
             List<AspNetRoles> lstRoles = new List<AspNetRoles>();
+
+            List<Provinces> listProvinces = new List<Provinces>();
+
             lstRoles =_db.AspNetRoles.ToList();
+
+            listProvinces = _db.Provinces.ToList();
+           
             if (lstRoles.Count > 0)
             {
                 ViewBag.listRole = lstRoles;
@@ -307,7 +314,10 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 ViewBag.listRole = lstRoles;
                 
             }
+
             ViewBag.controller = "CustomerAccount";
+            ViewBag.listProvinces = listProvinces;
+
             if (role == null)
             {
                 var listUser = (IEnumerable<AccountViewModel>)(from us in _db.AspNetUsers
@@ -367,10 +377,10 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     CodeConfirm = AccountHelpers.GenerateCodeConfirm(),
-                    IsActivated=true,
-                    LockoutEnabled=false,
-                    CreatedDate =DateTime.Now,
-                    DisplayName = model.FullName                   
+                    IsActivated = true,
+                    LockoutEnabled = false,
+                    CreatedDate = DateTime.Now,
+                    DisplayName = model.FullName
                 };
                 var roleInDb = _db.AspNetRoles.Where(x => x.Id == Int32.Parse(model.RoleId)).FirstOrDefault();
                 
@@ -378,16 +388,16 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 if (result.Succeeded)
                 {
 
-                    //var useraddress = new UserAddress
-                    //{
-                    //    UserId = user.Id,
-                    //    WardId = model.WardId,
-                    //    ProvinceId = model.ProvinceId,
-                    //    DistrictId = model.DistricId,
-                    //    PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistricId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
-                    //};
-                    //_db.UserAddress.Add(useraddress);
-                    //await _db.SaveChangesAsync();
+                    var useraddress = new UserAddress
+                    {
+                        UserId = user.Id,
+                        WardId = model.WardId,
+                        ProvinceId = model.ProvinceId,
+                        DistrictId = model.DistrictId,
+                        PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistrictId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
+                    };
+                    _db.UserAddress.Add(useraddress);
+                    await _db.SaveChangesAsync();
                     #region Assign to Role, default Customer
                     var resultRole = new IdentityResult();
                     if (roleInDb == null)
@@ -412,11 +422,12 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         resultRole = await _userManager.AddToRoleAsync(user, roleInDb.Name);
                         if (resultRole.Succeeded)
                         {
-
-                            return RedirectToAction(nameof(AccountManager));
+                            Response.StatusCode = (int)HttpStatusCode.OK;
+                            return Json(new { code = 1 });
                         }
                         else
                         {
+                            Response.StatusCode = (int)HttpStatusCode.BadRequest;
                             return Json(new { code = 0, Err = "Không thể gán role cho user:" + user.UserName + "" });
                         }
                     }
@@ -425,6 +436,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 }
 
             }
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
         }
 
