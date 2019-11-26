@@ -1,0 +1,215 @@
+﻿@using ComputerAccessoriesV2.Extensions
+@using ComputerAccessoriesV2.Models
+@model List<ComputerAccessoriesV2.ViewModels.AttributeViewModel>
+@{
+    ViewData["Title"] = "Attributes";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+    IEnumerable<Category> categories = new List<Category>();
+    categories = ViewBag.lstCategory;
+}
+
+<br />
+<div class="page-header">
+    <div class="row">
+
+        <div class="col-lg-10">
+            <i class="fab fa-git-alt"></i>
+            <h3>Thuộc tính sản phẩm</h3>
+        </div>
+        <div class="col-lg-1">
+            <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewAttribute"><span><i class="fa fa-plus"></i></span> Thêm sản danh mục</a>
+        </div>
+        <div class="col-lg-1">
+        </div>
+    </div>
+</div>
+<section class="content">
+
+        <div class="box box-default">
+            <div class="box-header with-border">
+                <h3 class="box-title">Lọc</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body" style="">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Danh mục</label>
+                            @*<select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" asp-items="@categories.ToSelectListItem("CategoryName",categories.FirstOrDefault().Id)" id="CategoryId"></select>*@
+                            <input id="CategoryId" class="form-control" />
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Từ ngày</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control pull-right" id="datepicker1">
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <!-- /.form-group -->
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Đến ngày</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control pull-right" id="datepicker2">
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <!-- /.form-group -->
+                    </div>
+
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <div class="box-footer">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <a class="btn btn-success" onclick="Filter()" >Lọc</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+
+    
+   
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Danh sách</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div id="attributeGrid">
+
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+@section Scripts{
+    
+    <script>
+        $('#datepicker1').datepicker();
+        $('#datepicker2').datepicker();        
+        var selectedVal = "";
+            $("#CategoryId").change(function () {
+                debugger;
+                // var selectedVal = $("#myselect option:selected").text();
+                selectedVal = $("#CategoryId option:selected").val();
+            });
+
+        $(document).ready(() => {
+
+            $('#CategoryId').kendoDropDownList({
+                optionLabel: '-Chọn danh mục-',
+                dataTextField: "categoryName",
+                dataValueField: "id",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host+"/MainService/GetCategories"
+                        },
+                        requestEnd: function (e) {
+                                var response = e.response;
+                                var type = e.type;
+                                //console.log(type); // displays "read"
+                                if (response.length === 0) {
+                                    //console.log(response); // displays "read"
+                                }
+                        },
+                    }
+                },
+                index: 0
+            });
+
+             $("#attributeGrid").kendoGrid({
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: window.location.protocol + '//' + window.location.host + "/MainService/GetAccount?typeAccount=" + typeAccount
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                groupable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [{                    
+                    field: "displayName",
+                    title: "Khách hàng",
+                    width: 240
+                }, {
+                    field: "email",
+                    title: "Email"
+                },{
+                    field: "phoneNumber",
+                    title: "Số điện thoại"
+                },{
+                    field: "roleName",
+                    title: "Vai trò"
+                },{
+                    field: "createdDate",
+                    title: "Ngày tạo tài khoản"
+                },{
+                    field: "isActivated",
+                        title: "Trạng thái",
+                        template: "#if(isActivated==true){#<text>Đã kích hoạt</text>#}else{#<text>Khóa/Chưa kích hoạt</text>#}#"
+                },{
+                    field: "address",
+                    title: "Địa chỉ"
+                    }, {
+                        title: "Thao tác",
+                        template:"<a class='btn btn-default' style='border:none; background:transparent' onclick='return ViewDetails(#: id #)' title='Xem chi tiết'><span><i class='fa fa-eye'></i></span></a> <a class ='btn btn-default' style='border:none; background:transparent' onclick='return EditAccount(#: id#)' title='Chỉnh sửa'><span><i class='fa fa-pencil'></i></span></a>"
+                    }]
+            });
+
+        });
+        function Filter() {
+            var categoryId = $('#CategoryId').data('kendoDropDownList').value();
+                var fromTime = $('#datepicker1').val();
+                var toTime = $('#datepicker2').val();
+                var url =""
+                if (categoryId == "") {
+                    if (fromTime == "" || toTime == "") {
+                        alert("Vui lòng chọn mốc thơi gian");
+                        return;
+                    } else {
+                        url = "/Admin/MainService/Attributes?categoryId=" + categoryId + "&fromTime=" + fromTime + "&toTime=" + toTime + "";
+
+                    }
+                } else {
+                    url = "/Admin/MainService/Attributes?categoryId=" + categoryId + "&fromTime=" + fromTime + "&toTime=" + toTime + "";
+                }
+                window.location = url;
+            }
+    </script>
+}
+

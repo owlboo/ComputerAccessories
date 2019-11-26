@@ -1,0 +1,15 @@
+﻿@model int
+
+     @{
+         string model = Model.ToString();
+         string edit = @"Edit" + @ViewBag.controller+@"/"+model;
+         string delete = @"Delete" + @ViewBag.controller+@"/"+model;
+
+
+      }
+
+
+        <div class="btn-group" role="group" style="height:44px; ">
+            <a type="button" class="btn btn-success" href="@Url.Action(edit).Replace("%2F",@"/")"><i class="fa fa-edit"></i></a>
+        </div>
+  

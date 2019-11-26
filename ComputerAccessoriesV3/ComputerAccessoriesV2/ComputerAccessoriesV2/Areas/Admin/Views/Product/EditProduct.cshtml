@@ -1,0 +1,320 @@
+﻿
+
+
+@using ComputerAccessoriesV2.Extensions
+@model ComputerAccessoriesV2.ViewModels.ProductViewModel
+@{
+    ViewData["Title"] = "EditProduct";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+<br />
+
+<style>
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.image {
+  opacity: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.container:hover .image {
+  opacity: 0.3;
+}
+
+.container:hover .middle {
+  opacity: 1;
+}
+
+.text {
+  /*background-color: #4CAF50;*/
+  color: white;
+  font-size: 16px;
+  padding: 16px 32px;
+}
+</style>
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Chỉnh sửa sản phẩm</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    <form role="form" method="post" asp-action="EditProduct" enctype="multipart/form-data">
+        <div class="box-body">
+            <input hidden asp-for="Product.Id" />
+            <div class="form-group row">
+                
+                <div class="col-lg-2">
+                    <label asp-for="Product.ProductName">Tên sản phẩm</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control text-uppercase" placeholder="Nhập tên sản phẩm" asp-for="Product.ProductName">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Code">Mã sản phẩm</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control uppercase" placeholder="Nhập mã sản phẩm" maxlength="8" asp-for="Product.Code">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Brand">Thương hiệu</label>
+                </div>
+                <div class="col-lg-10">
+                    <select asp-for="Product.BrandId" asp-items="@Model.Brands.ToSelectListItem("BrandName",Model.Product.BrandId.Value)" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Category">Danh mục sản phẩm</label>
+                </div>
+                <div class="col-lg-10">
+                    <select asp-for="Product.CategoryId" asp-items="@Model.Categories.ToSelectListItem("CategoryName",Model.Product.CategoryId.Value)" class="form-control"></select>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.PromotionPrice">Giá</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control" type="number" placeholder="Giá sản phẩm" asp-for="Product.OriginalPrice" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.PromotionPrice">Giá khuyến mãi</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control" type="number" placeholder="Giá khuyến mãi" asp-for="Product.PromotionPrice" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Origin">Xuất sứ</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control" placeholder="Xuất sứ" asp-for="Product.Origin" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Color">Màu sắc</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control" placeholder="Màu sắc" asp-for="Product.Color" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Quantity">Số lượng</label>
+                </div>
+                <div class="col-lg-10">
+                    <input class="form-control" type="number" placeholder="Số lượng" asp-for="Product.Quantity" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                    <div class="col-lg-2">
+                        <label asp-for="Product.Thumnail">Hình nền</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <img src="@Model.Product.Thumnail" width="20%" />
+                        <br />
+                        <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" />
+                    </div>
+            </div>
+                @*<div class="form-group row">
+                    <div class="col-lg-2">
+                        <label>Hình ảnh khác</label>
+                    </div>
+                    <div class="col-lg-10">
+                        <input class="form-control" type="file" name="moreimages" multiple />
+                    </div>
+                </div>*@
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label>Trạng thái</label>
+                </div>
+                <div class="col-lg-10">
+                    <input type="checkbox" asp-for="Product.IsAvailable" style="height:35px; width:35px;" />
+                    @*<select  class="form-control">
+                        <option value="0">Ẩn</option>
+                        <option value="1">Hiển thị</option>
+                    </select>*@
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label>Mô tả ngắn</label>
+                </div>
+                <div class="col-lg-10">
+                    <textarea class="form-control" asp-for="Product.ShorDescription" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label>Mô tả đầy đủ</label>
+                </div>
+                <div class="col-lg-10">
+                    <textarea class="form-control" asp-for="Product.FullDescription" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Lưu lại</button>
+            <a asp-action="ProductManagement" asp-controller="Product" class="btn btn-warning"><span><i class="fa fa-arrow-left"></i></span> Quay lại</a>
+        </div>
+    </form>
+</div>
+<br />
+
+<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
+    Xem danh sách hình ảnh
+</button>
+<br />
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Danh sách hình ảnh</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @foreach (var item in Model.ProductImages)
+                    {
+                        
+                        <div class="col-lg-4" id="@item.Id">
+                            <div class="container">
+                                <input hidden id="imageId" value="@item.Id" />
+                                <img src="@item.ImageUrl" alt="@item.ImageUrl" class="image" style="width:100%">
+                                <div class="middle">
+                                    <div class="text"><button style="background:transparent;border:none" onclick="removeImg()"><span><i class="fa fa-remove" title="Xóa" style="font-size:25px; font-weight:100"></i></span></button></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <br />
+                <div class="form-group row">
+                    <div class="col-lg-2">
+                        <label style="margin-top:5px;">Upload ảnh</label>
+                    </div>
+                    <form>
+                        <div class="col-lg-6">
+                            <input type="file" name="importImages" id="importImages" class="form-control" multiple />
+                        </div>
+                    </form>
+                                      
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditImages">Lưu</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+
+@section Scripts{
+    <script src="~/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="~/tinymce/js/tinymce/jquery.tinymce.min.js"></script>
+    
+    <script>
+        tinymce.init({
+            selector: '#Product_FullDescription',
+            menubar: 'file edit insert view format table tools help',
+            min_height: 100
+
+        });
+    </script>
+<script>
+        function removeImg() {
+         var imgId = $('#imageId').val();
+         debugger;
+        if (confirm('Bạn có muốn xóa hình ảnh này??')) {
+            $.ajax({
+                url: "/Product/DeleteImage",
+                type: "post",
+                data: {
+                    _imgId :imgId
+                },
+                dataType: "json",              
+                success: function (result) {
+                    if (result.code == 1) {
+                        $('#' + result.id).remove();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+            }
+        
+    };
+    $('#saveEditImages').click(function () {
+        debugger;
+        var productId = $('#Product_Id').val();
+        
+        //if (myFile.files.length  > 0) {
+        //    console.log(myFile);
+        //}
+        var data = {
+
+            prodId: productId
+        }
+        $.ajax({
+            url: "/Product/UpdateMoreImages",
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (result) {
+
+                if (result.code == 1) {
+                    alert(result.notice);
+                    $('#modal-default').modal('hide');
+                } else {
+                    alert(result.notice);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+</script>
+}
+
+
+
