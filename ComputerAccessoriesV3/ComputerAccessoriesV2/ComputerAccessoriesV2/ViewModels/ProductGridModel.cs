@@ -25,6 +25,6 @@ namespace ComputerAccessoriesV2.ViewModels
         public string BrandName { get; set; }
         public string Thumnail { get; set; }
 
-        public bool IsAvailable { get; set; }
+        public int Status { get; set; }
     }
 }

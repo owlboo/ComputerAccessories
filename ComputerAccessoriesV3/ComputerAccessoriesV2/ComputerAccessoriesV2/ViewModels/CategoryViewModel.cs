@@ -15,6 +15,5 @@ namespace ComputerAccessoriesV2.ViewModels
         public DateTime? ModifiedDate { get; set; }
         public string ParentName { get; set; }
         public bool Status { get; set; }
-        public List<Category> listParent { get; set; }
     }
 }

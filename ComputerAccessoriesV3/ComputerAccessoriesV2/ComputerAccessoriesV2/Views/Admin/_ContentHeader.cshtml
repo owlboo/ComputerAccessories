@@ -3,14 +3,30 @@
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
+    
     <section class="content-header">
         <h1>
             @*@Model.PageName*@
             Dashboard
             <small>Control panel</small>
         </h1>
-        <ol class="breadcrumb">
+        <ol class="breadcrumb" id="header">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Index</li>
+            @*<li class="active">Index</li>*@
         </ol>
     </section>
+    <script>
+        var path = window.location.pathname.split('/');
+        var custom = "<li><a href='#'><i class='fa fa-dashboard'></i> Home</a></li>"
+        custom += "<li class='active'>" + path[path.length-1]+"</li> ";
+        //path.forEach(path => {
+        //    if (path == 'Admin') {
+        //        continue;
+        //    }
+        //    custom += "<li class='active'>" + path + "</li >";
+        //});
+        
+        //$('#header').append(custom);
+        var header = document.getElementById('header');
+        header.innerHTML = custom;
+    </script>

@@ -17,7 +17,7 @@
             <h3>Thuộc tính sản phẩm</h3>
         </div>
         <div class="col-lg-1">
-            <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewAttribute"><span><i class="fa fa-plus"></i></span> Thêm sản danh mục</a>
+            <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewAttribute"><span><i class="fa fa-plus"></i></span> Thêm thuộc tính</a>
         </div>
         <div class="col-lg-1">
         </div>
@@ -114,13 +114,14 @@
         $('#datepicker1').datepicker();
         $('#datepicker2').datepicker();        
         var selectedVal = "";
-            $("#CategoryId").change(function () {
-                debugger;
-                // var selectedVal = $("#myselect option:selected").text();
-                selectedVal = $("#CategoryId option:selected").val();
-            });
+            //$("#CategoryId").change(function () {
+            //    debugger;
+            //    // var selectedVal = $("#myselect option:selected").text();
+            //    selectedVal = $("#CategoryId option:selected").val();
+            //});
 
         $(document).ready(() => {
+
 
             $('#CategoryId').kendoDropDownList({
                 optionLabel: '-Chọn danh mục-',
@@ -149,8 +150,8 @@
              $("#attributeGrid").kendoGrid({
                 dataSource: {
                     type: "json",
-                    transport: {
-                        read: window.location.protocol + '//' + window.location.host + "/MainService/GetAccount?typeAccount=" + typeAccount
+                     transport: {
+                         read: window.location.protocol + '//' + window.location.host + "/MainService/Attributes"
                     },
                     pageSize: 20
                 },
@@ -163,53 +164,51 @@
                     buttonCount: 5
                 },
                 columns: [{                    
-                    field: "displayName",
-                    title: "Khách hàng",
+                    field: "attributeName",
+                    title: "Tên thuộc tính",
                     width: 240
                 }, {
-                    field: "email",
-                    title: "Email"
-                },{
-                    field: "phoneNumber",
-                    title: "Số điện thoại"
-                },{
-                    field: "roleName",
-                    title: "Vai trò"
+                    field: "categoryName",
+                    title: "Danh mục"
                 },{
                     field: "createdDate",
-                    title: "Ngày tạo tài khoản"
+                    title: "Ngày tạo"
                 },{
-                    field: "isActivated",
-                        title: "Trạng thái",
-                        template: "#if(isActivated==true){#<text>Đã kích hoạt</text>#}else{#<text>Khóa/Chưa kích hoạt</text>#}#"
+                    field: "modifiedDate",
+                    title: "Ngày chỉnh sửa"
                 },{
-                    field: "address",
-                    title: "Địa chỉ"
-                    }, {
                         title: "Thao tác",
-                        template:"<a class='btn btn-default' style='border:none; background:transparent' onclick='return ViewDetails(#: id #)' title='Xem chi tiết'><span><i class='fa fa-eye'></i></span></a> <a class ='btn btn-default' style='border:none; background:transparent' onclick='return EditAccount(#: id#)' title='Chỉnh sửa'><span><i class='fa fa-pencil'></i></span></a>"
+                        template:"<a class='btn btn-default' style='border:none; background:transparent' onclick='return EidtAttribute(#: id #)' title='Xem chi tiết'><span><i class='fa fa-pencil'></i></span></a>"
                     }]
             });
 
         });
         function Filter() {
-            var categoryId = $('#CategoryId').data('kendoDropDownList').value();
+                var categoryId = $('#CategoryId').data('kendoDropDownList').value();
                 var fromTime = $('#datepicker1').val();
-                var toTime = $('#datepicker2').val();
-                var url =""
+            var toTime = $('#datepicker2').val();
+            var data = {
+                categoryId: categoryId,
+                fromTime: fromTime,
+                toTime: toTime
+            }
+            var attributeGrid = $('#attributeGrid').data('kendoGrid');
                 if (categoryId == "") {
                     if (fromTime == "" || toTime == "") {
                         alert("Vui lòng chọn mốc thơi gian");
                         return;
                     } else {
-                        url = "/Admin/MainService/Attributes?categoryId=" + categoryId + "&fromTime=" + fromTime + "&toTime=" + toTime + "";
-
+                        //url = "/Admin/MainService/Attributes?categoryId=" + categoryId + "&fromTime=" + fromTime + "&toTime=" + toTime + "";
+                        attributeGrid.dataSource.read(data);
                     }
                 } else {
-                    url = "/Admin/MainService/Attributes?categoryId=" + categoryId + "&fromTime=" + fromTime + "&toTime=" + toTime + "";
+                    attributeGrid.dataSource.read(data);
                 }
-                window.location = url;
-            }
+                //window.location = url;
+        }
+        function EidtAttribute(id) {
+            window.HelperSDK.Helpers.Redirect("/Admin/MainService/EditAttributes?id=" + id);
+        }
     </script>
 }
 

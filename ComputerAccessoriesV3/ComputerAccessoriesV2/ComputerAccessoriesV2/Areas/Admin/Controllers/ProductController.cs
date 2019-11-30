@@ -54,7 +54,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 Origin = x.Origin,
                 Color = x.Color,
                 Code =x.Code,
-                IsAvailable = x.IsAvailable,
+                Status = x.Status,
                 Quantity = x.Quantity ?? x.Quantity.Value,
                 CreatedDate= x.CreatedDate ?? x.CreatedDate.Value,
                 Thumnail =x.Thumnail
@@ -85,7 +85,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 ShorDescription = model.Product.ShorDescription,
                 FullDescription = model.Product.FullDescription,
                 Quantity = model.Product.Quantity,
-                IsAvailable = model.Product.IsAvailable,
+                Status = 0,
                 Code = model.Product.Code
             };
             _db.Products.Add(product);
@@ -176,7 +176,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             productFromDb.Origin = model.Product.Origin;
             productFromDb.Color = model.Product.Color;
             productFromDb.Code = model.Product.Code;
-            productFromDb.IsAvailable = model.Product.IsAvailable;
+            //productFromDb.IsAvailable = model.Product.IsAvailable;
             productFromDb.OriginalPrice = model.Product.OriginalPrice;
             productFromDb.PromotionPrice = model.Product.PromotionPrice;
             await _db.SaveChangesAsync();
@@ -223,51 +223,140 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
-        //[HttpPost]
-        //[Route("Product/UpdateMoreImages")]      
-        //public async Task<IActionResult> UpdateMoreImages(int prodId)
-        //{
-        //    var productFromDb = _db.Products.Where(x => x.Id == prodId).FirstOrDefault();
-        //    var images = _db.ProductImages.Where(x => x.ProductId == prodId).Select(x=>x.ImageUrl).ToList();
-        //    //var files = Request.Form.Files;
-            
-        //    if (files.Count > 0)
-        //    {
-        //        int i = 1;
-        //        int count = 0;
-        //        var webRootPath = _hostEnvironment.WebRootPath;
-        //        var pathImage = Path.Combine(webRootPath, SD.ProductImages);
-                
-        //        foreach (var item in files)
-        //        {
-        //            var fullPath = Path.Combine(pathImage, productFromDb.Code + "-thumnail" + i);
-        //            while (checkContain(images, fullPath) == "")
-        //            {
-        //                i++;
-        //            }
-        //            using (var fileStream = new FileStream(fullPath, FileMode.Create))
-        //            {
-        //                await item.CopyToAsync(fileStream);
-        //            }
-        //            ProductImages img = new ProductImages
-        //            {
-        //                ImageUrl = fullPath,
-        //                ProductId = prodId,
-        //            };
-        //            _db.ProductImages.Add(img);
-        //            if(await _db.SaveChangesAsync() > 0)
-        //            {
-        //                count++;
-        //            }
-        //        }
-        //        if(count == files.Count)
-        //        {
-        //            return Json(new { code = 1, notice = $"Đã thêm {count} hình ảnh" });
-        //        }
-        //    }
-        //    return Json(new { code = 0, notice="Cập nhật thất bại" });
-        //}
+        [HttpPost]
+        //[Route("Product/UpdateMoreImages")]
+        public async Task<IActionResult> UploadMoreImages(int prodId)
+        {
+            var productFromDb = _db.Products.Where(x => x.Id == prodId).FirstOrDefault();
+            var images = _db.ProductImages.Where(x => x.ProductId == prodId).Select(x => x.ImageUrl).ToList();
+            var files = Request.Form.Files;
 
+            if (files.Count > 0)
+            {
+                int i = 1;
+                int count = 0;
+                var webRootPath = _hostEnvironment.WebRootPath;
+                var pathImage = Path.Combine(webRootPath, SD.ProductImages);
+
+                foreach (var item in files)
+                {
+                    var fullPath = Path.Combine(pathImage, productFromDb.Code + "-image" + i);
+                    while (checkContain(images, fullPath) == "")
+                    {
+                        i++;
+                    }
+                    using (var fileStream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        await item.CopyToAsync(fileStream);
+                    }
+                    ProductImages img = new ProductImages
+                    {
+                        ImageUrl = fullPath,
+                        ProductId = prodId,
+                    };
+                    _db.ProductImages.Add(img);
+                    if (await _db.SaveChangesAsync() > 0)
+                    {
+                        count++;
+                    }
+                }
+                if (count == files.Count)
+                {
+                    return Json(new { code = 1, notice = $"Đã thêm {count} hình ảnh" });
+                }
+            }
+            return Json(new { code = 0, notice = "Cập nhật thất bại" });
+        }
+
+        
+        public ActionResult UpdateAttribute(int id, int categoryId)
+        {
+            var listAttributes = _db.Attributes.Where(x => x.CategoryId == categoryId).ToList();
+            var listProductAttributes = _db.ProductAttribute.Where(x => x.ProductId == id).ToList();
+            UpdateAttributeViewModel model = new UpdateAttributeViewModel() {
+                CategoryId = categoryId,
+                CategoryName = _db.Category.Where(z => z.Id == categoryId).Select(z => z.CategoryName).FirstOrDefault(),
+                ProductId = id,
+                ProductName = _db.Products.Where(z => z.Id == id).Select(z => z.ProductName).FirstOrDefault(),
+                Attributes = listAttributes,
+                ProductAttributes = listProductAttributes
+            };
+            
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("/[controller]/SaveAttributesProduct")]
+        public async Task<JsonResult> SaveAttributesProduct(AttrsStoredProductViewModel model)
+        {
+            string returnUrl = "/";
+            try
+            {
+                bool isExistProductAttributeUpdate = _db.ProductAttribute.Where(x => x.ProductId == model.ProductId).ToList().Count > 0 ? true : false;
+
+                if (!isExistProductAttributeUpdate)
+                {
+                    int i = 0;
+                    foreach (var item in model.ListAttrs)
+                    {
+                        _db.ProductAttribute.Add(new ProductAttribute
+                        {
+                            ProductId = model.ProductId,
+                            AttributeId = item.Id,
+                            Value = item.Value
+                        });
+                        await _db.SaveChangesAsync();
+                        i++;
+                    }
+
+                    if (i <= model.ListAttrs.Count && i >= 1)
+                    {
+                        //var listProductUpdate = _db.Products.Where(x => x.Id == model.ProductId).ToList();
+                        //foreach (var item in listProductUpdate)
+                        //{
+                        //    item.Status = 1;
+                        //}
+                        //_db.Products.UpdateRange(listProductUpdate);
+
+                        var productFromdb = _db.Products.Where(x => x.Id == model.ProductId).FirstOrDefault();
+                        productFromdb.Status = 1;
+                        await _db.SaveChangesAsync();
+                        returnUrl = "/Admin/Product/ProductManagement";
+                        return Json(new { code = 1, count = i, url = returnUrl });
+                    }
+                    if (i == 0)
+                    {
+                        return Json(new { code = 0, err = "Có lỗi xảy ra khi thêm giá trị", url = returnUrl });
+                    }
+                }
+                else
+                {
+                    //List<ProductAttribute> newValueAtribute = new List<ProductAttribute>();
+                    foreach (var item in model.ListAttrs)
+                    {
+                        var productAttribute = _db.ProductAttribute.Where(x => x.AttributeId == item.Id).FirstOrDefault();
+                        productAttribute.Value = item.Value;
+                        await _db.SaveChangesAsync();
+                    }
+                    var productFromdb = _db.Products.Where(x => x.Id == model.ProductId).FirstOrDefault();
+                    if (productFromdb.Status < 1)
+                    {
+                        productFromdb.Status = 1;
+                    }
+                    await _db.SaveChangesAsync();
+                    returnUrl = "/Admin/Product/ProductManagement";
+                    return Json(new { code = 1, count =model.ListAttrs.Count, url = returnUrl });
+                }
+                
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+            returnUrl = "/Admin/Product/ProductManagement";
+            return Json(new { code = 1, url = returnUrl });
+        }
         public string checkContain(List<string> strs , string key)
         {
             string result = "";

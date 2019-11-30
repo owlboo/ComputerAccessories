@@ -1,6 +1,4 @@
 ﻿
-
-
 @using ComputerAccessoriesV2.Extensions
 @model ComputerAccessoriesV2.ViewModels.ProductViewModel
 @{
@@ -60,7 +58,7 @@
         <div class="box-body">
             <input hidden asp-for="Product.Id" />
             <div class="form-group row">
-                
+
                 <div class="col-lg-2">
                     <label asp-for="Product.ProductName">Tên sản phẩm</label>
                 </div>
@@ -81,7 +79,8 @@
                     <label asp-for="Product.Brand">Thương hiệu</label>
                 </div>
                 <div class="col-lg-10">
-                    <select asp-for="Product.BrandId" asp-items="@Model.Brands.ToSelectListItem("BrandName",Model.Product.BrandId.Value)" class="form-control"></select>
+                    @*<select asp-for="Product.BrandId" asp-items="@Model.Brands.ToSelectListItem("BrandName",Model.Product.BrandId.Value)" class="form-control"></select>*@
+                    <input asp-for="Product.BrandId" class="form-control" />
                 </div>
             </div>
             <div class="form-group row">
@@ -89,9 +88,9 @@
                     <label asp-for="Product.Category">Danh mục sản phẩm</label>
                 </div>
                 <div class="col-lg-10">
-                    <select asp-for="Product.CategoryId" asp-items="@Model.Categories.ToSelectListItem("CategoryName",Model.Product.CategoryId.Value)" class="form-control"></select>
+                    @*<select asp-for="Product.CategoryId" asp-items="@Model.Categories.ToSelectListItem("CategoryName",Model.Product.CategoryId.Value)" class="form-control"></select>*@
+                    <input asp-for="Product.CategoryId" class="form-control" />
                 </div>
-
             </div>
             <div class="form-group row">
                 <div class="col-lg-2">
@@ -135,35 +134,36 @@
             </div>
 
             <div class="form-group row">
-                    <div class="col-lg-2">
-                        <label asp-for="Product.Thumnail">Hình nền</label>
-                    </div>
-                    <div class="col-lg-8">
-                        <img src="@Model.Product.Thumnail" width="20%" />
-                        <br />
-                        <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" />
-                    </div>
+                <div class="col-lg-2">
+                    <label asp-for="Product.Thumnail">Hình nền</label>
+                </div>
+                <div class="col-lg-8">
+                    <img src="@Model.Product.Thumnail" width="20%" />
+                    <br />
+                    <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" style="width:20%" />
+                </div>
             </div>
-                @*<div class="form-group row">
+            @*<div class="form-group row">
+            <div class="col-lg-2">
+                <label>Hình ảnh khác</label>
+            </div>
+            <div class="col-lg-10">
+                <input class="form-control" type="file" name="moreimages" multiple />
+            </div>
+        </div>*@
+            @*@if (Model.Product.Status == 1)
+            {
+                <div class="form-group row">
                     <div class="col-lg-2">
-                        <label>Hình ảnh khác</label>
+                        <label>Trạng thái</label>
                     </div>
                     <div class="col-lg-10">
-                        <input class="form-control" type="file" name="moreimages" multiple />
+                        <input type="checkbox" asp-for="Product.Status" style="height:35px; width:35px;" />
+
                     </div>
-                </div>*@
-            <div class="form-group row">
-                <div class="col-lg-2">
-                    <label>Trạng thái</label>
                 </div>
-                <div class="col-lg-10">
-                    <input type="checkbox" asp-for="Product.IsAvailable" style="height:35px; width:35px;" />
-                    @*<select  class="form-control">
-                        <option value="0">Ẩn</option>
-                        <option value="1">Hiển thị</option>
-                    </select>*@
-                </div>
-            </div>
+            }*@
+
             <div class="form-group row">
                 <div class="col-lg-2">
                     <label>Mô tả ngắn</label>
@@ -227,7 +227,7 @@
                     <div class="col-lg-2">
                         <label style="margin-top:5px;">Upload ảnh</label>
                     </div>
-                    <form>
+                    <form method="post" asp-action="UploadMoreImages" asp-controller="Product" asp-route-prodId="@Model.Product.Id" id="imgForm" enctype="multipart/form-data">
                         <div class="col-lg-6">
                             <input type="file" name="importImages" id="importImages" class="form-control" multiple />
                         </div>
@@ -260,6 +260,62 @@
         });
     </script>
 <script>
+
+    //Product.Status
+
+    $(document).ready(() => {
+        var categoryId = "@Model.Product.CategoryId";
+        var brandId = "@Model.Product.BrandId";
+        $('#Product_CategoryId').kendoDropDownList({
+                optionLabel: '-Chọn danh mục-',
+                dataTextField: "categoryName",
+                dataValueField: "id",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host + "/MainService/GetCategory"
+                        },
+                        requestEnd: function (e) {
+                                var response = e.response;
+                                var type = e.type;
+                                //console.log(type); // displays "read"
+                                if (response.length === 0) {
+                                    //console.log(response); // displays "read"
+                                }
+                        },
+                    }
+                },
+            index: 0,
+            value: categoryId
+        });
+
+        $('#Product_BrandId').kendoDropDownList({
+                optionLabel: '-Chọn thương hiệu-',
+                dataTextField: "brandName",
+                dataValueField: "id",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host + "/Brand/GetBrand"
+                        },
+                        requestEnd: function (e) {
+                                var response = e.response;
+                                var type = e.type;
+                                //console.log(type); // displays "read"
+                                if (response.length === 0) {
+                                    //console.log(response); // displays "read"
+                                }
+                        },
+                    }
+                },
+            index: 0,
+            value: brandId
+            });
+    });
         function removeImg() {
          var imgId = $('#imageId').val();
          debugger;
@@ -285,33 +341,34 @@
     };
     $('#saveEditImages').click(function () {
         debugger;
-        var productId = $('#Product_Id').val();
+        $('#imgForm').submit();
+        //var productId = $('#Product_Id').val();
         
-        //if (myFile.files.length  > 0) {
-        //    console.log(myFile);
+        ////if (myFile.files.length  > 0) {
+        ////    console.log(myFile);
+        ////}
+        //var data = {
+
+        //    prodId: productId
         //}
-        var data = {
+        //$.ajax({
+        //    url: "/Product/UpdateMoreImages",
+        //    type: "post",
+        //    dataType: "json",
+        //    data: data,
+        //    success: function (result) {
 
-            prodId: productId
-        }
-        $.ajax({
-            url: "/Product/UpdateMoreImages",
-            type: "post",
-            dataType: "json",
-            data: data,
-            success: function (result) {
-
-                if (result.code == 1) {
-                    alert(result.notice);
-                    $('#modal-default').modal('hide');
-                } else {
-                    alert(result.notice);
-                }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+        //        if (result.code == 1) {
+        //            alert(result.notice);
+        //            $('#modal-default').modal('hide');
+        //        } else {
+        //            alert(result.notice);
+        //        }
+        //    },
+        //    error: function (err) {
+        //        console.log(err);
+        //    }
+        //});
     });
 </script>
 }

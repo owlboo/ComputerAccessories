@@ -1,5 +1,4 @@
-﻿@using ComputerAccessoriesV2.Extensions;
-@model ComputerAccessoriesV2.ViewModels.CategoryViewModel
+﻿
 @{
     ViewData["Title"] = "CreateNewCategory";
     Layout = "~/Views/Admin/_Layout.cshtml";
@@ -8,42 +7,148 @@
 <br />
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Thêm danh mục sản phẩm</h3>
+                <div class="col-lg-8">
+                    <h3 class="box-title">Thêm danh mục sản phẩm</h3>
+                </div>
+                <div class="col-lg-4">
+                    <span id="notify"></span>
+                </div>
+                
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" method="post" action="CreateNewCategory">
-                <div class="box-body">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Tên danh mục</label>
-                        <input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Danh mục cha</label>
-                        @*<input class="form-control" placeholder="Nhập tên danh mục" asp-for="CategoryName">*@
-                        @*<select class="form-control">
-                            @foreach (var item in categories)
-                            {
-                                <option value="@item.Id">@item.CategoryName</option>
-                            }
-                        </select>*@
+            <br />
+            <div class="row">
+                <div class="col-lg-12" style="text-align:center">
+                    <div class="box-body">
+                        <div class="form-group row">
+                            <div class="col-lg-4 text-right">
+                                <label for="exampleInputEmail1">Tên danh mục</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input class="form-control" placeholder="Nhập tên danh mục" id="CategoryName">
+                            </div>
 
-                        <select asp-for="ParentCateId" asp-items="@Model.listParent.ToSelectListItem("CategoryName",Model.Id)" class="form-control"></select>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-4 text-right">
+                                <label for="exampleInputEmail1">Danh mục cha</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input id="ParentId" class="form-control" />
+                            </div>
+
+                        </div>
+                        <div class="col-lg-4 text-right">
+                            <label>Active</label>
+                        </div>
+                        <div class="col-lg-6 text-left">
+                            <input type="checkbox" id="Status" checked />
+                        </div>
                     </div>
                 </div>
-                
-                <div>
-                    <label>Active</label>
-                    <input type="checkbox" asp-for="Status"/>
+                <div class="col-lg-12 text-right">
+                    <div class="col-lg-4">
+
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="box-footer">
+                            <button id="createNewCategory" class="btn btn-primary">Tạo</button>
+                        </div>
+                        
+                    </div>
+
+                    
                 </div>
+            </div>
+            
+                
                 <!-- /.box-body -->
 
-                <div class="box-footer">
-                    <button type="submit" class="btn btn-primary">Tạo</button>
-                </div>
-            </form>
+                
         </div>
 
 
+@section Scripts{ 
+    <script>
+        var notification;
+        $(document).ready(() => {
+            $('#ParentId').kendoDropDownList({
+                optionLabel: '-Chọn danh mục-',
+                dataTextField: "categoryName",
+                dataValueField: "id",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host+"/MainService/GetCategories"
+                        },
+                        requestEnd: function (e) {
+                                var response = e.response;
+                                var type = e.type;
+                                //console.log(type); // displays "read"
+                                if (response.length === 0) {
+                                    //console.log(response); // displays "read"
+                                }
+                        },
+                    }
+                },
+                index: 0
+            });
+
+            notification = $("#notify").kendoNotification({
+                position: {
+                    top:170
+                },
+                templates: [{
+                    type: "warning",
+                    template: "<div class='text-danger'><text style='font-size:14px'>#= content #</text></div>"
+                }, {
+                    type: "success",
+                    template: "<div class='text-success'><text style='font-size:14px'>#= content #</text></div>"
+                    }]
+            }).data("kendoNotification");           
+        });
+        function GetMessageAlert(msg) {
+            return {
+                content: msg
+            }
+        }
+        $('#createNewCategory').click(() => {
+            debugger;
+            
+            var categoryName = $('#CategoryName').val();
+            var parentId = $('#ParentId').data('kendoDropDownList').value();
+            var isActive = $('#Status').is(":checked");
+            if (categoryName == "") {
+                notification.show(GetMessageAlert("Vui lòng nhập tên danh mục"), "warning");
+                return;
+            }
+            var data = {
+                CategoryName: categoryName,
+                ParendId: parentId,
+                Status: isActive
+            }
+
+            $.ajax({
+                url: "/MainService/CreateNewCategory",
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    if (result.code == 1) {
+                        notification.show("Tạo thành công", "success");
+                        setTimeout(window.HelperSDK.Helpers.Redirect(result.url), 5000);
+                    } else {
+                        notification.show(result.err, "warning");
+                    }
+                    
+                },
+                error: function (err) {
+                    notification.show(GetMessageAlert(err), "warning");
+                }
+            });
+        });
+    </script>
+}

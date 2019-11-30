@@ -32,13 +32,10 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         public MainServiceController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _db = db;
-            CategoryVM = new CategoryViewModel
-            {
-                listParent = _db.Category.ToList()
-            };
             AttributeVM = new AttributeViewModel();
             _userManager = userManager;
             _roleManager = roleManager;
+            CategoryVM = new CategoryViewModel();
             //AccountVM.Roles = _db.AspNetRoles.ToList();
         }
 
@@ -56,37 +53,43 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return PartialView("~/Views/Admin/_GetCategory.cshtml", listCategory);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateNewCategory(CategoryViewModel categoryView)
+        [Route("/[controller]/CreateNewCategory")]
+        public async Task<IActionResult> CreateNewCategory(Category model)
         {
+            string returnUrl = "/";
             _db.Category.Add(new Category
             {
-                CategoryName = categoryView.CategoryName,
+                CategoryName = model.CategoryName,
                 CreatedDate = DateTime.Now,
-                ParendId = categoryView.ParentCateId,
-                Status = categoryView.Status
+                ParendId = model.ParendId,
+                Status = model.Status
             });
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Category));
+            
+            if(await _db.SaveChangesAsync() > 0)
+            {
+                returnUrl = "/Admin/MainService/Category";
+                return Json(new { code = 1, url = returnUrl });
+            }
+            else
+            {
+                return Json(new { code = 0, url = returnUrl });
+            }
+            //return RedirectToAction(nameof(Category));
         }
 
         [Route("/[controller]/GetCategories")]
         public JsonResult GetCategories()
         {
-            return Json(_db.Category.Select(x => new Category
-            {
-                Id = x.Id,
-                CategoryName = x.CategoryName
-            }).ToList());
-        }
-        public IActionResult Category()
-        {
-            var listCategory = _db.Category.Where(x => x.Id != 2).ToList();
+
+            var listCategory = _db.Category.ToList();
+
             List<CategoryViewModel> lstCategory = new List<CategoryViewModel>();
 
             foreach (var item in listCategory)
             {
                 if (item.ParendId != null)
                 {
+             
                     var parentName = _db.Category.Where(x => x.Id == item.ParendId).Select(x => x.CategoryName).FirstOrDefault();
 
                     CategoryViewModel category = new CategoryViewModel()
@@ -107,24 +110,27 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         CategoryName = item.CategoryName,
                         CreatedDate = item.CreatedDate,
                         ModifiedDate = item.ModifiedDate,
-                        Id = item.Id
+                        Id = item.Id,
+                        ParentName = "",
+                        Status = item.Status == null ? false : item.Status.Value
                     };
                     lstCategory.Add(category);
                 }
 
             }
-            ViewBag.controller = "Category";
-            return View(lstCategory);
+            return Json(lstCategory);
+
+        }
+
+
+        public IActionResult Category()
+        {                    
+            return View();
         }
         [Route("/[controller]/GetCategory")]
         [HttpGet]
         public JsonResult GetCategory()
         {
-            List<Category> categories  = _db.Category.Select(x => new Category
-            {
-                Id = x.Id,
-                CategoryName = x.CategoryName
-            }).ToList();
             return Json(_db.Category.Select(x => new Category
             {
                 Id = x.Id,
@@ -136,7 +142,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         public IActionResult CreateNewCategory()
         {
-            return View(CategoryVM);
+            return View();
         }
 
         public IActionResult CreateNewAttribute()
@@ -167,11 +173,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditCategory(Category category)
+        [Route("/[controller]/updateCategory")]
+        public async Task<IActionResult> SaveUpdateCategory(Category category)
         {
-            if (category == null)
+            string returnUrl = "/";
+            if (category == null || !ModelState.IsValid)
             {
-                return NotFound();
+                return Json(new { code = 0, err = "Có lỗi xảy ra trong quá trình cập nhật",url=returnUrl });
             }
             var categoryFromDb = _db.Category.Where(x => x.Id == category.Id).FirstOrDefault();
             categoryFromDb.CategoryName = category.CategoryName;
@@ -181,7 +189,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             var result = await _db.SaveChangesAsync();
             if (result > 0)
             {
-                return RedirectToAction(nameof(Category));
+                returnUrl = "/Admin/MainService/Category";
+                return Json(new { code = 1, err = "", url = returnUrl });
             }
             return null;
         }
@@ -189,11 +198,9 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         #endregion
         #region Attribute
         [HttpGet]
-        public IActionResult Attributes(string categoryId = null, string fromTime = null, string toTime = null)
+        [Route("/[controller]/Attributes")]
+        public JsonResult GetAttributes(string categoryId = null, string fromTime = null, string toTime = null)
         {
-            ViewBag.controller = "Attributes";
-            var listCategory = _db.Category.ToList();
-            ViewBag.lstCategory = listCategory;
             if (string.IsNullOrEmpty(categoryId))
             {
                 if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
@@ -207,12 +214,12 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         ModifiedDate = x.ModifiedDate,
                         CategoryName = x.CategoryName
                     }).ToList();
-                    return View(lstAttributes);
+                    return Json(lstAttributes);
                 }
                 else
                 {
-                    DateTime from = DateTime.Parse(fromTime);
-                    DateTime to = DateTime.Parse(toTime + " 23:59:59");
+                    DateTime from = DateTime.Parse(fromTime).ToLocalTime();
+                    DateTime to = DateTime.Parse(toTime + " 23:59:59").ToLocalTime();
                     var lstAttributes = _db.Attributes.Where(x => x.CreatedDate >= from && x.CreatedDate <= to).Select(x => new AttributeViewModel
                     {
                         Id = x.Id,
@@ -222,7 +229,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         ModifiedDate = x.ModifiedDate,
                         CategoryName = x.Category.CategoryName
                     }).ToList();
-                    return View(lstAttributes);
+                    return Json(lstAttributes);
                 }
             }
             else
@@ -239,7 +246,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         ModifiedDate = x.ModifiedDate,
                         CategoryName = x.Category.CategoryName
                     }).ToList();
-                    return View(lstAttributes);
+                    return Json(lstAttributes);
                 }
                 else
                 {
@@ -254,10 +261,17 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         ModifiedDate = x.ModifiedDate,
                         CategoryName = x.Category.CategoryName
                     }).ToList();
-                    return View(lstAttributes);
+                    return Json(lstAttributes);
 
                 }
             }
+        }
+        public IActionResult Attributes()
+        {
+            //ViewBag.controller = "Attributes";
+            //var listCategory = _db.Category.ToList();
+            //ViewBag.lstCategory = listCategory;
+            
             return View();
 
         }

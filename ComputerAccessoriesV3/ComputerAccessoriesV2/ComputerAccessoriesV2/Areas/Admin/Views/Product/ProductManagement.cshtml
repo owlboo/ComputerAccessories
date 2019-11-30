@@ -28,56 +28,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                @*<table id="example2" class="table table-bordered table-hover">
-                    <thead style="color:darkcyan">
-                        <tr>
-                            <th>Mã</th>
-                            <th>Tên sản phẩm</th>
-                            <th style="width:20%">Thumbnail</th>
-                            <th>Danh mục</th>
-                            <th>Thương hiệu</th>
-                            <th>Giá gốc </th>
-                            <th>Giá khuyến mãi</th>
-                            <th>Số lượng</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                        <tr>
-                            <th>@item.Id</th>
-                            <th>@item.ProductName</th>
-                            <th style="width:20%">
-                                <img src="@item.Thumnail" width="40%" />
-                            </th>
-                            <th>@item.Category.CategoryName</th>
-                            <th>@item.Brand.BrandName</th>
-                            <th>@item.OriginalPrice</th>
-                            <th>@item.PromotionPrice</th>
-                            <th>@item.Quantity</th>
-               
-                            @if (item.IsAvailable)
-                            {
-                                <th>Còn hàng</th>
-                            }
-                            else
-                            {
-                                <th>Hết hàng</th>
-                            }                            
-                            <th>
-                                <div class="btn-group" role="group" style="height:44px; ">
-                                    <a type="button" class="btn btn-success" href="@Url.Action("EditProduct","Product",new {id = item.Id }).Replace("%2F",@"/")"><i class="fa fa-edit"></i></a>
-                                    <a type="button" class="btn btn-primary" href="@Url.Action("UpdateProductAttribute","Product").Replace("%2F",@"/") title="Cập nhật thuộc tính sản phẩm"><span><i class="fa fa-list-alt"></i></span></a>
-                                </div>
-                                
-                            </th>
-                        </tr>
-                        }
-                    </tbody>
-                   
-                </table>*@
+                
 
                 <div id="productGrid">
 
@@ -134,23 +85,42 @@
                     field: "color",
                     title: "Màu sắc"
                 },{
-                    field: "originPrice",
+                    field: "originalPrice",
                     title: "Giá gốc"
                 },{
                     field: "promotionPrice",
                     title: "Giá khuyến mãi"
                 },{
+                    field: "status",
+                    title: "Trạng thái",
+                    template:"#if(data.status == 0){#<text>Mới tạo</text>#}else if(data.status ==1){#<text>Đã cập nhật thuộc tính</text>#}else if(data.status ==2){#<text>Đang trưng bày</text>#}else if(data.status ==3){#<text>Ẩn</text>#}#"
+                },{
                     field: "createdDate",
-                        title: "Ngày tạo",
-                    format: "{0: yyyy-MM-dd HH:mm:ss}",
+                    title: "Ngày tạo",
+                    format: "{0:dd-MM-yyyy}",
                     width: 150
                 },{
                         title: "Thao tác",
-                    template:"<a class='btn btn-default' title='Chỉnh sửa' onlick='return EditProduct(#:data.id#)' style='border:none;background:transparent'><span><i class='fa fa-pencil'></i></span></a> <a class='btn btn-default' title='Xóa' onlick='return Disabled(#:data.id#)' style='border:none;background:transparent'><span><i class='fa fa-remove'></i></span></a>",
+                    template:"<a class='btn btn-default' href='/Admin/Product/EditProduct?id=#=data.id#'  title='Chỉnh sửa'  style='border:none;background:transparent'><span><i class='fa fa-pencil'></i></span></a> <a class='btn btn-default' title='Xóa' onclick='return Disabled(#:data.id#)' style='border:none;background:transparent'><span><i class='fa fa-remove'></i></span></a> <a class='btn btn-default' title='Cập nhật thuộc tính'  onclick='UpdateAttribute(#=data.id#,#=data.categoryId#)' style='border:none;background:transparent'><span><i class='fa fa-indent'></i></span></a>",
                     width: 150
                 }]
             });
         });
+
+        //onlick='EditProductDetails(#=data.id#)'
+        function EditProductDetails(id) {
+            debugger;
+            //var url = window.location.protocol + '//' + window.location.host+"/Product/GetProduct"
+            var url = "/Admin/Product/EditProduct?id=" + id;
+            window.location.href = window.location.protocol + '//' + window.location.host + url;
+        }
+
+        function UpdateAttribute(id,categoryId) {
+            debugger;
+            var url = "/Admin/Product/UpdateAttribute?id=" + id + "&categoryId=" + categoryId;
+            window.location.href = window.location.protocol + '//' + window.location.host + url;
+        }
     </script>
+
 }
 

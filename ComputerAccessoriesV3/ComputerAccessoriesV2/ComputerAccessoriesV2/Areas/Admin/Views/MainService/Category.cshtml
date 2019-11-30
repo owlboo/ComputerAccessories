@@ -9,10 +9,11 @@
     <div class="page-header">
         <div class="row">
             <div class="col-lg-10">
-                <h3>Danh mục thương hiệu</h3>
+                <h3>Danh mục sản phẩm</h3>
             </div>
             <div class="col-lg-1">
-                <a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewCategory" ><span><i class="fa fa-plus"></i></span> Thêm thương hiệu mới</a>
+                @*<a class="btn btn-default" asp-area="Admin" asp-controller="MainService" asp-action="CreateNewCategory" ><span><i class="fa fa-plus"></i></span> Thêm danh mục</a>*@
+                <a class="btn btn-default" href="/Admin/Mainservice/CreateNewCategory"><span><i class="fa fa-plus"></i></span> Thêm danh mục</a>
             </div>
         </div>
     </div>
@@ -26,60 +27,7 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <table id="example2" class="table table-bordered table-hover">
-                        <thead style="color:darkcyan">
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên danh mục</th>\
-                                <td>Active</td>
-                                <th>Danh mục cha</th>
-                                <th>Ngày tạo </th>
-                                <th>Ngày chỉnh sửa</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                            <tr>
-                                <th>@item.Id</th>
-                                <th>@item.CategoryName</th>
-                                <th>@item.Status</th>
-                                @if (item.ParentName == null)
-                                {
-                                    <th>Trống</th>
-                                }
-                                else
-                                {
-                                    <th>@item.ParentName</th>
-
-                                }
-                                <th>@item.CreatedDate</th>
-                                @if(item.ModifiedDate == null)
-                                {
-                                    <th></th>
-                                }
-                                else
-                                {
-                                    <th>@item.ModifiedDate</th>
-                                }
-                                <th style="text-align:center;">
-                                    <partial name="~/Views/Shared/_TableButtonPartial.cshtml" model="item.Id" />
-                                </th>
-
-                            </tr>
-                            }
-                        </tbody>
-                        @*<tfoot>
-                            <tr>
-                                <th>Rendering engine</th>
-                                <th>Browser</th>
-                                <th>Platform(s)</th>
-                                <th>Engine version</th>
-                                <th>CSS grade</th>
-                            </tr>
-                        </tfoot>*@
-                    </table>
+                    <div id="CategoryGrid"></div>
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -87,3 +35,56 @@
 
     </div>
 
+@section Scripts{
+    <script>
+        var helpers = HelperSDK.Helpers;
+        $(document).ready(() => {
+            $("#CategoryGrid").kendoGrid({
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: helpers.GetJsonSource("MainService", "GetCategories") // GetJsonSource([controller]/[actionName])
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                groupable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [{                    
+                    field: "categoryName",
+                    title: "Tên danh mục",
+                    width: 240
+                },{                    
+                    field: "parentName",
+                    title: "Danh mục cha"
+                },{
+                    field: "status",
+                    title: "Trạng thái",
+                    template:"#if(data.status == false){#<text>Ẩn</text>#}else{#<text>Hiển thị</text>#}#"
+                },{
+                    field: "createdDate",
+                    title: "Ngày tạo",
+                    format: "{0:dd-MM-yyyy}",
+                    width: 150
+                },{
+                    field: "modifiedDate",
+                    title: "Cập nhật lần cuối",
+                    format: "{0:dd-MM-yyyy}",
+                    width: 150
+                },{
+                        title: "Thao tác",
+                    template:"<a class='btn btn-default' onclick='EditCategory(#=data.id#)'  title='Chỉnh sửa'  style='border:none;background:transparent'><span><i class='fa fa-pencil'></i></span></a> <a class='btn btn-default' title='Ẩn' onclick='return Disabled(#:data.id#)' style='border:none;background:transparent'><span><i class='fa fa-remove'></i></span></a>",
+                    width: 150
+                }]
+            });
+        })
+        function EditCategory(id) {
+            helpers.Redirect("/Admin/MainService/EditCategory?id=" + id);
+        }
+    </script>
+ }

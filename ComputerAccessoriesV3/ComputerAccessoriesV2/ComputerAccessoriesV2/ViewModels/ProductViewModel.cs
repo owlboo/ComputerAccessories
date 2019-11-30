@@ -13,4 +13,15 @@ namespace ComputerAccessoriesV2.ViewModels
         public IEnumerable<Category> Categories { get; set; }
         public List<ProductImages> ProductImages { get; set; }
     }
+    public class AttrsStoredProductViewModel
+    {
+        public int ProductId { get; set; }
+        public int CategoryId { get; set; }
+        public List<AttributeVM> ListAttrs { get; set; }
+    }
+    public class AttributeVM
+    {
+        public int Id { get; set; }
+        public string Value { get; set; }
+    }
 }
