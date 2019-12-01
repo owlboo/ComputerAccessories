@@ -1,0 +1,69 @@
+﻿@model List<ComputerAccessoriesV2.ViewModels.CategoryHomeModel>
+
+
+
+    <div class="category-toggle">
+        category
+        <div class="cat-icon">
+            <i class="fa fa-angle-down"></i>
+        </div>
+    </div>
+    <nav class="category-menu hm-1">
+        <ul>
+            @foreach (var category in Model)
+            {
+
+                @if (category.ListChildrenNode != null && category.ListChildrenNode.Count > 0)
+                {
+            <li class="menu-item-has-children">
+
+                <a href="menu-item-has-children">
+                    <i class="fa fa-desktop"></i>
+                    @category.MainCategory.CategoryName
+                </a>
+                <ul class="category-mega-menu">
+                    @foreach (var category1 in category.ListChildrenNode)
+                    {
+
+
+                        @if (category.ListChildrenNode != null && category.ListChildrenNode.Count > 0)
+                        {
+                            <li class="menu-item-has-children">
+                                <a href="shop-grid-left-sidebar.html">@category1.MainCategory.CategoryName</a>
+                                <ul>
+                                    @foreach (var category2 in category1.ListChildrenNode)
+                                    {
+
+                                        <li><a href="shop-grid-left-sidebar.html">@category2.MainCategory.CategoryName</a></li>
+
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="menu-item-has-children">
+                                <a href="shop-grid-left-sidebar.html">@category1.MainCategory.CategoryName</a>
+
+                            </li>
+                        }
+
+                        
+
+                    }
+                </ul>
+                </li>
+
+                    }
+                    else
+                    {
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-desktop"></i>
+                                @category.MainCategory.CategoryName
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </nav>
