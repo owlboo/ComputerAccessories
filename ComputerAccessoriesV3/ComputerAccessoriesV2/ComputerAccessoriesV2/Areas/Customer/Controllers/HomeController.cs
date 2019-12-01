@@ -13,5 +13,6 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         {
             return View();
         }
+
     }
 }

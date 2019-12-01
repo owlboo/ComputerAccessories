@@ -499,12 +499,11 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     CreatedDate = DateTime.Now,
                     DisplayName = model.FullName
                 };
-                var roleInDb = _db.AspNetRoles.Where(x => x.Id == Int32.Parse(model.RoleId)).FirstOrDefault();
+                var roleInDb = _db.AspNetRoles.Where(x => x.Name == model.RoleName).FirstOrDefault();
                 
                 var result = await _userManager.CreateAsync(user, model.Password).ConfigureAwait(true);
                 if (result.Succeeded)
                 {
-
                     var useraddress = new UserAddress
                     {
                         UserId = user.Id,
@@ -519,15 +518,19 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     var resultRole = new IdentityResult();
                     if (roleInDb == null)
                     {
-                        if (!await _roleManager.RoleExistsAsync(SD.Customer))
+                        if (!await _roleManager.RoleExistsAsync(model.RoleName))
                         {
-                            await _roleManager.CreateAsync(new IdentityRole<int> { Name = SD.Customer });
+                            await _roleManager.CreateAsync(new IdentityRole<int> { Name = model.RoleName });
                         }
-                        resultRole = await _userManager.AddToRoleAsync(user, SD.Customer);
+
+                        resultRole = await _userManager.AddToRoleAsync(user, model.RoleName);
+
                         if (resultRole.Succeeded)
                         {
-
-                            return RedirectToAction(nameof(AccountManager));
+                            return Json(new
+                            {
+                                code = 1
+                            });
                         }
                         else
                         {

@@ -28,7 +28,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Areas\Customer\Views\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="wwwroot\kendo\" />
   </ItemGroup>
