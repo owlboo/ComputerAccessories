@@ -17,7 +17,7 @@ namespace ComputerAccessoriesV2.ViewModels
         public int WardId { get; set; }
 
         public string PlaceDetail { get; set; }
-        public string RoleId { get; set; }
+        public string RoleName { get; set; }
         //public string ConfirmPwd { get; set; }
         
     }

@@ -20,6 +20,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         {
             return View();
         }
+
         [Route("/[controller]/Categories")]
         public IActionResult Categories()
         {
