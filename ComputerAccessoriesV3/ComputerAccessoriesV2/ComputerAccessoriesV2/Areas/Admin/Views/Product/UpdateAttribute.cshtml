@@ -1,0 +1,210 @@
+﻿@model ComputerAccessoriesV2.ViewModels.UpdateAttributeViewModel
+@{
+    ViewData["Title"] = "UpdateAttribute";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<script>
+    var objAttribute = new Array();
+</script>
+
+<br />
+<br />
+<br />
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Cập nhật thuộc tính sản phẩm</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->   
+        <input hidden asp-for="ProductId" />
+        <input hidden asp-for="CategoryId"/>
+
+        <div class="box-body">
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label>Tên sản phẩm</label>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <text style="font-size:14px;"><strong>@Model.ProductName</strong></text>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label>Danh mục</label>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <text style="font-size:14px;"><strong>@Model.CategoryName</strong></text>
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-lg-4">
+                    <text style="font-size:18px;"><b>Danh sách thuộc tính</b></text>
+                </div>
+
+            </div>
+
+            <div class="form-group row">
+                <div class="col-lg-2 ">
+                    Tên thuộc tính
+                </div>
+                <div class="col-lg-6 text-center">
+                    Giá trị
+                </div>
+            </div>
+            <hr />
+            @if (Model.ProductAttributes.Count == 0)
+            {
+                @if (Model.Attributes != null && Model.Attributes.Count > 0)
+                {
+                    foreach (var item in Model.Attributes)
+                    {
+                        string id = "att" + item.Id;
+                        <div class="form-group row">
+                            <div class="col-lg-2">
+                                <label>@item.AttributeName</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input id="@id" class="form-control" style="border-radius:50px; text-align:center" />
+                            </div>
+                        </div>
+                        <script>
+                        var id = "@item.Id";
+                        var name = "@item.AttributeName";
+                        var obj = {
+                            Id: id,
+                            Name: name
+                        };
+                        objAttribute.push(obj);
+                        </script>
+                    }
+                }
+                else
+                {
+                    <div class="form-group row">
+                        <div class="col-lg-4">
+                            <text style="font-size:18px;color:red"><b>Danh sách thuộc tính</b></text>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                foreach (var item in Model.ProductAttributes)
+                {
+                    string id = "att" + item.AttributeId;
+                    <div class="form-group row">
+                        <div class="col-lg-2">
+                            <label>@item.Attribute.AttributeName</label>
+                        </div>
+                        <div class="col-lg-6 text-center">
+                            <input id="@id" type="text" value="@item.Value" class="form-control" style="border-radius:50px;text-align:center" />
+                        </div>
+                    </div>
+                    <script>
+                        var id = "@item.AttributeId";
+                        var name = "@item.Attribute.AttributeName";
+                        var obj = {
+                            Id: id,
+                            Name: name
+                        };
+                        objAttribute.push(obj);
+                    </script>
+                }
+            }
+
+
+        </div>   
+
+
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button class="btn btn-primary" id="updateAttribute">Lưu lại</button>
+            <a asp-action="ProductManagement" asp-controller="Product" class="btn btn-warning"><span><i class="fa fa-arrow-left"></i></span> Quay lại</a>
+        </div>
+</div>
+
+@section Scripts{
+    <script>
+        $('#updateAttribute').click(() => {
+            debugger;
+            var productId = $('#ProductId').val();
+            var categoryId = $('#CategoryId').val();
+            var i = 0;
+            var ArrayAttributes = [];
+            var isExistAttributeUpdate = "@Model.ProductAttributes.Count";
+            if (isExistAttributeUpdate == "0") {
+                objAttribute.forEach(att => {
+                    var value = $('#att' + att.Id).val();
+                    if (value == "" || value == null) {
+                        ArrayAttributes = [];
+                        alert("Thuộc tính " + att.name + "chưa có giá trị");
+                        i = 0;
+                        return;
+                    }
+                    var objAtt = {
+                        Id: att.Id,
+                        Value: value
+                    };
+                    ArrayAttributes.push(objAtt);
+                    i++;
+                });
+            } else {
+                objAttribute.forEach(att => {
+                    var value = $('#att' + att.Id).val();
+                    if (value == "" || value == null) {
+                        ArrayAttributes = [];
+                        alert("Thuộc tính " + att.name + "chưa có giá trị");
+                        i = 0;
+                        return;
+                    }
+                    var objAtt = {
+                        Id: att.Id,
+                        Value: value
+                    };
+                    ArrayAttributes.push(objAtt);
+                    i++;
+                });
+            }
+            
+            console.log(ArrayAttributes);
+            var data = {
+                ProductId: productId,
+                CategoryId: categoryId,
+                ListAttrs: ArrayAttributes
+            };
+            $.ajax({
+                url: "/Product/SaveAttributesProduct",
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    if (result.code == 1) {
+                        //alert('Successfull');
+                        $('#updateAttribute').innerHtml = "Đang xử lý";
+                        $('#updateAttribute').addClass = "lds-dual-ring";
+                        var url = result.url;
+                        function redirect(url) {
+                            HelperSDK.Helpers.Redirect(url);
+                        };
+                        setTimeout(redirect(url), 5000);
+                    }
+                    else {
+                        alert(result.err);
+                    }
+                },
+                err: function (err) {
+                    alert('Something went wrong ! Please try again');
+                }
+            })
+        })
+        function Redirect(url) {
+            window.location.href
+        }
+    </script>
+}
+
