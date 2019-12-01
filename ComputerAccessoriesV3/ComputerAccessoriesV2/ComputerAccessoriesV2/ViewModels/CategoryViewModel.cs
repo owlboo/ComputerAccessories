@@ -16,4 +16,12 @@ namespace ComputerAccessoriesV2.ViewModels
         public string ParentName { get; set; }
         public bool Status { get; set; }
     }
+
+    public class CategoryHomeModel
+    {
+        public Category MainCategory { get; set; }
+        public List<CategoryHomeModel> ListChildrenNode { get; set; }
+        
+
+    }
 }

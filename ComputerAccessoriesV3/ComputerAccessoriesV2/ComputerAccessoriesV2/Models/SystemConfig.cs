@@ -15,5 +15,7 @@ namespace ComputerAccessoriesV2.Models
         public string Skype { get; set; }
         public string Facebook { get; set; }
         public string Zalo { get; set; }
+        public string LogoUrl { get; set; }
+        public string WorkingTime { get; set; }
     }
 }

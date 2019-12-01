@@ -325,6 +325,8 @@ namespace ComputerAccessoriesV2.Models
 
                 entity.Property(e => e.Facebook).HasMaxLength(50);
 
+                entity.Property(e => e.LogoUrl).HasMaxLength(50);
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ShopAddress).HasMaxLength(256);
@@ -336,6 +338,8 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.SystemEmail).HasMaxLength(50);
 
                 entity.Property(e => e.SystemPhone).HasMaxLength(20);
+
+                entity.Property(e => e.WorkingTime).HasMaxLength(50);
 
                 entity.Property(e => e.Zalo).HasMaxLength(50);
             });
