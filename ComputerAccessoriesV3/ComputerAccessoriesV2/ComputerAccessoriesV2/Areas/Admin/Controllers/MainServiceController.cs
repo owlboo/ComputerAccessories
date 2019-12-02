@@ -39,7 +39,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             //AccountVM.Roles = _db.AspNetRoles.ToList();
         }
 
-        //[Authorize(Roles =SD.Customer)]
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult Index()
         {
             return View();
@@ -122,7 +122,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         }
 
-
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult Category()
         {                    
             return View();
@@ -138,19 +138,21 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }).ToList());
         }
 
-        
-
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult CreateNewCategory()
         {
             return View();
         }
 
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult CreateNewAttribute()
         {
             var categories = _db.Category.ToList();
             ViewBag.lstCategory = categories;
             return View(AttributeVM);
         }
+
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult EditCategory(int? id)
         {
             if (id == null)
@@ -266,6 +268,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 }
             }
         }
+
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult Attributes()
         {
             //ViewBag.controller = "Attributes";
@@ -296,7 +300,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return RedirectToAction(nameof(Attributes));
         }
 
-
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult EditAttributes(int? id)
         {
             if (id == null)
@@ -323,6 +327,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             return Json(_db.AspNetRoles.ToArray());
         }
+
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult AccountManager(string role)
         {
 
@@ -560,6 +566,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
         }
 
+        [Authorize(Policy = SD.SupperAdmin)]
         public IActionResult EditCustomerAccount(int? id)
         {
             if (id == null)

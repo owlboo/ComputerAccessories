@@ -48,6 +48,11 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
         }
 
+        public IActionResult AccessDeny()
+        {
+            return View();
+        }
+
         public IActionResult ConfirmEmail()
         {
             return View();

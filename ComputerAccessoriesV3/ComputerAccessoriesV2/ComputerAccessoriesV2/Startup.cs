@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using ComputerAccessoriesV2.Models;
+using ComputerAccessoriesV2.Ultilities;
 
 namespace ComputerAccessoriesV2
 {
@@ -57,6 +58,36 @@ namespace ComputerAccessoriesV2
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(SD.SupperAdmin, policy =>
+                {
+                    policy.RequireRole(SD.SupperAdmin);
+                });
+
+                options.AddPolicy(SD.Customer, policy =>
+                {
+                    policy.RequireRole(SD.Customer);
+                });
+
+                options.AddPolicy(SD.Shipper, policy =>
+                {
+                    policy.RequireRole(SD.Shipper);
+                });
+
+                options.AddPolicy(SD.Sale, policy =>
+                {
+                    policy.RequireRole(SD.Sale);
+                });
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Customer/Account/SignIn";
+                options.AccessDeniedPath = "/Customer/Account/AccessDeny";
+            });
+
             services.AddRazorPages();
         }
 
