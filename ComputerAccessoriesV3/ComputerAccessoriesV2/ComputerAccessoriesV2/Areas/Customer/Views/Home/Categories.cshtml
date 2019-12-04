@@ -2,12 +2,12 @@
 
 
 
-    <div class="category-toggle">
+    @*<div class="category-toggle">
         category
         <div class="cat-icon">
             <i class="fa fa-angle-down"></i>
         </div>
-    </div>
+    </div>*@
     <nav class="category-menu hm-1">
         <ul>
             @foreach (var category in Model)
@@ -67,3 +67,7 @@
                 }
             </ul>
         </nav>
+
+<script>
+    $('.category-menu').hide();
+</script>

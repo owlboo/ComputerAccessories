@@ -42,7 +42,7 @@
 }
 
 .text {
-  /*background-color: #4CAF50;*/
+
   color: white;
   font-size: 16px;
   padding: 16px 32px;
@@ -52,8 +52,7 @@
     <div class="box-header with-border">
         <h3 class="box-title">Chỉnh sửa sản phẩm</h3>
     </div>
-    <!-- /.box-header -->
-    <!-- form start -->
+
     <form role="form" method="post" asp-action="EditProduct" enctype="multipart/form-data">
         <div class="box-body">
             <input hidden asp-for="Product.Id" />
@@ -79,7 +78,7 @@
                     <label asp-for="Product.Brand">Thương hiệu</label>
                 </div>
                 <div class="col-lg-10">
-                    @*<select asp-for="Product.BrandId" asp-items="@Model.Brands.ToSelectListItem("BrandName",Model.Product.BrandId.Value)" class="form-control"></select>*@
+                    
                     <input asp-for="Product.BrandId" class="form-control" />
                 </div>
             </div>
@@ -88,7 +87,7 @@
                     <label asp-for="Product.Category">Danh mục sản phẩm</label>
                 </div>
                 <div class="col-lg-10">
-                    @*<select asp-for="Product.CategoryId" asp-items="@Model.Categories.ToSelectListItem("CategoryName",Model.Product.CategoryId.Value)" class="form-control"></select>*@
+
                     <input asp-for="Product.CategoryId" class="form-control" />
                 </div>
             </div>
@@ -143,26 +142,7 @@
                     <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" style="width:20%" />
                 </div>
             </div>
-            @*<div class="form-group row">
-            <div class="col-lg-2">
-                <label>Hình ảnh khác</label>
-            </div>
-            <div class="col-lg-10">
-                <input class="form-control" type="file" name="moreimages" multiple />
-            </div>
-        </div>*@
-            @*@if (Model.Product.Status == 1)
-            {
-                <div class="form-group row">
-                    <div class="col-lg-2">
-                        <label>Trạng thái</label>
-                    </div>
-                    <div class="col-lg-10">
-                        <input type="checkbox" asp-for="Product.Status" style="height:35px; width:35px;" />
 
-                    </div>
-                </div>
-            }*@
 
             <div class="form-group row">
                 <div class="col-lg-2">
@@ -183,7 +163,6 @@
         </div>
 
 
-        <!-- /.box-body -->
 
         <div class="box-footer">
             <button type="submit" class="btn btn-primary">Lưu lại</button>
@@ -240,9 +219,9 @@
                 <button type="button" class="btn btn-primary" id="saveEditImages">Lưu</button>
             </div>
         </div>
-        <!-- /.modal-content -->
+
     </div>
-    <!-- /.modal-dialog -->
+
 </div>
 
 
@@ -261,7 +240,7 @@
     </script>
 <script>
 
-    //Product.Status
+
 
     $(document).ready(() => {
         var categoryId = "@Model.Product.CategoryId";
@@ -280,9 +259,9 @@
                         requestEnd: function (e) {
                                 var response = e.response;
                                 var type = e.type;
-                                //console.log(type); // displays "read"
+
                                 if (response.length === 0) {
-                                    //console.log(response); // displays "read"
+
                                 }
                         },
                     }
@@ -342,33 +321,7 @@
     $('#saveEditImages').click(function () {
         debugger;
         $('#imgForm').submit();
-        //var productId = $('#Product_Id').val();
-        
-        ////if (myFile.files.length  > 0) {
-        ////    console.log(myFile);
-        ////}
-        //var data = {
-
-        //    prodId: productId
-        //}
-        //$.ajax({
-        //    url: "/Product/UpdateMoreImages",
-        //    type: "post",
-        //    dataType: "json",
-        //    data: data,
-        //    success: function (result) {
-
-        //        if (result.code == 1) {
-        //            alert(result.notice);
-        //            $('#modal-default').modal('hide');
-        //        } else {
-        //            alert(result.notice);
-        //        }
-        //    },
-        //    error: function (err) {
-        //        console.log(err);
-        //    }
-        //});
+      
     });
 </script>
 }

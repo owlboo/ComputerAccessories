@@ -10,8 +10,7 @@
     <div class="box-header with-border">
         <h3 class="box-title">Thêm sản phẩm mới</h3>
     </div>
-    <!-- /.box-header -->
-    <!-- form start -->
+
     <form role="form" method="post" asp-action="CreateNewProduct" enctype="multipart/form-data">
         <div class="box-body">
             <div class="form-group row">
@@ -88,30 +87,7 @@
                 </div>
             </div>
 
-            @*<div class="form-group row">
-                <div class="col-lg-2">
-                    <label asp-for="Product.Thumnail">Hình nền</label>
-                </div>
-                <div class="col-lg-10">
-                    <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-lg-2">
-                    <label>Hình ảnh khác</label>
-                </div>
-                <div class="col-lg-10">
-                    <input class="form-control" type="file" name="moreimages" multiple />
-                </div>
-            </div>*@
-            @*<div class="form-group row">
-                <div class="col-lg-2">
-                    <label>Trạng thái</label>
-                </div>
-                <div class="col-lg-10">
-                    <input type="checkbox" asp-for="Product.IsAvailable" />
-                </div>
-            </div>*@
+
             <div class="form-group row">
                 <div class="col-lg-2">
                     <label>Mô tả ngắn</label>
@@ -131,7 +107,6 @@
         </div>
 
 
-        <!-- /.box-body -->
 
         <div class="box-footer">
             <button type="submit" class="btn btn-primary">Tạo</button>

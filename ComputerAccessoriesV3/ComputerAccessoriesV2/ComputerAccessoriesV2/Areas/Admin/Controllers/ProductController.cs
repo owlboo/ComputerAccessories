@@ -43,21 +43,21 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             return Json(_db.Products.Select(x => new ProductGridModel
             {
-                Id =x.Id,
+                Id = x.Id,
                 ProductName = x.ProductName,
-                PromotionPrice=x.PromotionPrice ?? x.PromotionPrice.Value,
-                BrandId =x.BrandId ?? x.BrandId.Value,
+                PromotionPrice = x.PromotionPrice ?? x.PromotionPrice.Value,
+                BrandId = x.BrandId ?? x.BrandId.Value,
                 BrandName = x.Brand.BrandName,
                 CategoryId = x.CategoryId ?? x.CategoryId.Value,
-                CategoryName= x.Category.CategoryName,
+                CategoryName = x.Category.CategoryName,
                 OriginalPrice = x.OriginalPrice ?? x.OriginalPrice.Value,
                 Origin = x.Origin,
                 Color = x.Color,
-                Code =x.Code,
+                Code = x.Code,
                 Status = x.Status,
                 Quantity = x.Quantity ?? x.Quantity.Value,
-                CreatedDate= x.CreatedDate ?? x.CreatedDate.Value,
-                Thumnail =x.Thumnail
+                CreatedDate = x.CreatedDate ?? x.CreatedDate.Value,
+                Thumnail = x.Thumnail
             }).ToList());
         }
         public IActionResult CreateNewProduct()
@@ -86,7 +86,9 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 FullDescription = model.Product.FullDescription,
                 Quantity = model.Product.Quantity,
                 Status = 0,
-                Code = model.Product.Code
+                Code = model.Product.Code,
+                IsNew = true,
+                ViewCounts = 0
             };
             _db.Products.Add(product);
             await _db.SaveChangesAsync();
@@ -268,12 +270,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return Json(new { code = 0, notice = "Cập nhật thất bại" });
         }
 
-        
+
         public ActionResult UpdateAttribute(int id, int categoryId)
         {
             var listAttributes = _db.Attributes.Where(x => x.CategoryId == categoryId).ToList();
             var listProductAttributes = _db.ProductAttribute.Where(x => x.ProductId == id).ToList();
-            UpdateAttributeViewModel model = new UpdateAttributeViewModel() {
+            UpdateAttributeViewModel model = new UpdateAttributeViewModel()
+            {
                 CategoryId = categoryId,
                 CategoryName = _db.Category.Where(z => z.Id == categoryId).Select(z => z.CategoryName).FirstOrDefault(),
                 ProductId = id,
@@ -281,7 +284,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 Attributes = listAttributes,
                 ProductAttributes = listProductAttributes
             };
-            
+
             return View(model);
         }
 
@@ -345,9 +348,9 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     }
                     await _db.SaveChangesAsync();
                     returnUrl = "/Admin/Product/ProductManagement";
-                    return Json(new { code = 1, count =model.ListAttrs.Count, url = returnUrl });
+                    return Json(new { code = 1, count = model.ListAttrs.Count, url = returnUrl });
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -357,7 +360,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             returnUrl = "/Admin/Product/ProductManagement";
             return Json(new { code = 1, url = returnUrl });
         }
-        public string checkContain(List<string> strs , string key)
+        public string checkContain(List<string> strs, string key)
         {
             string result = "";
             foreach (var item in strs)

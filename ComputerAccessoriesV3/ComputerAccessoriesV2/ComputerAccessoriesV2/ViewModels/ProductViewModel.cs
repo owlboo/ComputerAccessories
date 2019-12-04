@@ -24,4 +24,12 @@ namespace ComputerAccessoriesV2.ViewModels
         public int Id { get; set; }
         public string Value { get; set; }
     }
+
+    public class ProductHomeViewModel
+    {
+        public List<ProductGridModel> ListNewProducts { get; set; }
+        public List<ProductGridModel> ListMostViewsProducts { get; set; }
+        public List<ProductGridModel> ListHotDealProducts { get; set; }
+        public List<Blog> ListBlogs { get; set; }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComputerAccessoriesV2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,12 @@ namespace ComputerAccessoriesV2.ViewModels
         public int BrandId { get; set; }
         public string BrandName { get; set; }
         public string Thumnail { get; set; }
+        public string Thumnail2 { get; set; }
+        public bool IsNew { get; set; }
+        public int ViewCounts { get; set; }
 
         public int Status { get; set; }
+
+        public List<ProductImages> ProductImages { get; set; }
     }
 }

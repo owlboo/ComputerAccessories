@@ -7,10 +7,12 @@ namespace ComputerAccessoriesV2.Ultilities
 {
     public class SD
     {
+
         public const string SupperAdmin = "SupperAdmin";
         public const string Sale = "Sale";
         public const string Customer = "Customer";
         public const string Shipper = "Shipper";
         public const string ProductImages = @"image/ProductImages";
+
     }
 }

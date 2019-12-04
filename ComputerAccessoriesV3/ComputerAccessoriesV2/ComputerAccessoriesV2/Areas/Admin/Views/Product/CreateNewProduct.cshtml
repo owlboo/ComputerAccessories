@@ -10,8 +10,7 @@
     <div class="box-header with-border">
         <h3 class="box-title">Thêm sản phẩm mới</h3>
     </div>
-    <!-- /.box-header -->
-    <!-- form start -->
+
     <form role="form" method="post" asp-action="CreateNewProduct" enctype="multipart/form-data">
         <div class="box-body">
             <div class="form-group row">
@@ -133,7 +132,6 @@
         </div>
         
 
-        <!-- /.box-body -->
 
         <div class="box-footer">
             <button type="submit" class="btn btn-primary">Tạo</button>
@@ -155,7 +153,7 @@
         });
         var baseUrl = window.location.protocol + '//' + window.location.host;
         $(document).ready(() => {
-            //var data = GetCategory();
+
             $('#Product_CategoryId').kendoDropDownList({
                 optionLabel: '-Chọn danh mục-',
                 dataTextField: "categoryName",
@@ -170,9 +168,9 @@
                         requestEnd: function (e) {
                                 var response = e.response;
                                 var type = e.type;
-                                //console.log(type); // displays "read"
+                          
                                 if (response.length === 0) {
-                                    //console.log(response); // displays "read"
+  
                                 }
                         },
                     }
@@ -194,9 +192,8 @@
                         requestEnd: function (e) {
                                 var response = e.response;
                                 var type = e.type;
-                                //console.log(type); // displays "read"
                                 if (response.length === 0) {
-                                    //console.log(response); // displays "read"
+
                                 }
                         },
                     }
