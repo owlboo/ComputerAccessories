@@ -224,5 +224,11 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return RedirectToAction("SignIn", "Account", new { err = "Có lỗi xảy ra, vui lòng thử lại" });
         }
 
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("SignIn", "Account");
+        }
+
     }
 }

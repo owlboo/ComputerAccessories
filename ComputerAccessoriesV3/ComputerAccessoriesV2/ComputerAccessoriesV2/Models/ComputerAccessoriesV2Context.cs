@@ -25,7 +25,11 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<Attributes> Attributes { get; set; }
         public virtual DbSet<BillDetails> BillDetails { get; set; }
         public virtual DbSet<Bills> Bills { get; set; }
+        public virtual DbSet<Blog> Blog { get; set; }
         public virtual DbSet<Brand> Brand { get; set; }
+        public virtual DbSet<Campaign> Campaign { get; set; }
+        public virtual DbSet<CampaignDetails> CampaignDetails { get; set; }
+        public virtual DbSet<CampaignType> CampaignType { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
         public virtual DbSet<ErrLogs> ErrLogs { get; set; }
@@ -186,6 +190,22 @@ namespace ComputerAccessoriesV2.Models
                     .HasConstraintName("FK_Bills_AspNetUsers");
             });
 
+            modelBuilder.Entity<Blog>(entity =>
+            {
+                entity.Property(e => e.BlogName).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ShortUrl).HasMaxLength(50);
+
+                entity.HasOne(d => d.CreatedUser)
+                    .WithMany(p => p.Blog)
+                    .HasForeignKey(d => d.CreatedUserId)
+                    .HasConstraintName("FK_Blog_AspNetUsers");
+            });
+
             modelBuilder.Entity<Brand>(entity =>
             {
                 entity.Property(e => e.BrandName).HasMaxLength(100);
@@ -195,6 +215,48 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.Logo).HasMaxLength(100);
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Campaign>(entity =>
+            {
+                entity.Property(e => e.CampaignName).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Type)
+                    .WithMany(p => p.Campaign)
+                    .HasForeignKey(d => d.TypeId)
+                    .HasConstraintName("FK_Campaign_CampaignType");
+            });
+
+            modelBuilder.Entity<CampaignDetails>(entity =>
+            {
+                entity.HasKey(e => new { e.CampaignId, e.ProductId });
+
+                entity.Property(e => e.PromotionPrice).HasColumnType("money");
+
+                entity.HasOne(d => d.Campaign)
+                    .WithMany(p => p.CampaignDetails)
+                    .HasForeignKey(d => d.CampaignId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CampaignDetails_Campaign");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.CampaignDetails)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CampaignDetails_Products");
+            });
+
+            modelBuilder.Entity<CampaignType>(entity =>
+            {
+                entity.HasKey(e => e.TypeId);
+
+                entity.Property(e => e.Description).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -283,6 +345,10 @@ namespace ComputerAccessoriesV2.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.IsNew)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Origin).HasMaxLength(50);
@@ -296,6 +362,10 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.ShorDescription).HasMaxLength(256);
 
                 entity.Property(e => e.Thumnail).HasMaxLength(50);
+
+                entity.Property(e => e.Thumnail2)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
 
                 entity.HasOne(d => d.Brand)
                     .WithMany(p => p.Products)
@@ -372,7 +442,7 @@ namespace ComputerAccessoriesV2.Models
 
             modelBuilder.Entity<UserAddress>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.ProvinceId, e.DistrictId, e.WardId });
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.PlaceDetails).HasMaxLength(256);
 

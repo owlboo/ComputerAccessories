@@ -8,6 +8,7 @@ namespace ComputerAccessoriesV2.Models
         public Products()
         {
             BillDetails = new HashSet<BillDetails>();
+            CampaignDetails = new HashSet<CampaignDetails>();
             ProductAttribute = new HashSet<ProductAttribute>();
             ProductImages = new HashSet<ProductImages>();
         }
@@ -28,10 +29,14 @@ namespace ComputerAccessoriesV2.Models
         public int? BrandId { get; set; }
         public string Thumnail { get; set; }
         public int Status { get; set; }
+        public bool? IsNew { get; set; }
+        public int ViewCounts { get; set; }
+        public string Thumnail2 { get; set; }
 
         public virtual Brand Brand { get; set; }
         public virtual Category Category { get; set; }
         public virtual ICollection<BillDetails> BillDetails { get; set; }
+        public virtual ICollection<CampaignDetails> CampaignDetails { get; set; }
         public virtual ICollection<ProductAttribute> ProductAttribute { get; set; }
         public virtual ICollection<ProductImages> ProductImages { get; set; }
     }

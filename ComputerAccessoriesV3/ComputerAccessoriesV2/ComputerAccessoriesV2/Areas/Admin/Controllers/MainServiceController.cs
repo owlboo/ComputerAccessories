@@ -400,6 +400,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         }
 
+        [HttpGet]
         [Route("/[controller]/GetProvinces")]
         public JsonResult GetProvinces()
         {
@@ -581,6 +582,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 CreatedDate = z.UserRole.Users.CreatedDate,
                 RoleName = z.Role.Name
             }).FirstOrDefault();
+
             if(accountFromDb == null)
             {
                 return NotFound();

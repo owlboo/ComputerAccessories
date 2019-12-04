@@ -71,7 +71,6 @@
 
 	/*-- Category Menu Toggles --*/
     function categorySubMenuToggle() {
-        debugger;
 		var screenSize = $window.width();
 		if (screenSize <= 991) {
 			$('.category-menu .menu-item-has-children > a').prepend('<span class="expand menu-expand"></span>');
