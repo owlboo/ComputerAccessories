@@ -1,12 +1,156 @@
-﻿<!-- Single Tab Content Start -->
-<h3>Billing Address</h3>
-<address>
-    <p><strong>Alex Tuntuni</strong></p>
-    <p>
-        1355 Market St, Suite 900 <br>
-        San Francisco, CA 94103
-    </p>
-    <p>Mobile: (123) 456-7890</p>
-</address>
-<a href="#" class="check-btn sqr-btn "><i class="fa fa-edit"></i> Edit Address</a>
-<!-- Single Tab Content End -->
+﻿@model ComputerAccessoriesV2.Models.UserAddress
+@using ComputerAccessoriesV2.Extensions
+@using ComputerAccessoriesV2.Models
+
+@{
+    UserAddress userAddress = ViewBag.userAddress;
+}
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Thông tin địa chỉ</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    <form role="form" method="post" action="ChangeAddress" enctype="multipart/form-data">
+        <div class="box-body">
+            <div>
+                <label>Tỉnh, thành phố</label>
+                <input asp-for="ProvinceId" id="provinceSelector" class="form-control" />
+            </div>
+
+            <div>
+                <label>Huyện, Quận</label>
+                <input asp-for="DistrictId" id="districtSelector" class="form-control" />
+            </div>
+
+            <div>
+                <label>Xã, Phường</label>
+                <input asp-for="WardId" id="wardSelector" class="form-control" />
+            </div>
+
+            <div>
+                <label>Số nhà, Đường</label>
+                <input asp-for="PlaceDetails" type="text" id="placeDetailText" value="@userAddress.PlaceDetails" class="form-control">
+            </div>
+        </div>
+
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Thay đổi</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(() => {
+        $('#provinceSelector').kendoDropDownList({
+            optionLabel: '-Chọn tỉnh-',
+            dataTextField: "provinceName",
+            dataValueField: "provinceId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetProvinces"
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: @userAddress.ProvinceId,
+            change: onProvinceChange
+        });
+
+        $('#districtSelector').kendoDropDownList({
+            optionLabel: '-Chọn Quận, huyện-',
+            dataTextField: "districtName",
+            dataValueField: "districtId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetDistricts?provinceId=@userAddress.ProvinceId"
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: @userAddress.DistrictId,
+            change: onDistrictChange
+
+        });
+
+        $('#wardSelector').kendoDropDownList({
+            optionLabel: '-Chọn xã, phường-',
+            dataTextField: "wardName",
+            dataValueField: "wardId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetWards?districtId=@userAddress.DistrictId"
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: @userAddress.WardId
+        });
+    });
+
+    function onDistrictChange() {
+        var newDistrictId = $('#districtSelector').data('kendoDropDownList').value();
+
+        $('#wardSelector').kendoDropDownList({
+            optionLabel: '-Chọn xã, phường-',
+            dataTextField: "wardName",
+            dataValueField: "wardId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetWards?districtId=" + newDistrictId
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: 0
+        });
+    }
+
+    function onProvinceChange() {
+        var newProvinceId = $('#provinceSelector').data('kendoDropDownList').value();
+
+        $('#districtSelector').kendoDropDownList({
+            optionLabel: '-Chọn Quận, huyện-',
+            dataTextField: "districtName",
+            dataValueField: "districtId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetDistricts?provinceId=" + newProvinceId
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: 0,
+            change: onDistrictChange
+
+        });
+    }
+</script>

@@ -442,7 +442,7 @@ namespace ComputerAccessoriesV2.Models
 
             modelBuilder.Entity<UserAddress>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.ProvinceId, e.DistrictId, e.WardId });
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.PlaceDetails).HasMaxLength(256);
 

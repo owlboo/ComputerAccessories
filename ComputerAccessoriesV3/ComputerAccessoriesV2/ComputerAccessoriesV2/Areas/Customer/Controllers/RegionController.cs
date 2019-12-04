@@ -15,14 +15,21 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             _db = db;
         }
 
-        [Route("/[controller]/GetDistrict")]
+        [Route("/[controller]/GetProvinces")]
         [HttpGet]
-        public JsonResult GetDistrict(int provinceId)
+        public JsonResult GetProvinces()
+        {
+            return Json(_db.Provinces.ToList());
+        }
+
+        [Route("/[controller]/GetDistricts")]
+        [HttpGet]
+        public JsonResult GetDistricts(int provinceId)
         {
             return Json(_db.Districts.Where(x => x.ProvinceId == provinceId).ToList());
         }
 
-        [Route("/[controller]/GetWard")]
+        [Route("/[controller]/GetWards")]
         [HttpGet]
         public JsonResult GetWard(int districtId)
         {

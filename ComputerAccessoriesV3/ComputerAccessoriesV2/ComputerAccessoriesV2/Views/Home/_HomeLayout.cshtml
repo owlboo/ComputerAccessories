@@ -10,7 +10,7 @@
 @inject RoleManager<IdentityRole<int>> roleManager
 @inject IHttpContextAccessor HttpContextAccessor
 @{ 
-    var Name = "";
+    String Name = null;
     if (SignInManager.IsSignedIn(User))
     {
         var userName = UserManager.GetUserName(User);
@@ -151,11 +151,20 @@
                                                     </a>
                                                 }
 
-                                                <div class="dropdown-menu" aria-labelledby="myaccount">
-                                                    <a class="dropdown-item" href="my-account.html">my account</a>
-                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn"> login</a>
-                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">register</a>
-                                                </div>
+                                            <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                @if (Name != null)
+                                                {
+                                                    <a class="dropdown-item" href="Customer/Profile">@Name</a>
+                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn">Đăng nhập</a>
+                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">Đăng kí</a>
+                                                }
+
+
+                                            </div>
                                             </div>
                                         </li>
                                         <li>

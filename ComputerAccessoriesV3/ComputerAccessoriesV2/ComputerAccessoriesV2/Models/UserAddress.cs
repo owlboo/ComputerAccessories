@@ -10,6 +10,7 @@ namespace ComputerAccessoriesV2.Models
         public int DistrictId { get; set; }
         public int WardId { get; set; }
         public string PlaceDetails { get; set; }
+        public int Id { get; set; }
 
         public virtual Districts District { get; set; }
         public virtual Provinces Province { get; set; }

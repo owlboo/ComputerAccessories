@@ -17,7 +17,7 @@
 
 $("#districtSelector").change(async function () {
     var option = { method: 'GET' }
-    var url = "https://" + window.location.host + "/Region/GetWard?districtId=" + $("#districtSelector").children("option:selected").val();
+    var url = "https://" + window.location.host + "/Region/GetWards?districtId=" + $("#districtSelector").children("option:selected").val();
     var respone = await fetch(url, option);
     var json = await respone.json();
 
