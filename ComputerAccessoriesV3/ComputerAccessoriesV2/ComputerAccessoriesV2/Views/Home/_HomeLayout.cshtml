@@ -13,9 +13,8 @@
     String Name = null;
     if (SignInManager.IsSignedIn(User))
     {
-        var userName = UserManager.GetUserName(User);
-        var NameData = userName.Split("@");
-        Name = NameData[0];
+        var user = await UserManager.GetUserAsync(User);
+        Name = user.DisplayName;
     }
 
     HttpContextAccessor = new HttpContextAccessor();

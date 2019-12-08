@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
+using ComputerAccessoriesV2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,38 +29,85 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Policy = Policy.ProfileModify)]
         public IActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
+        [Authorize(Policy = Policy.ProfileModify)]
         public IActionResult Dashboard()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult ProfileInfo()
+        [Authorize(Policy = Policy.ProfileModify)]
+        public async Task<IActionResult> ProfileInfo()
         {
-            
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = Policy.ProfileModify)]
+        [Route("/Profile/ChangeProfileInfo")]
+        public async Task<IActionResult> ChangeProfileInfo(ProfileUpdateInfo _params)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var currentUserDb = _db.AspNetUsers.Where(x => x.Id == user.Id).FirstOrDefault();
+
+            currentUserDb.UserName = _params.UserName;
+            currentUserDb.PhoneNumber = _params.PhoneNumber;
+
+            var result = await _db.SaveChangesAsync();
+
+            if(result > 0)
+            {
+                return Json(new { StatusCode = (int)HttpStatusCode.OK });
+            }
+            else
+            {
+                return Json(new { StatusCode = (int)HttpStatusCode.BadRequest });
+            }
         }
 
         [HttpGet]
+        [Authorize(Policy = Policy.ProfileModify)]
         public IActionResult ChangePassword()
         {
-
             return View();
         }
 
+        [HttpPost]
+        [Route("/Profile/ChangePassword")]
+        [Authorize(Policy = Policy.ProfileModify)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel _params)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var result = await _userManager.ChangePasswordAsync(currentUser, _params.OldPassword, _params.NewPassword);
+
+            if(result.Succeeded)
+            {
+                return Json(new { StatusCode = (int)HttpStatusCode.OK });
+            }
+            else
+            {
+                return Json(new { StatusCode = (int)HttpStatusCode.BadRequest });
+            }
+        }
+
+
         [HttpGet]
+        [Authorize(Policy = Policy.ProfileModify)]
         public async Task<IActionResult> Address()
         {
+            var user = await _userManager.GetUserAsync(User);
             int currentUserId = 0;
-            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier).Value,out currentUserId);
-            var user = _db.AspNetUsers.Where(x => x.Id == currentUserId);
-            if(user == null)
+            currentUserId = user.Id;
+
+            if (user == null)
             {
                 return NotFound();
             }
@@ -71,11 +120,13 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Policy.ProfileModify)]
         [Route("Customer/ChangeAddress")]
         public async Task<IActionResult> ChangeAddress(UserAddress _userAddress)
         {
+            var user = await _userManager.GetUserAsync(User);
             int currentUserId = 0;
-            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier).Value, out currentUserId);
+            currentUserId = user.Id;
 
             if (currentUserId != 0)
             {
@@ -102,6 +153,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = Policy.ProfileModify)]
         public IActionResult Orders()
         {
             return View();

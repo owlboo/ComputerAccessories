@@ -1,51 +1,71 @@
-﻿<h3>Account Details</h3>
+﻿@model ComputerAccessoriesV2.Data.MyUsers
+@using ComputerAccessoriesV2.Data
+
+<h3>Account Details</h3>
 <div class="account-details-form">
-    <form action="#">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="single-input-item">
-                    <label for="first-name" class="required">First Name</label>
-                    <input type="text" id="first-name" placeholder="First Name" />
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="single-input-item">
-                    <label for="last-name" class="required">Last Name</label>
-                    <input type="text" id="last-name" placeholder="Last Name" />
-                </div>
-            </div>
-        </div>
-        <div class="single-input-item">
-            <label for="display-name" class="required">Display Name</label>
-            <input type="text" id="display-name" placeholder="Display Name" />
-        </div>
-        <div class="single-input-item">
-            <label for="email" class="required">Email Addres</label>
-            <input type="email" id="email" placeholder="Email Address" />
-        </div>
-        <fieldset>
-            <legend>Password change</legend>
-            <div class="single-input-item">
-                <label for="current-pwd" class="required">Current Password</label>
-                <input type="password" id="current-pwd" placeholder="Current Password" />
-            </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="single-input-item">
-                        <label for="new-pwd" class="required">New Password</label>
-                        <input type="password" id="new-pwd" placeholder="New Password" />
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="single-input-item">
-                        <label for="confirm-pwd" class="required">Confirm Password</label>
-                        <input type="password" id="confirm-pwd" placeholder="Confirm Password" />
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-        <div class="single-input-item">
-            <button class="check-btn sqr-btn ">Save Changes</button>
-        </div>
-    </form>
+
+    <div class="col-lg-4">
+        <span id="notify"></span>
+    </div>
+
+    <div class="single-input-item">
+        <label for="display-name" class="required">Display Name</label>
+        <input type="text" id="display-name" placeholder="Display Name" asp-for="DisplayName" />
+    </div>
+    <div class="single-input-item">
+        <label for="display-name" class="required">Phone Number</label>
+        <input type="number" id="phoneNumber" placeholder="Display Name" asp-for="PhoneNumber" />
+    </div>
+    <div class="single-input-item">
+        <label for="email" class="required">Email Addres</label>
+        <input disabled="disabled" type="email" id="email" placeholder="Email Address" asp-for="Email" />
+    </div>
+    <div class="single-input-item">
+        <label for="Created Date" class="required">Created Date</label>
+        <input disabled="disabled" type="datetime" id="createdDate" placeholder="Created Date" asp-for="CreatedDate" />
+    </div>
+    <div class="single-input-item">
+        <button onclick="onChangeProfileInfo()" class="check-btn sqr-btn ">Save Changes</button>
+    </div>
 </div>
+
+<script>
+    $(document).ready(() => {
+        notification = $("#notify").kendoNotification({
+                position: {
+                    top:170
+                },
+                templates: [{
+                    type: "warning",
+                    template: "<div class='text-danger'><text style='font-size:14px'>#= content #</text></div>"
+                }, {
+                    type: "success",
+                    template: "<div class='text-success'><text style='font-size:14px'>#= content #</text></div>"
+                    }]
+            }).data("kendoNotification");    
+    });
+
+    function onChangeProfileInfo() {
+        var displayName = document.getElementById("display-name").value;
+        var phoneNumber = document.getElementById("phoneNumber").value;
+
+        var data = {
+            UserName: displayName,
+            PhoneNumber: phoneNumber
+        }
+
+        $.ajax({
+            url: "/Profile/ChangeProfileInfo",
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (success) {
+                notification.show("Cập nhật thông tin thành công", "success");
+            },
+            error: function (err) {
+                notification.show("Cập nhật thông tin thất bại", "warning");
+            }
+        });
+    }
+
+</script>
