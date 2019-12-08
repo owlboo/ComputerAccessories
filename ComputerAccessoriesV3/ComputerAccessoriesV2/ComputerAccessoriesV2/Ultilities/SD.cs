@@ -12,6 +12,7 @@ namespace ComputerAccessoriesV2.Ultilities
         public const string Sale = "Sale";
         public const string Customer = "Customer";
         public const string Shipper = "Shipper";
+        public const string Admin = "Admin";
         public const string ProductImages = @"image/ProductImages";
 
     }

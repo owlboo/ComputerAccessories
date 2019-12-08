@@ -36,22 +36,23 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             CategoryVM = new CategoryViewModel();
-            //AccountVM.Roles = _db.AspNetRoles.ToList();
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Index()
         {
             return View();
         }
         #region Category
-
+        [Authorize(Policy = Policy.AdminAccess)]
         public PartialViewResult _GetCategory()
         {
             var listCategory = _db.Category.ToList();
             ViewBag.lstCategory = listCategory;
             return PartialView("~/Views/Admin/_GetCategory.cshtml", listCategory);
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [Route("/[controller]/CreateNewCategory")]
         public async Task<IActionResult> CreateNewCategory(Category model)
@@ -77,6 +78,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             //return RedirectToAction(nameof(Category));
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [Route("/[controller]/GetCategories")]
         public JsonResult GetCategories()
         {
@@ -122,11 +124,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Category()
         {                    
             return View();
         }
+
+        [Authorize(Policy = Policy.AdminAccess)]
         [Route("/[controller]/GetCategory")]
         [HttpGet]
         public JsonResult GetCategory()
@@ -138,13 +142,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }).ToList());
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult CreateNewCategory()
         {
             return View();
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult CreateNewAttribute()
         {
             var categories = _db.Category.ToList();
@@ -152,7 +156,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(AttributeVM);
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditCategory(int? id)
         {
             if (id == null)
@@ -174,6 +178,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(CategoryVM);
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [Route("/[controller]/updateCategory")]
         public async Task<IActionResult> SaveUpdateCategory(Category category)
@@ -199,6 +204,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         #endregion
         #region Attribute
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         [Route("/[controller]/Attributes")]
         public JsonResult GetAttributes(string categoryId = null, string fromTime = null, string toTime = null)
@@ -269,7 +275,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Attributes()
         {
             //ViewBag.controller = "Attributes";
@@ -280,6 +286,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public async Task<IActionResult> CreateNewAttribute(AttributeViewModel model)
         {
@@ -300,7 +307,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return RedirectToAction(nameof(Attributes));
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult EditAttributes(int? id)
         {
             if (id == null)
@@ -322,13 +329,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         }
         #endregion
         #region AccountManger
+        [Authorize(Policy = Policy.AdminModify)]
         [Route("/[controller]/GetRoles")]
         public JsonResult GetRoles()
         {
             return Json(_db.AspNetRoles.ToArray());
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult AccountManager(string role)
         {
 
@@ -400,37 +408,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         }
 
-        [HttpGet]
-        [Route("/[controller]/GetProvinces")]
-        public JsonResult GetProvinces()
-        {
-            return Json(_db.Provinces.Select(x => new Provinces
-            {
-                ProvinceId = x.ProvinceId,
-                ProvinceName = x.ProvinceName
-            }).ToList());
-        }
-
-
-        [Route("/[controller]/GetDistricts")]
-        public JsonResult GetDistricts(int provinceId)
-        {
-            return Json(_db.Districts.Where(x=>x.ProvinceId == provinceId).Select(x => new Districts
-            {
-                DistrictId = x.DistrictId,
-                DistrictName = x.DistrictName
-            }).ToList());
-        }
-
-
-        [Route("/[controller]/GetWards")]
-        public JsonResult GetWards(int provinceId, int districtId)
-        {
-            return Json(_db.Ward.Where(x => x.DistrictId == districtId).Select(x=>new Ward { 
-                WardId = x.WardId,
-                WardName =x.WardName
-            }).ToList());
-        }
+        [Authorize(Policy = Policy.AdminAccess)]
         public string GetFullAddressByUserId (int userId)
         {
             string provinceName = _db.UserAddress.Where(x => x.UserId == userId).Select(x => x.Province.ProvinceName).FirstOrDefault();
@@ -439,12 +417,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return _db.UserAddress.Where(x => x.UserId == userId).Select(x => x.PlaceDetails).FirstOrDefault() + " " + wardNAme + ", " + districtName + ", " + provinceName;
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public string GetRoleNameByUserID(int userid)
         {
             var roleid = _db.AspNetUserRoles.Where(x => x.UserId == userid).Select(x=>x.RoleId).FirstOrDefault();
             return _db.AspNetRoles.Where(x => x.Id == roleid).Select(x => x.Name).FirstOrDefault();
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [Route("/MainService/GetAccount")]
         public JsonResult GetAccount (int? typeAccount = null)
         {
@@ -482,6 +462,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [Route("MainService/CreateNewUser")]
         public async Task<IActionResult> CreateNewUser([FromBody]RegisterViewModel model)
@@ -567,7 +548,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
         }
 
-        [Authorize(Policy = SD.SupperAdmin)]
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditCustomerAccount(int? id)
         {
             if (id == null)

@@ -57,7 +57,6 @@
     var toggleWrap = $('#categoryDropDown');
 
     toggleWrap.click(function () {
-        debugger;
         //var screenSize = $window.width();
         //if (screenSize <= 991) {
         //    $('.category-menu .menu-item-has-children > a').prepend('<span class="expand menu-expand"></span>');

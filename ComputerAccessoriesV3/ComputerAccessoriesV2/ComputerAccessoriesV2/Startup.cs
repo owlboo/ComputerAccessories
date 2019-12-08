@@ -61,24 +61,24 @@ namespace ComputerAccessoriesV2
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(SD.SupperAdmin, policy =>
+                options.AddPolicy(Policy.AdminAccess, policy =>
+                {
+                    policy.RequireRole(SD.Admin, SD.Sale, SD.SupperAdmin);
+                });
+
+                options.AddPolicy(Policy.AdminModify, policy =>
                 {
                     policy.RequireRole(SD.SupperAdmin);
                 });
 
-                options.AddPolicy(SD.Customer, policy =>
+                options.AddPolicy(Policy.ProfileModify, policy =>
+                {
+                    policy.RequireRole(SD.Customer, SD.Admin, SD.SupperAdmin, SD.Shipper);
+                });
+
+                options.AddPolicy(Policy.Customer, policy =>
                 {
                     policy.RequireRole(SD.Customer);
-                });
-
-                options.AddPolicy(SD.Shipper, policy =>
-                {
-                    policy.RequireRole(SD.Shipper);
-                });
-
-                options.AddPolicy(SD.Sale, policy =>
-                {
-                    policy.RequireRole(SD.Sale);
                 });
             });
 
