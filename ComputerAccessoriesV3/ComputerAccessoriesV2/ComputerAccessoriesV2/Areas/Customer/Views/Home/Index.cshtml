@@ -1,10 +1,14 @@
 ﻿@model ComputerAccessoriesV2.ViewModels.ProductHomeViewModel
+@using ComputerAccessoriesV2.ViewModels
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Home/_HomeLayout.cshtml";
+    ProductGridModel product = ViewBag.products;
+
 }
 
 
+@Html.Partial("~/Views/Home/_SliderImageAdvertisingPartial.cshtml")
 <div class="row">
     <div class="col-lg-3" id="hot_deals">
         <div class="main-sidebar category-wrapper mb-24">
@@ -274,7 +278,7 @@
                                     <div class="col">
                                         <div class="category-item">
                                             <div class="category-thumb">
-                                                <a href="product-details.html">
+                                                <a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">
                                                     <img src="@item.Thumnail" alt="">
                                                 </a>
                                             </div>
@@ -324,7 +328,7 @@
                                     <div class="col">
                                         <div class="category-item">
                                             <div class="category-thumb">
-                                                <a href="product-details.html">
+                                                <a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">
                                                     <img src="@item.Thumnail" alt="">
                                                 </a>
                                             </div>
@@ -824,7 +828,7 @@
                     <div class="product-thumb">
                         <a href="product-details.html">
                             <img src="@item.Thumnail" class="img-pri" alt="">
-                            <img src="@item.Thumnail" class="img-sec" alt="">
+                            <img src="@item.Thumnail2" class="img-sec" alt="">
                         </a>
                         <div class="product-label">
                             <span>hot</span>
@@ -834,7 +838,7 @@
                                     <span data-toggle="tooltip"
                                           data-placement="left" title="Quick view"><i class="fa fa-search"></i></span>
                                 </a>*@
-                            <a asp-area="Customer" asp-controller="Home" asp-action="ProductDetails" asp-route-id="@item.Id" title="Xem chi tiết">
+                            <a href="#" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
                                 <span data-toggle="tooltip"
                                       data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                             </a>
@@ -845,8 +849,9 @@
                     </div>
                     <div class="product-content">
                         <h4><a href="product-details.html">@item.ProductName</a></h4>
-                        <text><a href="product-details.html" style="color:black">@item.BrandName</a></text>
-                        <text><a href="product-details.html" style="color:black">@item.CategoryName</a></text>
+                        <text><a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-categoryId="@item.CategoryId" style="color:black">@item.BrandName</a></text>
+                        |
+                        <text><a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-categoryId="@item.BrandId"  style="color:black">@item.CategoryName</a></text>
                         <div class="pricebox">
                             <span class="regular-price">@item.OriginalPrice.ToString("##") VND</span>
                             <div class="ratings">
@@ -869,41 +874,164 @@
     </div>
 </div>
 
-<div id="pro_content">
 
-</div>
+
+
+<div class="modal" id="quick_view">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="product-details-inner">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="product-large-slider slick-arrow-style_2 mb-20" id="slider_imgs">
+
+                                </div>
+                                <div class="pro-nav slick-padding2 slick-arrow-style_2" id="slider_thumnails">
+
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="product-details-des mt-md-34 mt-sm-34">
+                                    <h3><a href="#" id="product_name" title="Xem chi tiết"></a></h3>
+                                    <div class="ratings">
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span><i class="fa fa-star"></i></span>
+                                        <div class="pro-review">
+                                            <span>1 review(s)</span>
+                                        </div>
+                                    </div>
+                                    <div class="availability mt-10">
+                                        <h5>Còn lại:</h5>
+                                        <span id="quantity"></span>
+                                    </div>
+                                    <div class="pricebox">
+                                        <span class="regular-price" id="price">$160.00</span>
+                                    </div>
+                                    <p id="short_description">
+                                        
+                                    </p>
+                                    <div class="quantity-cart-box d-flex align-items-center mt-20">
+                                        <div class="quantity">
+                                            <div class="pro-qty"><input type="text" value="1" id="productQuantity"></div>
+                                        </div>
+                                        <div class="action_link">
+                                            <input hidden id="productId" type="text" />
+                                            <a class="buy-btn" href="#" id="btnAddToCart">
+                                                add to cart<i class="fa fa-shopping-cart"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 @section Scripts{
+    
+
+
     <script>
+        var helper = window.HelperSDK.Helpers;
         var html = "";
         function QuickView(id) {
+            var slider_imgs = $('#slider_imgs');
+            //slider_imgs.slick('unslick');
+
+            var slider_thumnails = $('#slider_thumnails');
+
+            RemoveAllSlick(slider_imgs);
+            RemoveAllSlick(slider_thumnails)
+
+            //slider_thumnails.slick('unslick');
             debugger;
             $.ajax({
                 url: "/Home/QuickView?id=" + id,
                 type: "get",
-                dataType: "html",
+                dataType: "json",
                 success: function (data) {
-                    $('#pro_content').html(data);
-                    //$('#slide_thumnail').addClass("product-large-slider slick-arrow-style_2 mb-20");
-                    //$('#slide_thumnail2').addClass("pro-nav slick-padding2 slick-arrow-style_2");
+
+                    for (var i = 0; i < data.productImages.length; i++) {
+
+                        //slider_large += "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>";
+
+                        slider_imgs.slick('slickAdd', "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>");
+                        slider_thumnails.slick('slickAdd', "<div class='pro-nav-thumb'><img src='" + data.productImages[i].imageUrl + "'alt='' /></div>");
+
+                    }
+
+                    $('#quantity').text(data.quantity);
+                    $('#short_description').text(data.shorDescription);
+                    $('#price').text(data.originalPrice);
+                    $('#product_name').text(data.productName);
+                    $('#product_name').attr('href', "/Customer/ProductHome/ProductDetails?productId=" + data.id);
+                    $('#productId').attr('value', data.id);
+                    //slider_imgs.append(slider_large);
+                    //slider_thumnails.append(slider_small);
                     $('#quick_view').modal('show');
                 }
             });
 
-            //$.get("/Home/QuickView?id=" + id, function (data) {
-            //    html = data;
-            //});
 
-            
-
-            
-            //$('#quick_view').on('show.bs.modal', function () {
-
-            //})
 
         }
+        var sl;
+        function RemoveAllSlick(selector) {
+            debugger;
+            sl = selector;
+            console.log(sl);
+            var totalSlides = selector.slick('getSlick').slideCount;
+
+            while (totalSlides !== 0) {
+                selector.slick('slickRemove', totalSlides - 1);
+                totalSlides--;
+            }
+            return true;
+        }
+
+        
+
+        $('#btnAddToCart').click(function () {
+            var productId = $('#productId').val();
+            var quantity = $('#productQuantity').val();
+
+            var data = {
+                productId: productId,
+                quantity: quantity
+            };
+
+            $.ajax({
+                url: "/Home/AddToCart",
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    if (result.code == 1) {
+                        $('#kendoNoti').data('kendoNotification').show({ title: "Đã thêm sản phẩm", message: "Sản phẩm " + result.name + " đã được thêm vào giỏ với số lượng " + result.quantity }, "success");
+                        $('#sumProduct').text(result.sum);
+                    } else {
+                        helper.Redirect(result.returnUrl);
+                    }
+                }
+            })
+        });
+
     </script>
 
+
+    
 }
 

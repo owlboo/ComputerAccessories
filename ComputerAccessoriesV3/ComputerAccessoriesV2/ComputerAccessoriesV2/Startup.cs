@@ -38,6 +38,11 @@ namespace ComputerAccessoriesV2
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = new TimeSpan(0, 15, 0);
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddIdentity<MyUsers,IdentityRole<int>>(options => {
                 //options.SignIn.RequireConfirmedAccount = true;
@@ -107,7 +112,7 @@ namespace ComputerAccessoriesV2
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
 
             app.UseAuthentication();
@@ -115,19 +120,12 @@ namespace ComputerAccessoriesV2
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllerRoute(
-                //    name: "default",
-                //    pattern: "{controller=Home}/{action=Index}/{id?}");
-                //endpoints.MapRazorPages();
+
                 endpoints.MapControllerRoute(
                     name: "areas",
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
                     );
-                //endpoints.MapControllerRoute(
-                //    name: "areas",
-                //    pattern: "{area}/{controller}/{action}/{id?}",
-                //    defaults: new { action = "Index" }
-                //    );
+
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });

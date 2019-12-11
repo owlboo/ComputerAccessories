@@ -158,7 +158,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             }
             return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
         }
-        public IActionResult SignIn(LoginViewModel model, string err = null, string returnUrl=null)
+        public IActionResult SignIn(LoginViewModel model=null, string err = null, string returnUrl=null)
         {
             //string cookie = Request.Cookies[$"CookieSignIn{MySecurity.Base64Encode(user.Id.ToString())}"];
             //if (cookie != null)
@@ -169,8 +169,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             //    return RedirectToAction("Index", "Home", new { userId = user.Id });
             //}
             //HttpContextAccessor httpContextAccessor = new HttpContextAccessor();
+
+
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier);
-            if(currentUser != null)
+            if (currentUser != null)
             {
                 var userFromDb = _db.AspNetUsers.Where(x => x.Id == Int32.Parse(currentUser.Value)).FirstOrDefault();
                 #region ghi cookie
@@ -184,7 +186,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     Response.Cookies.Append($"CookieLogin{MySecurity.Base64Encode(userFromDb.Id.ToString())}", MySecurity.DecryptPassword(userFromDb.Email), new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                 }
             }
-            
+
             if (!String.IsNullOrEmpty(returnUrl))
             {
                 returnUrl = "/Customer/Home/Index";
@@ -218,7 +220,6 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     Response.Cookies.Append($"CookieLogin{MySecurity.Base64Encode(userFromDb.Id.ToString())}", MySecurity.DecryptPassword(userFromDb.Email), new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                     #endregion
                     return RedirectToAction("Index", "Home");
-                    #endregion
                 }
             }
             return RedirectToAction("SignIn", "Account", new { err = "Có lỗi xảy ra, vui lòng thử lại" });
@@ -232,3 +233,4 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
     }
 }
+#endregion

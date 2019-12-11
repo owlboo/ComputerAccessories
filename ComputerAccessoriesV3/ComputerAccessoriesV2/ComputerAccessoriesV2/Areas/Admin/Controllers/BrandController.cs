@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerAccessoriesV2.Areas.Admin.Controllers
@@ -13,11 +14,12 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
     [Area("Admin")]
     public class BrandController : Controller
     {
-        public BrandController(ComputerAccessoriesV2Context db)
+        public BrandController(ComputerAccessoriesV2Context db, IHostingEnvironment hostingEnvironment)
         {
             _db = db;
+            _hostingEvironment = hostingEnvironment;
         }
-
+        private readonly IHostingEnvironment _hostingEvironment;
         private readonly ComputerAccessoriesV2Context _db;
 
         public IActionResult Index()
@@ -39,7 +41,11 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return Json(_db.Brand.Select(x => new Brand
             {
                 Id = x.Id,
-                BrandName = x.BrandName
+                BrandName = x.BrandName,
+                Logo = x.Logo,
+                CreatedDate = x.CreatedDate,
+                ModifiedDate =x.ModifiedDate,
+                Status =x.Status
             }).ToList());
         }
         public IActionResult EditBrand(int? id)
@@ -70,16 +76,17 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                String currentDir = Directory.GetCurrentDirectory();
-                String webRootPath = Path.Combine(currentDir, "wwwroot");
+                //String currentDir = Directory.GetCurrentDirectory();
+                String webRootPath = _hostingEvironment.WebRootPath;
+                
                 var file = HttpContext.Request.Form.Files;
 
                 if (file.Count != 0)
                 {
-                    var upload = Path.Combine(webRootPath, @"image/BrandImage");
+                    var upload = Path.Combine(webRootPath, SD.BrandImages);
                     var extension = Path.GetExtension(file[0].FileName);
                     var fileName = file[0].FileName;
-                    var newFileDir = Path.Combine(upload, fileName);
+                    var newFileDir = Path.Combine(upload, fileName+extension);
                     using (var fileStream = new FileStream(newFileDir, FileMode.Create))
                     {
                         await file[0].CopyToAsync(fileStream);
@@ -89,7 +96,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     {
                         BrandName = brand.BrandName,
                         CreatedDate = DateTime.Now,
-                        Logo = Path.GetFileName(fileName),
+                        Logo = @"/" + SD.BrandImages + @"/" + fileName,
                         Status = brand.Status
                     });
                     await _db.SaveChangesAsync();
@@ -112,14 +119,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                String currentDir = Directory.GetCurrentDirectory();
-                String webRootPath = Path.Combine(currentDir, "wwwroot");
+                String webRootPath = _hostingEvironment.WebRootPath;
+
                 var file = HttpContext.Request.Form.Files;
                 var currentBrandFromBd = _db.Brand.Where(x => x.Id == brand.Id).FirstOrDefault();
 
                 if (file.Count != 0)
                 {
-                    var upload = Path.Combine(webRootPath, @"image/BrandImage");
+                    var upload = Path.Combine(webRootPath, SD.BrandImages);
                     var extension = Path.GetExtension(file[0].FileName);
                     var fileName = file[0].FileName;
                     var newFileDir = Path.Combine(upload, fileName);
@@ -128,7 +135,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         await file[0].CopyToAsync(fileStream);
                     }
 
-                    currentBrandFromBd.Logo = Path.GetFileName(fileName);
+                    currentBrandFromBd.Logo = @"/" + SD.BrandImages + @"/" + fileName;
 
                 }
 
@@ -136,12 +143,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 currentBrandFromBd.ModifiedDate = DateTime.Now;
                 currentBrandFromBd.Status = brand.Status;
 
-                var result = await _db.SaveChangesAsync();
-                if (result > 0)
-                {
-                    return RedirectToAction(nameof(Brand));
-                }
-                return null;
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(Brand));
             }
             else
             {

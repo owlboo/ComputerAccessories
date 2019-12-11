@@ -9,7 +9,7 @@
         },
         GetJsonSource: function (controller, action) {
             return window.location.protocol + '//' + window.location.host + "/" + controller + "/" + action;
-        },
+        }      
         //ReturnLocation: function (page) {
         //    switch (page) {
         //        case "Product":

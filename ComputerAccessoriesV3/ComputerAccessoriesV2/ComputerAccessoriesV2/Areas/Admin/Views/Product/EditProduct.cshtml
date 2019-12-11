@@ -78,7 +78,7 @@
                     <label asp-for="Product.Brand">Thương hiệu</label>
                 </div>
                 <div class="col-lg-10">
-                    
+
                     <input asp-for="Product.BrandId" class="form-control" />
                 </div>
             </div>
@@ -139,7 +139,17 @@
                 <div class="col-lg-8">
                     <img src="@Model.Product.Thumnail" width="20%" />
                     <br />
-                    <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" style="width:20%" />
+                    <input asp-for="Product.Thumnail" type="file" name="thumnail1" class="form-control" style="width:20%" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Thumnail2">Hình nền2</label>
+                </div>
+                <div class="col-lg-8">
+                    <img src="@Model.Product.Thumnail2" width="20%" />
+                    <br />
+                    <input asp-for="Product.Thumnail2" type="file" name="thumnail2" class="form-control" style="width:20%" />
                 </div>
             </div>
 
@@ -192,10 +202,10 @@
                         
                         <div class="col-lg-4" id="@item.Id">
                             <div class="container">
-                                <input hidden id="imageId" value="@item.Id" />
+                                <input hidden id="imageId_@item.Id" value="@item.Id" />
                                 <img src="@item.ImageUrl" alt="@item.ImageUrl" class="image" style="width:100%">
                                 <div class="middle">
-                                    <div class="text"><button style="background:transparent;border:none" onclick="removeImg()"><span><i class="fa fa-remove" title="Xóa" style="font-size:25px; font-weight:100"></i></span></button></div>
+                                    <div class="text"><button style="background:transparent;border:none" onclick="removeImg(@item.Id)"><span><i class="fa fa-remove" title="Xóa" style="font-size:25px; font-weight:100"></i></span></button></div>
                                 </div>
                             </div>
                         </div>
@@ -206,12 +216,13 @@
                     <div class="col-lg-2">
                         <label style="margin-top:5px;">Upload ảnh</label>
                     </div>
-                    <form method="post" asp-action="UploadMoreImages" asp-controller="Product" asp-route-prodId="@Model.Product.Id" id="imgForm" enctype="multipart/form-data">
+                    
+                    <form method="post" id="imgForm" asp-action="UploadMoreImages" asp-controller="Product" asp-route-prodId="@Model.Product.Id"  enctype="multipart/form-data">
                         <div class="col-lg-6">
                             <input type="file" name="importImages" id="importImages" class="form-control" multiple />
                         </div>
                     </form>
-                                      
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -295,15 +306,15 @@
             value: brandId
             });
     });
-        function removeImg() {
-         var imgId = $('#imageId').val();
+        function removeImg(id) {
+         //var imgId = $('#imageId').val();
          debugger;
         if (confirm('Bạn có muốn xóa hình ảnh này??')) {
             $.ajax({
                 url: "/Product/DeleteImage",
                 type: "post",
                 data: {
-                    _imgId :imgId
+                    _imgId: id
                 },
                 dataType: "json",              
                 success: function (result) {

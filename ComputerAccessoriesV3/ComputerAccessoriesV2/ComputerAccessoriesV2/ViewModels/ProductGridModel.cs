@@ -32,5 +32,6 @@ namespace ComputerAccessoriesV2.ViewModels
         public int Status { get; set; }
 
         public List<ProductImages> ProductImages { get; set; }
+        public List<ProductAttribute> ProductAttributes { get; set; }
     }
 }
