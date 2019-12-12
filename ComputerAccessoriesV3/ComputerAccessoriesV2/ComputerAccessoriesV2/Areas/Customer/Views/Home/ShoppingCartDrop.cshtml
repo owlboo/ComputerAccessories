@@ -1,0 +1,132 @@
+﻿@model ComputerAccessoriesV2.ViewModels.ShoppingCartPreview
+
+
+@if (Model.ListProducts.Count != 0)
+{
+
+    @foreach (var item in Model.ListProducts)
+    {
+
+        <li id="@item.Products.Id">
+            <div class="cart-img">
+                <a href="product-details.html">
+                    <img src="@item.Products.Thumnail"
+                         alt="">
+                </a>
+            </div>
+            <div class="cart-info" style="width:200px">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <h4><a href="product-details.html">@item.Products.ProductName</a></h4>
+                    </div>
+                    <div class="col-lg-4">
+                        <span>@item.Products.OriginalPrice.Value.ToString("##")</span>
+                    </div>
+                    <div class="col-lg-3">
+                         <div class="pro-qty">
+                             <text id="sub" onclick="sub(@item.Products.Id)" style="font-size:20px;font-weight:bold; border:none;background:transparent">- </text>
+                             <input type="text"  value="@item.Quantity" class="text-center" id="productQuantity_@item.Products.Id" style="width:30px; border-radius:20%">
+                             <text id="plus" onclick="plus(@item.Products.Id)" style="font-size:20px;font-weight:bold"> +</text>
+                         </div>
+                    </div>
+                    <div class="col-lg-1 del-icon" onclick="removeProduct(@item.Products.Id)">
+                        <i class="fa fa-remove"></i>
+                    </div>
+                </div>
+                
+                
+               
+            </div>
+
+            @*<div class="del-icon">
+                             
+            </div>*@
+        </li>
+    }
+
+    <li class="mini-cart-price">
+        <span class="subtotal">subtotal : </span>
+        <text class="subtotal-price" >VND <span id="totalPrice">@Model.TotalPrice.ToString("##")</span></text>
+    </li>
+    <li class="checkout-btn">
+        <a href="#">checkout</a>
+    </li>
+
+}
+else
+{
+    <div>
+        <text style="color:red">Bạn chưa thêm sản phẩm </text>
+    </div>
+}
+
+
+    <script>
+        function sub(productId) {
+            var quantity = parseInt($('#productQuantity_'+productId).val());
+            if (quantity > 0) {
+                $('#productQuantity_'+productId).attr('value', quantity - 1);
+            } else {
+                return;
+            }
+            updateQuantity(productId, true);           
+        }
+
+        function plus(productId) {
+            var quantity = parseInt($('#productQuantity_'+productId).val());
+            $('#productQuantity_' + productId).attr('value', quantity + 1);
+            updateQuantity(productId, false);
+        }
+
+
+        function updateQuantity(productId, isSub) {
+            debugger;
+            var currentQuantity = $('#productQuantity_'+productId).val();
+            var data = {
+                productId: productId,
+                quantity: currentQuantity,
+                currentTotalPrice: $('#totalPrice').text(),
+                IsSub: isSub
+            }
+            $.ajax({
+                url: "/Home/UpdateQuantity",
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    if (result != 0) {
+                        $('#totalPrice').text(result.totalPrice);
+                    }
+                    console.log(result);
+                }
+            })
+        }
+
+        function removeProduct(productId) {
+            debugger;
+            $.ajax({
+                url: "/Home/RemoveProductFromCart",
+                type: "post",
+                dataType: "json",
+                data: {
+                    productId: productId,
+                    currentTotalPrice: $('#totalPrice').text(),
+                },
+                success: function (result) {
+                    if (result.code === 1) {
+                        $('#' + productId).remove();
+                        $('#totalPrice').text(result.totalPrice);
+                        $('#sumProduct').text(result.counter);
+                        if (result.counter === 0) {
+                            $('.cart-list').slideToggle();
+                        }
+                        $('#kendoNoti').data('kendoNotification').show({ title: "", message: "Đã xóa sản phẩm : " + result.name+" ra khỏi giỏ hàng" }, "success");
+                    }
+                },
+                err: function (err) {
+                    $('#kendoNoti').data('kendoNotification').show({ title: "", message: "Có lỗi xảy ra, vui lòng thử lại" }, "error");
+                }
+            })
+        }
+
+    </script>
