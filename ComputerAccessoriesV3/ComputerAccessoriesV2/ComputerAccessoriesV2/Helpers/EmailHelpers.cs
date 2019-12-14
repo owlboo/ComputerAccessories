@@ -10,17 +10,19 @@ namespace ComputerAccessoriesV2.Helpers
 {
     public class EmailHelpers
     {
-        public static bool SendConfirmEmail(AspNetUsers user)
+        public static bool SendConfirmEmail(AspNetUsers user, string title, string subject, string content)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Shop Gear", "shopyasuogear@gmail.com"));
             message.To.Add(new MailboxAddress(user.DisplayName, user.Email));
-            message.Subject = "cc";
+            message.Subject = subject;
 
-            message.Body = new TextPart("plain")
+            var bodyBuilder = new BodyBuilder()
             {
-                Text = user.CodeConfirm
+                HtmlBody = content
             };
+
+            message.Body = bodyBuilder.ToMessageBody();
 
             using (var client = new SmtpClient())
             {

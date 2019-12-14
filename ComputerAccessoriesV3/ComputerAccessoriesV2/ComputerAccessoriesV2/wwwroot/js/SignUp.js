@@ -1,32 +1,83 @@
-﻿$("#provinceSelector").change(async function () {
-    var option = { method: 'GET' }
-    var url = "https://" + window.location.host + "/Region/GetDistrict?provinceId=" + $("#provinceSelector").children("option:selected").val();
-    var respone = await fetch(url, option);
-    var json = await respone.json();
+﻿
 
-    var districtSelector = document.getElementById("districtSelector");
-    districtSelector.innerText = null;
-    
-    for (var i = 0; i < json.length; i++) {
-        var option = document.createElement("option");
-        option.text = json[i].districtName;
-        option.value = json[i].districtId;
-        districtSelector.add(option);
+$('#submit').click(function (e) {
+    debugger;
+    var popupNotification = $('#notify').data('kendoNotification');
+    if ($('#fullname').val().trim() == "") {
+        //$("#validation").text("*Vui lòng nhập họ và tên của bạn");
+        popupNotification.show({ title: "Thông báo", message: "Vui lòng nhập họ tên của bạn" }, "error");
+        $('#fullname').focus();
+        return;
     }
-})
 
-$("#districtSelector").change(async function () {
-    var option = { method: 'GET' }
-    var url = "https://" + window.location.host + "/Region/GetWards?districtId=" + $("#districtSelector").children("option:selected").val();
-    var respone = await fetch(url, option);
-    var json = await respone.json();
-
-    var wardSelector = document.getElementById("wardSelector");
-    wardSelector.innerText = null;
-    for (var i = 0; i < json.length; i++) {
-        var option = document.createElement("option");
-        option.text = json[i].wardName;
-        option.value = json[i].wardId;
-        wardSelector.add(option);
+    if ($('#email').val().trim() == "") {
+        popupNotification.show({ title: "Thông báo", message: "Vui lòng nhập Email của bạn" }, "error");
+        $('#email').focus();
+        return;
     }
-})
+
+    if ($('#phonenumber').val().trim() == "") {
+        popupNotification.show({ title: "Thông báo", message: "Vui lòng nhập số điện thoại của bạn" }, "error");
+        $('#phonenumber').focus();
+        return;
+    }
+
+    if ($('#Pwd').val().length < 6) {
+        popupNotification.show({ title: "Thông báo", message: "Mật khẩu phải có ít nhất 6 ký tự" }, "error");
+        $('#Pwd').focus();
+        return;
+    }
+
+    if ($('#Pwd').val() != $('#confirmPwd').val()) {
+        popupNotification.show({ title: "Thông báo", message: "Nhập lại mật khẩu không chính xác" }, "error");
+        $('#Pwd').text("");
+        $('#confirmPwd').text("");
+        return;
+    }
+
+    var provinceId = $('#provinceSelector').data('kendoDropDownList').value();
+    var districtId = $('#districtSelector').data('kendoDropDownList').value();
+    var wardId = $('#wardSelector').data('kendoDropDownList').value();
+    if (provinceId == "") {
+        popupNotification.show({ title: "Thông báo", message: "Vui lòng chọn Tỉnh/Thành phố" }, "error");
+        return;
+    }
+    if (districtId == "") {
+        popupNotification.show({ title: "Thông báo", message: "Vui lòng chọn Quận/Huyện" }, "error");
+        return;
+    }
+    if (wardId == "") {
+        popupNotification.show({ title: "Thông báo", message: "Vui lòng chọn Xã/Thị trấn" }, "error");
+        return;
+    }
+    var data = {
+        FullName: $('#fullname').val(),
+        Email: $('#email').val(),
+        PhoneNumber: $('#phonenumber').val(),
+        Password: $('#Pwd').val(),
+        ProvinceId: provinceId,
+        DistrictId: districtId,
+        WardId: wardId,
+        PlaceDetail: $('#placeDetailText').val(),
+        RoleName:"Customer"
+    }
+
+    $.ajax({
+        url: "/Account/SignUp",
+        type: "post",
+        dataType: "json",
+        data: data,
+        success: function (result) {
+            if (result.code == 1) {
+                popupNotification.show({ title: "Thông báo", message: "Một email đã được gửi đến tài khoản: " + result.email + " để kích hoạt tài khoản của bạn" }, "success");
+                setTimeout(window.HelperSDK.Helpers.Redirect(result.returnUrl), 6 * 1000);
+            } else {
+                popupNotification.show({ title: "Thông báo", message: result.err }, "error");
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+
+});

@@ -15,12 +15,16 @@
 @{ 
     var ListShoppingCart = new List<ShoppingCartViewModel>();
     String Name = null;
+    int isActive = 0;
     if (SignInManager.IsSignedIn(User))
     {
 
         var user = await UserManager.GetUserAsync(User);
+
+        isActive = user.IsActivated.Value ? 1 : 0;
+
         Name = user.DisplayName;
-        
+
         int userId = 0;
         int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier).Value,out userId);
         if (userId != 0)
@@ -36,7 +40,7 @@
 
     }
 
-    
+
 
 
 
@@ -83,6 +87,9 @@
 
 <body>
 
+    <div class="container-fluid text-center" style="background-color:Highlight">
+        <text>Tài khoản của bạn chưa được kích hoạt. Nhấn <a href="#" style="font-weight:500">vào đây</a> để kích hoạt tài khoản của bạn</text>
+    </div>
     <!-- color switcher start -->
     <div class="color-switcher">
         <div class="color-switcher-inner">
@@ -141,7 +148,7 @@
 
         <!-- header area start -->
         <header>
-
+            <span id="notifyActive"></span>
             <!-- header top start -->
             <div class="header-top-area bg-gray text-center text-md-left">
                 <div class="container">
@@ -182,9 +189,9 @@
                                                 }
 
                                             <div class="dropdown-menu" aria-labelledby="myaccount">
-                                                <a class="dropdown-item" asp-action="Index" asp-controller="Profile" asp-area="Customer">my account</a>
-                                                <a class="dropdown-item" asp-action="SignIn" asp-controller="Account" asp-area="Customer"> login</a>
-                                                <a class="dropdown-item" asp-action="SignUp" asp-controller="Account" asp-area="Customer">register</a>
+                                                <a class="dropdown-item" asp-action="Index" asp-controller="Profile" asp-area="Customer">Thông tin tài khoản</a>
+                                                <a class="dropdown-item" asp-action="SignIn" asp-controller="Account" asp-area="Customer">Đăng nhập</a>
+                                                <a class="dropdown-item" href="/Customer/Account/SignUp">Đăng ký</a>
                                             </div>
                                             </div>
                                         </li>
@@ -601,7 +608,6 @@
                 $('#categoryDropDown').append(data);
                 //$('.category-menu').slideToggle();
             });
-
             $("#kendoNoti").kendoNotification({
                 position: {
                     pinned: true,
@@ -620,9 +626,10 @@
                 ]
 
             })
-
         })
+
     </script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

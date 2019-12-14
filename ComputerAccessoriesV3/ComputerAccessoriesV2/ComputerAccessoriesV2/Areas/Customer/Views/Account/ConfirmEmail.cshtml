@@ -1,6 +1,4 @@
-﻿@model ComputerAccessoriesV2.ViewModels.ConfirmEmailViewModel
-
-
+﻿
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,6 +17,7 @@
     <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
     <!-- iCheck -->
     <link rel="stylesheet" href="../../plugins/iCheck/square/blue.css">
+    <link rel="stylesheet" href="~/kendo/styles/kendo.bootstrap-v4.min.css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -34,33 +33,26 @@
         <div class="login-logo">
             <a href="../../index2.html"><b>Xác nhận Email</b></a>
         </div>
+        <span id="notify"></span>
         <!-- /.login-logo -->
         <div class="login-box-body">
-            <p class="login-box-msg">Nhập Email và Mã code để xác nhận</p>
+            <p class="login-box-msg">Kích hoạt tài khoản</p>
             <br />
-            <form asp-action="SignIn" method="post">
-                <div class="form-group has-feedback">
-                    <input type="email" class="form-control" asp-for="Email" placeholder="Email">
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                </div>
-                <div class="form-group has-feedback">
-                    <input type="password" class="form-control" asp-for="ConfirmCode" placeholder="Code">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
+            <div class="form-group has-feedback">
+                <input type="email" class="form-control" id="Email" placeholder="Email" value="@ViewBag.Email">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" id="CodeConfirm" placeholder="Nhập mã kích hoạt tại đây">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
 
-                <div>
-                    <text>@ViewBag.ErrorMes</text>
-                </div>
-                <div class="row">
-
-                    <!-- /.col -->
-                    <div class="col-xs-4">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Xác nhận</button>
-                    </div>
-                    <!-- /.col -->
-                </div>
-            </form>
-
+            <div class="row">
+                <!-- /.col -->
+                <div class="col-xs-4">
+                    <button id="submit" class="btn btn-primary btn-block btn-flat">Xác nhận</button>
+                </div>                   <!-- /.col -->
+            </div>
         </div>
         <!-- /.login-box-body -->
     </div>
@@ -71,7 +63,59 @@
     <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- iCheck -->
     <script src="../../plugins/iCheck/icheck.min.js"></script>
+    <script src="~/kendo/js/kendo.ui.core.min.js"></script>
+    <script src="~/kendo/js/kendo.all.min.js"></script>
+    <script src="~/js/CustomJS.js" type="text/javascript"></script>
+    <script src="~/js/HelperSDK.js" type="text/javascript"></script>
 
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="new-mail">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
+
+    <script id="errorTemplate" type="text/x-kendo-template">
+        <div class="k-notification-error">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
+
+    <script id="warningTemplate" type="text/x-kendo-template">
+        <div class="k-notification-warning">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
+
+    <script src="~/js/HelperSDK.js"></script>
+    <script>
+        $(window).on("load", () => {
+            $("#notify").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 300,
+                    right: 400
+                },
+                autoHideAfter: 5 * 1000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }, {
+                    type: "error",
+                    template: $("#errorTemplate").html()
+                    },
+                    {
+                    type: "warning",
+                    template: $("#warningTemplate").html()
+                }
+                ]
+
+            })
+        });
+    </script>
 </body>
 </html>
 

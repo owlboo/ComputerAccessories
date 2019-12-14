@@ -29,7 +29,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return Json(_db.Districts.Where(x => x.ProvinceId == provinceId).ToList());
         }
 
-        [Route("/[controller]/GetWards")]
+        [Route("/[controller]/GetWard")]
         [HttpGet]
         public JsonResult GetWard(int districtId)
         {
