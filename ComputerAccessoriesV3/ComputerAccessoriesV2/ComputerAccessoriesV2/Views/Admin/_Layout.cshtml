@@ -31,6 +31,9 @@
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="~/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
     <link rel="stylesheet" href="~/kendo/styles/kendo.bootstrap-v4.min.css" />
+    <link rel="stylesheet" href="styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="styles/kendo.default.mobile.min.css" />
     <link rel="stylesheet" href="~/font-awsome/css/fontawesome.min.css" />
     @*<link rel="stylesheet" href="~/fontawesome-free-5.11.2-web/css/fontawesome.css" />
         <link rel="stylesheet" href="~/fontawesome-free-5.11.2-web/css/fontawesome.min.css" />*@
@@ -358,22 +361,30 @@
                             <i class="fa fa-files-o"></i>
                             <span>Danh mục sản phẩm</span>
                             @*<span class="pull-right-container">
-                                    <span class="label label-primary pull-right">4</span>
-                                </span>*@
+                    <span class="label label-primary pull-right">4</span>
+                </span>*@
                         </a>
                         @*<ul class="treeview-menu">
-                                <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
-                                <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
-                                <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
-                                <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
-                            </ul>*@
+                <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
+                <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
+                <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
+                <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
+            </ul>*@
                     </li>
                     <li>
                         <a asp-controller="Brand" asp-action="Brand">
                             <i class="fa fa-th"></i> <span> Thương hiệu</span>
                             @*<span class="pull-right-container">
-                                    <small class="label pull-right bg-green">new</small>
-                                </span>*@
+                    <small class="label pull-right bg-green">new</small>
+                </span>*@
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Campaign" asp-action="Index">
+                            <i class="fa fa-th"></i> <span> Campaign</span>
+                            @*<span class="pull-right-container">
+                    <small class="label pull-right bg-green">new</small>
+                </span>*@
                         </a>
                     </li>
                     <li @*class="treeview"*@>
@@ -386,27 +397,27 @@
                         </a>
 
                         @*<ul class="treeview-menu">
-                                <li><a asp-area="Admin" asp-controller="MainService" asp-action="CreateNewProduct"><i class="fa fa-circle-o"></i> Thêm mới</a></li>
-                                <li class="treeview">
-                                    <a href="#">
-                                        <i class="fa fa-circle-o"></i>
-                                        <span>Danh mục sản phẩm</span>
-                                        <span class="pull-right-container">
-                                            <i class="fa fa-angle-left pull-right"></i>
-                                        </span>
-                                    </a>
-                                    <ul class="treeview-menu" id="groupCategory">
-                                    </ul>
-                                </li>
+                <li><a asp-area="Admin" asp-controller="MainService" asp-action="CreateNewProduct"><i class="fa fa-circle-o"></i> Thêm mới</a></li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-circle-o"></i>
+                        <span>Danh mục sản phẩm</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu" id="groupCategory">
+                    </ul>
+                </li>
 
-                            </ul>*@
+            </ul>*@
                     </li>
                     <li>
                         <a asp-area="Admin" asp-controller="MainService" asp-action="Attributes">
                             <i class="fa fa-edit"></i> <span>Thuộc tính</span>
                             @*<span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>*@
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>*@
                         </a>
                     </li>
                     <li class="treeview">

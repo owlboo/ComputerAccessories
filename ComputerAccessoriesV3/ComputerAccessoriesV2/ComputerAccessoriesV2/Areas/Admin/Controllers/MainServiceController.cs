@@ -571,5 +571,15 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(accountFromDb);
         }
         #endregion
+
+
+
+        #region campain
+        public IActionResult Campaign()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }

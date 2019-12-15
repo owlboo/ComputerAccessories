@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<select id="multiselect"></select>
+
+@section Scripts{
+    <script>
+       $(document).ready(function(){
+        $("#multiselect").kendoMultiSelect({
+          dataTextField: "Id",
+          dataValueField: "ProductDetail",
+          dataSource: {
+                    type: "json",
+                    transport: {
+                        read: window.location.protocol + '//' + window.location.host + "/Admin/Compaign/GetAllProductForNewCompaign"
+                    }
+                },
+        });
+      });
+    </script>
+}

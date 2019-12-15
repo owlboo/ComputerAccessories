@@ -121,7 +121,7 @@ namespace ComputerAccessoriesV2
                 //endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(
                     name: "areas",
-                    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
+                    pattern: "{area=Admin}/{controller=MainService}/{action=Index}/{id?}"
                     );
                 //endpoints.MapControllerRoute(
                 //    name: "areas",
