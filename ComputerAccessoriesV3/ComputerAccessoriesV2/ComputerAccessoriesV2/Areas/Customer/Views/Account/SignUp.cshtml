@@ -34,60 +34,77 @@
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
-<body class="hold-transition register-page">
-    <div class="register-box">
+<body class="hold-transition register-page" style="overflow-y: hidden">
+    <div class="register-box" style="width: 50%; margin: 1% auto">
         <div class="register-logo">
-            <a href="../../index2.html"><b>ĐĂNG KÝ TÀI KHOẢN</b></a>
+            <a href="../../index2.html" style="font-size: 4rem"><b>ĐĂNG KÝ TÀI KHOẢN</b></a>
         </div>
         <span id="notify"></span>
         <div class="register-box-body">
-            <p class="login-box-msg" style="font-size:14px;">Đăng ký thành viên mới</p>
+            <p class="login-box-msg" style="font-size:3rem;">Đăng ký thành viên mới</p>
             <br />
-            <div class="form-group has-feedback">
-                <label>Họ và tên</label>
-                <input type="text" id="fullname" asp-for="FullName" class="form-control" required placeholder="Họ và tên">
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group has-feedback">
+                        <label>Họ và tên</label>
+                        <input type="text" id="fullname" asp-for="FullName" class="form-control" required placeholder="Họ và tên">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group has-feedback">
+                        <label>Email</label>
+                        <input type="email" id="email" asp-for="Email" class="form-control" required placeholder="Email">
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group has-feedback">
-                <label>Email</label>
-                <input type="email" id="email" asp-for="Email" class="form-control" required placeholder="Email">
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-            </div>
-
-            <div>
-                <label>Tỉnh, Thành Phố</label>
-                @*<select id="provinceSelector" asp-for="ProvinceId" asp-items="@provinces.ToSelectListItemProvince("ProvinceName",provinces.FirstOrDefault().ProvinceId)" class="form-control"></select>*@
-                <input id="provinceSelector" class="form-control" />
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-            </div>
-
-            <div>
-                <label>Huyện, Quận</label>
-                @*<select id="districtSelector" asp-for="DistrictId" class="form-control"></select>*@
-                <input id="districtSelector" class="form-control" />
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-            </div>
-
-            <div>
-                <label>Xã, Phường</label>
-                @*<select id="wardSelector" asp-for="WardId" class="form-control"></select>*@
-                <input id="wardSelector" class="form-control" />
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-            </div>
-
-            <div>
-                <label>Số nhà, Đường</label>
-                <input type="text" id="placeDetailText" class="form-control" placeholder="Nhập số nhà, đường">
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div>
+                        <label>Tỉnh, Thành Phố</label>
+                        @*<select id="provinceSelector" asp-for="ProvinceId" asp-items="@provinces.ToSelectListItemProvince("ProvinceName",provinces.FirstOrDefault().ProvinceId)" class="form-control"></select>*@
+                        <input id="provinceSelector" class="form-control" />
+                        @*<span class="glyphicon glyphicon-envelope form-control-feedback"></span>*@
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div>
+                        <label>Huyện, Quận</label>
+                        @*<select id="districtSelector" asp-for="DistrictId" class="form-control"></select>*@
+                        <input id="districtSelector" class="form-control" />
+                        @*<span class="glyphicon glyphicon-envelope form-control-feedback"></span>*@
+                    </div>
+                </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div>
+                        <label>Xã, Phường</label>
+                        @*<select id="wardSelector" asp-for="WardId" class="form-control"></select>*@
+                        <input id="wardSelector" class="form-control" />
+                        @*<span class="glyphicon glyphicon-envelope form-control-feedback"></span>*@
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group has-feedback">
+                        <label>Số điện thoại</label>
+                        <input type="tel" class="form-control" id="phonenumber" required placeholder="Nhập số điện thoại tại đây">
+                        <span class="glyphicon glyphicon-phone form-control-feedback"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div>
+                        <label>Số nhà, Đường</label>
+                        <input type="text" id="placeDetailText" class="form-control" placeholder="Nhập số nhà, đường">
+                        @*<span class="glyphicon glyphicon-envelope form-control-feedback"></span>*@
+                    </div>
+                </div>
+            </div>
             <br />
-
-            <div class="form-group has-feedback">
-                <label>Số điện thoại</label>
-                <input type="tel" class="form-control" id="phonenumber" required placeholder="Nhập số điện thoại tại đây">
-                <span class="glyphicon glyphicon-phone form-control-feedback"></span>
-            </div>
             <div class="form-group has-feedback">
                 <label>Mật khẩu</label>
                 @*<input type="password" class="form-control" id="Pwd" required placeholder="Mật khẩu" pattern=".{8,}">*@
@@ -100,7 +117,7 @@
                 <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
             </div>
             <div class="row">
-                <div class="col-xs-8">
+                <div class="col-xs-7 col-md-7">
                     <div class="checkbox icheck">
                         <label>
                             <input type="checkbox"> I agree to the <a href="#">terms</a>
@@ -108,27 +125,29 @@
                     </div>
                 </div>
                 <!-- /.col -->
-                <div class="col-xs-4">
-                    <button class="btn btn-primary btn-block btn-flat" id="submit">Đăng ký</button>
+                <div class="col-xs-5 col-md-5">
+                    <button class="btn btn-primary btn-block btn-flat" style="width: 50%" id="submit">Đăng ký</button>
                 </div>
                 <!-- /.col -->
             </div>
 
             <div class="social-auth-links text-center">
                 <p>- OR -</p>
-                <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
-                    <i class="fa fa-facebook"></i> Sign up using
-                    Facebook
-                </a>
-                <a href="#" class="btn btn-block btn-social btn-google btn-flat">
-                    <i class="fa fa-google-plus"></i> Sign up using
-                    Google+
-                </a>
-            </div>
+                <div style="display: inline-grid;">
+                    <a href="#" class="btn btn-block btn-social btn-facebook btn-flat" style="margin-bottom: 1rem">
+                        <i class="fa fa-facebook"></i> Sign up using
+                        Facebook
+                    </a>
+                    <a href="#" class="btn btn-block btn-social btn-google btn-flat mb-2" style="margin-bottom: 1rem">
+                        <i class="fa fa-google-plus"></i> Sign up using
+                        Google+
+                    </a>
+                    <a asp-controller="Account" asp-action="SignIn" asp-area="Customer" class="text-center" style="font-size: 2rem">Tôi đã có tài khoản</a>
+                </div>
 
-            <a asp-controller="Account" asp-action="SignIn" asp-area="Customer" class="text-center">Tôi đã có tài khoản</a>
+            </div>
+            <!-- /.form-box -->
         </div>
-        <!-- /.form-box -->
     </div>
     <!-- /.register-box -->
     <!-- jQuery 3 -->
