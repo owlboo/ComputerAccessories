@@ -21,7 +21,13 @@ namespace ComputerAccessoriesV2.ViewModels
     {
         public Category MainCategory { get; set; }
         public List<CategoryHomeModel> ListChildrenNode { get; set; }
-        
 
+    }
+
+    public class CategoryShoppingModel
+    {
+        public int Id { get; set; }
+        public string CategoryName { get; set; }
+        public int? ProductQuantity { get; set; }
     }
 }

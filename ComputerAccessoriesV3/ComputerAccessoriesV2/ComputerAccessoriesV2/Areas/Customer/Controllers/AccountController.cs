@@ -155,17 +155,12 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     StringBuilder str = new StringBuilder();
                     str.Append("<!DOCTYPE html>");
                     str.Append("<head>");
-                    str.Append("<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>");
                     str.Append("</head>");
                     str.Append("<body>");
                     str.Append("<div class='text-center'> ");
                     str.Append(" <h3 class='text-left'>Cảm ơn bạn đã đăng ký tài khoản</h3>");
                     str.Append("<p class='text-left'> Mã kích hoạt tài khoản của bạn là: <strong style='font-size:20px'>" + userFromDb.CodeConfirm + "</strong></p>");
-                    str.Append("<a class='btn btn-primary' href='"+protocol + host+area + action + "'>Click vào đây để kích hoạt</a>");
                     str.Append("</div>");
-                    str.Append("<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>");
-                    str.Append("<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'></script>");
-                    str.Append("<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js'></script>");
                     str.Append("</body>");
                     str.Append("</html>");
                     EmailHelpers.SendConfirmEmail(userFromDb,"Thông báo","Mã kích hoạt", str.ToString());
@@ -182,15 +177,6 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         }
         public IActionResult SignIn(LoginViewModel model=null, string err = null, string returnUrl=null)
         {
-            //string cookie = Request.Cookies[$"CookieSignIn{MySecurity.Base64Encode(user.Id.ToString())}"];
-            //if (cookie != null)
-            //{
-            //    CookieOptions cookieOptions = new CookieOptions();
-            //    cookieOptions.Expires = DateTime.Now.AddMinutes(-60);
-            //    Response.Cookies.Append($"CookieSignIn{MySecurity.Base64Encode(user.Id.ToString())}", MySecurity.EncryptPassword(user.Email), cookieOptions);
-            //    return RedirectToAction("Index", "Home", new { userId = user.Id });
-            //}
-            //HttpContextAccessor httpContextAccessor = new HttpContextAccessor();
 
 
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier);

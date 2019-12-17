@@ -12,7 +12,7 @@
 
 @inject RoleManager<IdentityRole<int>> roleManager
 @inject IHttpContextAccessor HttpContextAccessor
-@{ 
+@{
     var ListShoppingCart = new List<ShoppingCartViewModel>();
     String Name = null;
     int isActive = 0;
@@ -26,13 +26,13 @@
         Name = user.DisplayName;
 
         int userId = 0;
-        int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier).Value,out userId);
+        int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier).Value, out userId);
         if (userId != 0)
         {
             var sessionKey = "SessionSP_" + userId;
             var session = HttpContextAccessor.HttpContext.Session;
 
-            if(session.GetString(sessionKey) != null)
+            if (session.GetString(sessionKey) != null)
             {
                 ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(session.GetString(sessionKey));
             }
@@ -46,12 +46,30 @@
 
     var _db = new ComputerAccessoriesV2Context();
     List<Brand> brands = _db.Brand.ToList();
+    List<CategoryHomeModel> categoryModel = new List<CategoryHomeModel>();
+    categoryModel = _db.Category.Where(x=>x.ParendId == null).Select(x => new CategoryHomeModel
+    {
+        MainCategory = _db.Category.Where(z => z.Id == x.Id).FirstOrDefault(),
+
+    }).ToList();
+
+    foreach (var category in categoryModel)
+    {
+        category.ListChildrenNode = _db.Category.Where(x => x.ParendId == category.MainCategory.Id).Select(x => new CategoryHomeModel {
+            MainCategory = _db.Category.Where(z => z.Id == x.Id).FirstOrDefault(),
+            ListChildrenNode = _db.Category.Where(z=>z.ParendId == x.Id).Select(z=>new CategoryHomeModel {
+                MainCategory = _db.Category.Where(c=>c.Id ==z.Id).FirstOrDefault()
+            }).ToList()
+        }).ToList();
+
+    }
+    if(ViewBag.Index == null)
+    {
+        ViewBag.Index = 0;
+    }
 }
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-
-
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -59,7 +77,6 @@
     <meta name="description" content="meta description">
 
     <!-- Site title -->
-
     @*<title>Galio - Mega Shop Responsive Bootstrap 4 Template</title>*@
     <!-- Favicon -->
     <link rel="shortcut icon" href="~/assets/img/favicon.ico" type="image/x-icon" />
@@ -79,17 +96,20 @@
 
     @*<link rel="stylesheet" href="~/slick-1.8.1/slick-1.8.1/slick/slick-theme.css" />*@
     <style>
-        #cardList{
-            width:500px;
+        #cardList {
+            width: 500px;
         }
     </style>
 </head>
 
 <body>
+    @if (isActive == 0&&SignInManager.IsSignedIn(User))
+    {
+        <div class="container-fluid text-center" style="background-color:Highlight">
+            <text>Tài khoản của bạn chưa được kích hoạt. Nhấn <a href="#" style="font-weight:500">vào đây</a> để kích hoạt tài khoản của bạn</text>
+        </div>
+    }
 
-    <div class="container-fluid text-center" style="background-color:Highlight">
-        <text>Tài khoản của bạn chưa được kích hoạt. Nhấn <a href="#" style="font-weight:500">vào đây</a> để kích hoạt tài khoản của bạn</text>
-    </div>
     <!-- color switcher start -->
     <div class="color-switcher">
         <div class="color-switcher-inner">
@@ -188,11 +208,11 @@
                                                     </a>
                                                 }
 
-                                            <div class="dropdown-menu" aria-labelledby="myaccount">
-                                                <a class="dropdown-item" asp-action="Index" asp-controller="Profile" asp-area="Customer">Thông tin tài khoản</a>
-                                                <a class="dropdown-item" asp-action="SignIn" asp-controller="Account" asp-area="Customer">Đăng nhập</a>
-                                                <a class="dropdown-item" href="/Customer/Account/SignUp">Đăng ký</a>
-                                            </div>
+                                                <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                    <a class="dropdown-item" asp-action="Index" asp-controller="Profile" asp-area="Customer">Thông tin tài khoản</a>
+                                                    <a class="dropdown-item" asp-action="SignIn" asp-controller="Account" asp-area="Customer">Đăng nhập</a>
+                                                    <a class="dropdown-item" href="/Customer/Account/SignUp">Đăng ký</a>
+                                                </div>
                                             </div>
                                         </li>
                                         <li>
@@ -260,22 +280,7 @@
                                         <button class="search-btn"><i class="fa fa-search"></i></button>
                                     </div>
                                     <div class="header-mini-cart">
-                                        @*<div class="mini-cart-btn">
-                                                <i class="fa fa-shopping-cart"></i>
-                                                <span class="cart-notification" id="sumProduct">0</span>
-                                            </div>*@
-                                        @*@if (HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCartViewModel>>(sessionKey) != null)
-                                            {
-                                                var count = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCartViewModel>>(sessionKey).Count;
-                                                <div class="mini-cart-btn">
-                                                    <i class="fa fa-shopping-cart"></i>
-                                                    <span class="cart-notification">@count</span>
-                                                </div>
-                                            }
-                                            else
-                                            {
 
-                                            }*@
                                         @if (ListShoppingCart != null && ListShoppingCart.Count > 0)
                                         {
                                             <div class="mini-cart-btn" id="cart_click">
@@ -296,7 +301,7 @@
                                             <span>total</span>
                                             $50.00
                                         </div>
-                                        
+
                                         <ul class="cart-list" id="cardList">
                                         </ul>
                                     </div>
@@ -314,12 +319,8 @@
                         <div class="col-lg-12">
                             <div class="main-header-inner">
                                 <div class="category-toggle-wrap" id="categoryDropDown">
-                                    <div class="category-toggle">
-                                        category
-                                        <div class="cat-icon">
-                                            <i class="fa fa-angle-down"></i>
-                                        </div>
-                                    </div>
+                                    
+                                    <partial name="~/Views/Home/_CategoriesPartial.cshtml" model="categoryModel" />
                                 </div>
                                 @*@Html.Partial("~/Views/Home/_CategoriesPartial.cshtml")*@
                                 <div class="main-menu">
@@ -587,6 +588,7 @@
 
     <script src="~/kendo/js/kendo.ui.core.min.js"></script>
     <script src="~/kendo/js/kendo.all.min.js"></script>
+    <script src="~/js/CustomerValidate.js"></script>
     @*<script src="~/slick-1.8.1/slick-1.8.1/slick/slick.min.js"></script>*@
     <script id="successTemplate" type="text/x-kendo-template">
         <div class="new-mail">
@@ -604,10 +606,15 @@
     <script src="~/js/HelperSDK.js"></script>
     <script>
         $(window).on('load', function () {
-            $.get("/Home/Categories", function (data) {
-                $('#categoryDropDown').append(data);
-                //$('.category-menu').slideToggle();
-            });
+            //$.get("/Home/Categories", function (data) {
+            //    $('#categoryDropDown').append(data);
+            //    //$('.category-menu').slideToggle();
+            //});
+            debugger;
+            if (@ViewBag.Index !== 1) {
+                $('.category-menu').hide();
+            }
+
             $("#kendoNoti").kendoNotification({
                 position: {
                     pinned: true,
@@ -619,7 +626,7 @@
                 templates: [{
                     type: "success",
                     template: $("#successTemplate").html()
-                },{
+                }, {
                     type: "error",
                     template: $("#errorTemplate").html()
                 }

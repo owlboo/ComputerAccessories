@@ -1,4 +1,5 @@
 ﻿using System;
+using ComputerAccessoriesV2.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -43,6 +44,13 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<UserAddress> UserAddress { get; set; }
         public virtual DbSet<Vouchers> Vouchers { get; set; }
         public virtual DbSet<Ward> Ward { get; set; }
+
+        //public virtual DbSet<CategoryShoppingModel> CategoryShoppingModel
+        //{
+        //    get;
+        //    set;
+        //}
+        //public virtual DbSet<UserInformationModel> UserInformationModels { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -506,6 +514,9 @@ namespace ComputerAccessoriesV2.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Ward_Districts");
             });
+
+            //modelBuilder.Entity<CategoryShoppingModel>(entity => { entity.HasNoKey(); });
+            //modelBuilder.Entity<UserInformationModel>(entity => { entity.HasNoKey(); });
 
             OnModelCreatingPartial(modelBuilder);
         }

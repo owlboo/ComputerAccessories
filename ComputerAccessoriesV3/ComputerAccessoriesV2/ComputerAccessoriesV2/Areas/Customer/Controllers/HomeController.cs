@@ -49,7 +49,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                             BrandName = c.b.BrandName,
                                                             CategoryId = c.z.y.Id,
                                                             CategoryName = c.z.y.CategoryName,
-                                                            OriginalPrice = c.z.x.OriginalPrice.Value,
+                                                            OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###.###"),
                                                             Code = c.z.x.Code,
                                                             IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
                                                         }).Take(20).ToList();
@@ -66,7 +66,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                                 BrandName = c.b.BrandName,
                                                                 CategoryId = c.z.y.Id,
                                                                 CategoryName = c.z.y.CategoryName,
-                                                                OriginalPrice = c.z.x.OriginalPrice.Value,
+                                                                OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###,###"),
                                                                 Code = c.z.x.Code,
                                                                 IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
                                                             }).Take(20).ToList();
@@ -76,7 +76,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
                 List<Brand> brands = _db.Brand.ToList();
                 ViewBag.brandsFooter = brands;
-
+                ViewBag.Index = 1;
                 //Load all components
                 
                 return View(products);
@@ -129,7 +129,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 BrandName = c.x.Brand.BrandName,
                 CategoryId = c.x.CategoryId.Value,
                 CategoryName = c.x.Category.CategoryName,
-                OriginalPrice = c.x.OriginalPrice.Value,
+                OriginalPrice = c.x.OriginalPrice.Value.ToString("###,###"),
                 Thumnail = c.x.Thumnail,
                 Thumnail2 = c.x.Thumnail2,
                 Code = c.x.Code,

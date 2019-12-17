@@ -37,7 +37,9 @@ namespace ComputerAccessoriesV2
             services.AddDbContext<ComputerAccessoriesV2Context>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-
+            services.AddDbContext<QueryDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("QueryConnection")));
             services.AddSession(options =>
             {
                 options.IdleTimeout = new TimeSpan(0, 15, 0);
@@ -92,7 +94,6 @@ namespace ComputerAccessoriesV2
                 options.LoginPath = "/Customer/Account/SignIn";
                 options.AccessDeniedPath = "/Customer/Account/AccessDeny";
             });
-
             services.AddRazorPages();
         }
 
@@ -114,7 +115,6 @@ namespace ComputerAccessoriesV2
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 

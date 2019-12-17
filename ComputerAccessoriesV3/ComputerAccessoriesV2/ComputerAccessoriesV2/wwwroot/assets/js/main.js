@@ -66,19 +66,19 @@
 	var categoryToggle = $('.category-toggle');
 	var categoryMenu = $('.category-menu');
 
-    var toggleWrap = $('#categoryDropDown');
+    //var toggleWrap = $('#categoryDropDown');
 
-    toggleWrap.click(function () {
-        //var screenSize = $window.width();
-        //if (screenSize <= 991) {
-        //    $('.category-menu .menu-item-has-children > a').prepend('<span class="expand menu-expand"></span>');
-        //    $('.category-menu .menu-item-has-children ul').slideUp();
-        //} else {
-        //    $('.category-menu .menu-item-has-children > a .menu-expand').remove();
-        //    $('.category-menu .menu-item-has-children ul').slideDown();
-        //}
-        $('.category-menu').slideToggle();
-    })
+    //toggleWrap.click(function () {
+    //    //var screenSize = $window.width();
+    //    //if (screenSize <= 991) {
+    //    //    $('.category-menu .menu-item-has-children > a').prepend('<span class="expand menu-expand"></span>');
+    //    //    $('.category-menu .menu-item-has-children ul').slideUp();
+    //    //} else {
+    //    //    $('.category-menu .menu-item-has-children > a .menu-expand').remove();
+    //    //    $('.category-menu .menu-item-has-children ul').slideDown();
+    //    //}
+    //    $('.category-menu').slideToggle();
+    //})
 
 	/*-- Category Menu Toggles --*/
     function categorySubMenuToggle() {

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Chi tiết sản phẩm " + ViewBag.productName;
     Layout = "~/Views/Home/_HomeLayout.cshtml";
 
-    var relatedProduct = ViewBag.relatedProduct as List<ProductGridModel>;
+    var relatedProduct = ViewBag.relatedProduct as List<Products>;
 }
 
 
@@ -59,7 +59,7 @@
                                     <span>@Model.Quantity sản phẩm</span>
                                 </div>
                                 <div class="pricebox">
-                                    <span class="regular-price">@Model.OriginalPrice.ToString("##")</span>
+                                    <span class="regular-price">@Model.OriginalPrice</span>
                                 </div>
                                 <p>
                                     @Model.ShorDescription
@@ -69,7 +69,7 @@
                                         <div class="pro-qty"><input type="text" value="1"></div>
                                     </div>
                                     <div class="action_link">
-                                        <a class="buy-btn" href="#">add to cart<i class="fa fa-shopping-cart"></i></a>
+                                        <a class="buy-btn" href="#" onclick="return AddToCart(@Model.Id,1)">add to cart<i class="fa fa-shopping-cart"></i></a>
                                     </div>
                                 </div>
                                 <div class="useful-links mt-20">
@@ -107,7 +107,13 @@
                                     <div class="tab-pane fade show active" id="tab_one">
                                         <div class="tab-one">
                                             @Html.Raw(Model.FullDescription)
+                                            
                                         </div>
+                                        <div class="text-center">
+                                            <button class="btn btn-outline-primary" id="showMore" style="color: blue; border: none;background:transparent">Hiển thị thêm</button>
+                                            <button class="btn btn-outline-primary" id="showLess" style="color: blue; border: none; background: transparent;display:none" >Ẩn đi</button>
+                                        </div>
+                                        
                                     </div>
                                     <div class="tab-pane fade" id="tab_two">
                                         Select thuộc tính bỏ vào đây
@@ -264,6 +270,11 @@
 @section Scripts{
 
     <script>
+
+        $(document).ready(() => {
+            $('#more').hide();
+        });
+
         var html = "";
         function QuickView(id) {
             var slider_imgs = $('#slider_imgs');
@@ -280,7 +291,7 @@
                 dataType: "json",
                 success: function (data) {
                     var slider_large = "";
-                    var slider_small = ""
+                    var slider_small = "";
                     for (var i = 0; i < data.productImages.length; i++) {
 
                         //slider_large += "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>";
@@ -307,7 +318,7 @@
 
         function RemoveAllSlick(selector) {
             debugger;
-            sl = selector;
+            var sl = selector;
             console.log(sl);
             var totalSlides = selector.slick('getSlick').slideCount;
 
@@ -318,6 +329,16 @@
             return true;
         }
 
+        $('#showMore').click(function() {
+            $('#more').slideToggle();
+            $('#showMore').hide();
+            $('#showLess').show();
+        });
+        $('#showLess').click(function() {
+            $('#more').slideToggle();
+            $('#showMore').show();
+            $('#showLess').hide();
+        });
     </script>
 
 }

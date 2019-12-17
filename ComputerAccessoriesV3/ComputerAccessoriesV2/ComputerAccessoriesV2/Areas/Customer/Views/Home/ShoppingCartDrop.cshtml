@@ -49,7 +49,7 @@
         <text class="subtotal-price" >VND <span id="totalPrice">@Model.TotalPrice.ToString("##")</span></text>
     </li>
     <li class="checkout-btn">
-        <a href="#">checkout</a>
+        <a asp-action="CheckOut" asp-controller="Shopping">checkout</a>
     </li>
 
 }
