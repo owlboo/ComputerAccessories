@@ -1,0 +1,11 @@
+﻿@model List<ComputerAccessoriesV2.ViewModels.CategoryShoppingModel>
+
+<ul>
+    <li class="title"><i class="fa fa-bars"></i> categories</li>
+
+
+    @foreach (var item in Model)
+    {
+        <li><a asp-action="ProductListFilter" asp-controller="Shopping" asp-area="Customer" asp-route-categoryId="@item.Id">@item.CategoryName</a><span>(@item.ProductQuantity)</span></li>
+    }
+</ul>
