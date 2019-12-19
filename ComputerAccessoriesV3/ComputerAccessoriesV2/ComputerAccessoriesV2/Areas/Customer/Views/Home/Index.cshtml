@@ -399,7 +399,7 @@
                                     <span data-toggle="tooltip"
                                           data-placement="left" title="Quick view"><i class="fa fa-search"></i></span>
                                 </a>*@
-                            <a href="#" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
+                            <a href="#" data-toggle="modal" data-target="#quick_view" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
                                 <span data-toggle="tooltip"
                                       data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                             </a>
@@ -436,8 +436,6 @@
 </div>
 
 
-
-
 <div class="modal" id="quick_view">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -445,7 +443,6 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-
                     <div class="product-details-inner">
                         <div class="row">
                             <div class="col-lg-5">
@@ -513,10 +510,9 @@
             var slider_thumnails = $('#slider_thumnails');
 
             RemoveAllSlick(slider_imgs);
-            RemoveAllSlick(slider_thumnails)
+            RemoveAllSlick(slider_thumnails);
 
             //slider_thumnails.slick('unslick');
-            debugger;
             $.ajax({
                 url: "/Home/QuickView?id=" + id,
                 type: "get",
@@ -543,15 +539,10 @@
                     $('#quick_view').modal('show');
                 }
             });
-
-
-
         }
         var sl;
         function RemoveAllSlick(selector) {
-            debugger;
             sl = selector;
-            console.log(sl);
             var totalSlides = selector.slick('getSlick').slideCount;
 
             while (totalSlides !== 0) {
