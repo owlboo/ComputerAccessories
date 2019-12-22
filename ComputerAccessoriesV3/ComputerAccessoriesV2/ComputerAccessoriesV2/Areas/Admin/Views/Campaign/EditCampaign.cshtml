@@ -1,15 +1,86 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+    Layout = "~/Views/Admin/_Layout.cshtml";
+    int campaignId = ViewBag.CampaignId;
 }
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>EditCampaign</title>
-</head>
-<body>
-</body>
-</html>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Hover Data Table</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div id="listProductCampaignGrid">
+
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(() => {
+            var crudCampaignDetailBaseUrl = window.location.protocol + '//' + window.location.host + "/Admin/Campaign",
+                        dataSource = new kendo.data.DataSource({
+                            transport: {
+                                read:  {
+                                    url: crudCampaignDetailBaseUrl + "/GetAllProductInCampaign?campaignId=@campaignId",
+                                    dataType: "json"
+                                },
+                                update: {
+                                    url: crudCampaignDetailBaseUrl + "/UpdateProductInCampaignDetail",
+                                    dataType: "json"
+                                },
+                                destroy: {
+                                    url: crudCampaignDetailBaseUrl + "/RemoveProductInCampaignDetail",
+                                    dataType: "json"
+                                },
+                                create: {
+                                    url: crudCampaignDetailBaseUrl + "/InsertProductToExitCampaign",
+                                    dataType: "json"
+                                },
+                                parameterMap: function(options, operation) {
+                                    if (operation !== "read" && options.models) {
+                                        return {models: kendo.stringify(options.models)};
+                                    }
+                                }
+                            },
+                            batch: true,
+                            pageSize: 20,
+                            schema: {
+                                model: {
+                                    id: "id",
+                                    fields: {
+                                        id: { editable: false, nullable: false },
+                                        productId: { editable: false, nullable: false },
+                                        productName: { editable: false, nullable: false },
+                                        originPrice: { editable: false, nullable: false },
+                                        promotionPrice: { type: "number", validation: { required: true, min: 1 } },
+                                        campaignId: { editable: false, nullable: false, defaultValue: @campaignId }
+                                    }
+                                }
+                            }
+                        });
+
+                    $("#listProductCampaignGrid").kendoGrid({
+                        dataSource: dataSource,
+                        pageable: true,
+                        height: 550,
+                        toolbar: ["create"],
+                        columns: [
+                            { field: "id", title: "ID", width: "120px" },
+                            { field: "productId", title: "Mã sản phẩm", width: "120px" },
+                            { field: "productName", title: "Tên sản phẩm", width: "120px" },
+                            { field: "originPrice", title: "Giá gốc", width: "120px" },
+                            { field: "promotionPrice", title: "Giá khuyến mãi", width: "120px" },
+                            { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }],
+                        editable: "inline"
+                    });
+        });
+    </script>
+}

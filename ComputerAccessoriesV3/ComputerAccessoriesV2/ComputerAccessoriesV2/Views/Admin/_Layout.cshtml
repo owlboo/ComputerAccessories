@@ -31,9 +31,9 @@
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="~/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
     <link rel="stylesheet" href="~/kendo/styles/kendo.bootstrap-v4.min.css" />
-    <link rel="stylesheet" href="styles/kendo.common.min.css" />
-    <link rel="stylesheet" href="styles/kendo.default.min.css" />
-    <link rel="stylesheet" href="styles/kendo.default.mobile.min.css" />
+    <link rel="stylesheet" href="~/kendo/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="~/kendo/styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="~/kendo/styles/kendo.default.mobile.min.css" />
     <link rel="stylesheet" href="~/font-awsome/css/fontawesome.min.css" />
     @*<link rel="stylesheet" href="~/fontawesome-free-5.11.2-web/css/fontawesome.css" />
         <link rel="stylesheet" href="~/fontawesome-free-5.11.2-web/css/fontawesome.min.css" />*@
@@ -47,6 +47,8 @@
     <![endif]-->
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    @RenderSection("Styles", required: false)
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 
@@ -454,6 +456,9 @@
 
             <partial name="~/Views/Admin/_ContentHeader.cshtml" />
             <main role="main" class="pb-3">
+                <div class="col-lg-4">
+                    <span id="rootNotification"></span>
+                </div>
                 @RenderBody()
             </main>
         </div>
@@ -511,5 +516,21 @@
     <script src="~/js/CustomJS.js" type="text/javascript"></script>
     <script src="~/js/HelperSDK.js" type="text/javascript"></script>
     @RenderSection("Scripts", required: false)
+    <script>
+        $(document).ready(() => {
+            $("#rootNotification").kendoNotification({
+                position: {
+                    top:170
+                },
+                templates: [{
+                    type: "warning",
+                    template: "<div class='text-danger'><text style='font-size:14px'>#= content #</text></div>"
+                }, {
+                    type: "success",
+                    template: "<div class='text-success'><text style='font-size:14px'>#= content #</text></div>"
+                    }]
+            }).data("kendoNotification");    
+        })
+    </script>
 </body>
 </html>

@@ -11,9 +11,10 @@ namespace ComputerAccessoriesV2.ViewModels
         public String CampaignName { get; set; }
         public int CampaignType { get; set; }
         public bool Status { get; set; }
-        public DateTime CreatedDate { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public String Description { get; set; }
+        public List<int> ListProduct { get; set; }
 
     }
 }

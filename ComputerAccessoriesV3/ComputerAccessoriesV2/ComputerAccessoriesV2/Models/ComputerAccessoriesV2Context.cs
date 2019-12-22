@@ -212,8 +212,6 @@ namespace ComputerAccessoriesV2.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Logo).HasMaxLength(100);
-
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
@@ -222,6 +220,8 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.CampaignName).HasMaxLength(50);
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).IsRequired();
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
@@ -235,7 +235,8 @@ namespace ComputerAccessoriesV2.Models
 
             modelBuilder.Entity<CampaignDetails>(entity =>
             {
-                entity.HasKey(e => new { e.CampaignId, e.ProductId });
+                entity.HasKey(e => e.CampaignDetailId)
+                    .HasName("PK_CampaignDetails_1");
 
                 entity.Property(e => e.PromotionPrice).HasColumnType("money");
 
@@ -329,8 +330,6 @@ namespace ComputerAccessoriesV2.Models
 
             modelBuilder.Entity<ProductImages>(entity =>
             {
-                entity.Property(e => e.ImageUrl).HasMaxLength(100);
-
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProductImages)
                     .HasForeignKey(d => d.ProductId)
@@ -360,12 +359,6 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.PromotionPrice).HasColumnType("money");
 
                 entity.Property(e => e.ShorDescription).HasMaxLength(256);
-
-                entity.Property(e => e.Thumnail).HasMaxLength(50);
-
-                entity.Property(e => e.Thumnail2)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
 
                 entity.HasOne(d => d.Brand)
                     .WithMany(p => p.Products)
