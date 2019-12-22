@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Data;
@@ -53,8 +54,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return View();
         }
 
-        public IActionResult ConfirmEmail()
+        public IActionResult ConfirmEmail(string Email=null)
         {
+            ViewBag.email = Email;
             return View();
         }
 
@@ -82,25 +84,29 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        //[Route("/[controller]/SignUpPost")]
-
+        [Route("/[controller]/SignUp")]
+        
         public async Task<IActionResult> SignUp(RegisterViewModel model)
         {
             ViewBag.Error = "";
             if (ModelState.IsValid)
             {
-                Regex regex = new Regex(@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-                Match match = regex.Match(model.Email.Trim().ToLower());
-                if (!match.Success)
-                {
-                    return new JsonResult(new { code = 0, Err = "" });
-                }
 
+                var host = Request.Host;
+                var action = Request.Path.Value;
+                var protocol = Request.Protocol;
+                //var area = ControllerContext.RouteData.DataTokens["area"].ToString();
+                var area = "/Customer";
+                //Regex regex = new Regex(@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+                //Match match = regex.Match(model.Email.Trim().ToLower());
+                //if (!match.Success)
+                //{
+                //    return new JsonResult(new { code = 0, Err = "" });
+                //}
                 var checkUser = _db.AspNetUsers.Where(x => x.Email == model.Email).FirstOrDefault();
                 if (checkUser != null)
                 {
-                    return Json(new { code = 0 });
+                    return Json(new { code = 0 , err="Email của bạn đã tồn tại. Nhấn vào <a href='/Account/ForgetPassword' >Quên mật khẩu</a> để lấy lại mật khẩu"});
                 }
 
                 var user = new MyUsers
@@ -121,14 +127,15 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 if (result.Succeeded)
                 {
                     //var userFromDb = _db.AspNetUsers.Where(x => x.Email == model.Email).FirstOrDefault();
-                    if(!await _roleManager.RoleExistsAsync(SD.Customer))
+                    if(!await _roleManager.RoleExistsAsync(model.RoleName))
                     {
                        await _roleManager.CreateAsync(new IdentityRole<int> { 
-                           Name=SD.Customer
+                           Name=model.RoleName
                        });
                     }
-                    await _userManager.AddToRoleAsync(user, SD.Customer);
+                    await _userManager.AddToRoleAsync(user, model.RoleName);
 
+                    
                     var userAddress = new UserAddress
                     {
                         UserId = user.Id,
@@ -136,41 +143,44 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         ProvinceId = model.ProvinceId,
                         DistrictId = model.DistrictId,
                         PlaceDetails = model.PlaceDetail
-
                     };
                     _db.UserAddress.Add(userAddress);
                     //update dia chi
                     var userFromDb = _db.AspNetUsers.Where(x => x.Id == user.Id).FirstOrDefault();
                     userFromDb.Address = model.PlaceDetail + " " + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistrictId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName;
+                    
+
                     await _db.SaveChangesAsync();
-                    ;
-
-                   
-                    return RedirectToAction("SignIn", "Account");
-
+                    #region Send Mail Confirm
+                    StringBuilder str = new StringBuilder();
+                    str.Append("<!DOCTYPE html>");
+                    str.Append("<head>");
+                    str.Append("</head>");
+                    str.Append("<body>");
+                    str.Append("<div class='text-center'> ");
+                    str.Append(" <h3 class='text-left'>Cảm ơn bạn đã đăng ký tài khoản</h3>");
+                    str.Append("<p class='text-left'> Mã kích hoạt tài khoản của bạn là: <strong style='font-size:20px'>" + userFromDb.CodeConfirm + "</strong></p>");
+                    str.Append("</div>");
+                    str.Append("</body>");
+                    str.Append("</html>");
+                    EmailHelpers.SendConfirmEmail(userFromDb,"Thông báo","Mã kích hoạt", str.ToString());
+                    #endregion
+                    return Json(new { code = 1, returnUrl = "/Customer/Account/ConfirmEmail?email="+userFromDb.Email, email=userFromDb.Email });
                 }
                 else
                 {
-                    ViewBag.Error = "Người dùng đã tồn tại";
-                    return RedirectToAction(nameof(SignUp));
+                    return Json(new { code = 0, err = "Có lỗi xảy ra trong quá trình khởi tạo, vui lòng thử lại" });
                 }
 
             }
-            return new JsonResult(new { code = 0, Err = "*Có lỗi xảy ra, vui lòng thử lại" });
+            return Json(new { code = 0, err = "Có lỗi xảy ra trong quá trình khởi tạo, vui lòng thử lại" });
         }
-        public IActionResult SignIn(LoginViewModel model, string err = null, string returnUrl=null)
+        public IActionResult SignIn(LoginViewModel model=null, string err = null, string returnUrl=null)
         {
-            //string cookie = Request.Cookies[$"CookieSignIn{MySecurity.Base64Encode(user.Id.ToString())}"];
-            //if (cookie != null)
-            //{
-            //    CookieOptions cookieOptions = new CookieOptions();
-            //    cookieOptions.Expires = DateTime.Now.AddMinutes(-60);
-            //    Response.Cookies.Append($"CookieSignIn{MySecurity.Base64Encode(user.Id.ToString())}", MySecurity.EncryptPassword(user.Email), cookieOptions);
-            //    return RedirectToAction("Index", "Home", new { userId = user.Id });
-            //}
-            //HttpContextAccessor httpContextAccessor = new HttpContextAccessor();
+
+
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier);
-            if(currentUser != null)
+            if (currentUser != null)
             {
                 var userFromDb = _db.AspNetUsers.Where(x => x.Id == Int32.Parse(currentUser.Value)).FirstOrDefault();
                 #region ghi cookie
@@ -184,7 +194,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     Response.Cookies.Append($"CookieLogin{MySecurity.Base64Encode(userFromDb.Id.ToString())}", MySecurity.DecryptPassword(userFromDb.Email), new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                 }
             }
-            
+
             if (!String.IsNullOrEmpty(returnUrl))
             {
                 returnUrl = "/Customer/Home/Index";
@@ -218,7 +228,6 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     Response.Cookies.Append($"CookieLogin{MySecurity.Base64Encode(userFromDb.Id.ToString())}", MySecurity.DecryptPassword(userFromDb.Email), new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                     #endregion
                     return RedirectToAction("Index", "Home");
-                    #endregion
                 }
             }
             return RedirectToAction("SignIn", "Account", new { err = "Có lỗi xảy ra, vui lòng thử lại" });
@@ -228,7 +237,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("SignIn", "Account");
-        }
-
+        }    
     }
 }
+#endregion

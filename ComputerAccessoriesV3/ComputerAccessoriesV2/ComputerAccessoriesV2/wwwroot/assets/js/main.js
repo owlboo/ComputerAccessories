@@ -1,7 +1,7 @@
 /*global jQuery */
 (function ($) {
 	"use strict";
-
+    var a;
 	var $window = $(window);
 	$window.on('scroll', function () {
         // Sticky menu 
@@ -33,11 +33,23 @@
 	dropdownAnimation();
 
 	// mini cart toggler
-	$(".mini-cart-btn").on("click", function (event) {
-		event.stopPropagation();
-		event.preventDefault();
-		$(".cart-list").slideToggle();
-	});
+    $(".mini-cart-btn").on("click", function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        debugger;
+        $.ajax({
+            
+            url: "/Home/ShoppingCartDrop",
+            type: "post",
+            dataType: "text",
+            success: function (result) {
+                $(".cart-list").html(result);
+                a = result;
+                $(".cart-list").slideToggle();
+            }
+        });
+        
+    });
 
 	// responsive menu js
 	jQuery('#mobile-menu').meanmenu({
@@ -54,19 +66,19 @@
 	var categoryToggle = $('.category-toggle');
 	var categoryMenu = $('.category-menu');
 
-    var toggleWrap = $('#categoryDropDown');
+    //var toggleWrap = $('#categoryDropDown');
 
-    toggleWrap.click(function () {
-        //var screenSize = $window.width();
-        //if (screenSize <= 991) {
-        //    $('.category-menu .menu-item-has-children > a').prepend('<span class="expand menu-expand"></span>');
-        //    $('.category-menu .menu-item-has-children ul').slideUp();
-        //} else {
-        //    $('.category-menu .menu-item-has-children > a .menu-expand').remove();
-        //    $('.category-menu .menu-item-has-children ul').slideDown();
-        //}
-        $('.category-menu').slideToggle();
-    })
+    //toggleWrap.click(function () {
+    //    //var screenSize = $window.width();
+    //    //if (screenSize <= 991) {
+    //    //    $('.category-menu .menu-item-has-children > a').prepend('<span class="expand menu-expand"></span>');
+    //    //    $('.category-menu .menu-item-has-children ul').slideUp();
+    //    //} else {
+    //    //    $('.category-menu .menu-item-has-children > a .menu-expand').remove();
+    //    //    $('.category-menu .menu-item-has-children ul').slideDown();
+    //    //}
+    //    $('.category-menu').slideToggle();
+    //})
 
 	/*-- Category Menu Toggles --*/
     function categorySubMenuToggle() {

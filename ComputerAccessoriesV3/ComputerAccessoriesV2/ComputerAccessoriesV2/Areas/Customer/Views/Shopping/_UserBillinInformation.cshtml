@@ -1,0 +1,20 @@
+﻿@model ComputerAccessoriesV2.ViewModels.UserInformationModel
+
+<div class="tab-pane " id="address-edit" role="tabpanel">
+    <div class="myaccount-content">
+        <h3>Địa chỉ giao hàng</h3>
+        <input hidden id="userId" value="@Model.UserId" />
+        <input hidden id="wardId" value="@Model.WardId" />
+        <input hidden id="districtId" value="@Model.DistrictId" />
+        <input hidden id="provinceId" value="@Model.ProvinceId" />
+        <address>
+            <p><strong>@Model.DisplayName</strong></p>
+            <p>
+                @Model.PlaceDetails @Model.WardName, @Model.DistrictName <br>
+                @Model.ProvinceId
+            </p>
+            <p>Mobile: @Model.PhoneNumber</p>
+        </address>
+        <a href="#" class="check-btn sqr-btn "><i class="fa fa-edit"></i> Chỉnh sửa địa chỉ</a>
+    </div>
+    </div>

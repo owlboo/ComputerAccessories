@@ -1,14 +1,7 @@
 ﻿@model List<ComputerAccessoriesV2.ViewModels.CategoryHomeModel>
 
 
-
-    @*<div class="category-toggle">
-        category
-        <div class="cat-icon">
-            <i class="fa fa-angle-down"></i>
-        </div>
-    </div>*@
-    <nav class="category-menu hm-1">
+<nav class="category-menu hm-1">
         <ul>
             @foreach (var category in Model)
             {
@@ -17,7 +10,7 @@
                 {
             <li class="menu-item-has-children">
 
-                <a href="menu-item-has-children">
+                <a asp-controller="Shopping" asp-action="ProductListFilter" asp-route-categoryId="@category.MainCategory.Id">
                     <i class="fa fa-desktop"></i>
                     @category.MainCategory.CategoryName
                 </a>
@@ -29,12 +22,12 @@
                         @if (category.ListChildrenNode != null && category.ListChildrenNode.Count > 0)
                         {
                             <li class="menu-item-has-children">
-                                <a href="shop-grid-left-sidebar.html">@category1.MainCategory.CategoryName</a>
+                                <a asp-controller="Shopping" asp-action="ProductListFilter" asp-route-categoryId="@category1.MainCategory.Id">@category1.MainCategory.CategoryName</a>
                                 <ul>
                                     @foreach (var category2 in category1.ListChildrenNode)
                                     {
 
-                                        <li><a href="shop-grid-left-sidebar.html">@category2.MainCategory.CategoryName</a></li>
+                                        <li><a asp-controller="Shopping" asp-action="ProductListFilter" asp-route-categoryId="@category2.MainCategory.Id">@category2.MainCategory.CategoryName</a></li>
 
                                     }
                                 </ul>
@@ -43,7 +36,7 @@
                         else
                         {
                             <li class="menu-item-has-children">
-                                <a href="shop-grid-left-sidebar.html">@category1.MainCategory.CategoryName</a>
+                                <a asp-controller="Shopping" asp-action="ProductListFilter" asp-route-categoryId="@category1.MainCategory.Id">@category1.MainCategory.CategoryName</a>
 
                             </li>
                         }
@@ -58,7 +51,7 @@
                     else
                     {
                         <li>
-                            <a href="#">
+                            <a asp-controller="Shopping" asp-action="ProductListFilter" asp-route-categoryId="@category.MainCategory.Id">
                                 <i class="fa fa-desktop"></i>
                                 @category.MainCategory.CategoryName
                             </a>

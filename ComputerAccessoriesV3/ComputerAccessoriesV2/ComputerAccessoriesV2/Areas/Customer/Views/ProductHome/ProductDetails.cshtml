@@ -1,0 +1,344 @@
+﻿@model ComputerAccessoriesV2.ViewModels.ProductGridModel
+@using ComputerAccessoriesV2.ViewModels
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm " + ViewBag.productName;
+    Layout = "~/Views/Home/_HomeLayout.cshtml";
+
+    var relatedProduct = ViewBag.relatedProduct as List<Products>;
+}
+
+
+<title>Chi tiết sản phẩm @ViewBag.productName</title>
+
+<br />
+<div class="product-details-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <!-- product details inner end -->
+                <div class="product-details-inner">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="product-large-slider mb-20 slick-arrow-style_2">
+                                @foreach (var item in Model.ProductImages)
+                                {
+                                    <div class="pro-large-img img-zoom" id="img1">
+                                        <img src="@item.ImageUrl" alt="" />
+                                    </div>
+                                }
+
+
+                            </div>
+                            <div class="pro-nav slick-padding2 slick-arrow-style_2">
+                                @foreach (var item in Model.ProductImages)
+                                {
+                                    <div class="pro-nav-thumb"><img src="@item.ImageUrl" alt="" /></div>
+                                }
+
+
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="product-details-des mt-md-34 mt-sm-34">
+                                <h3><a asp-action="ProductDetails" asp-route-productId="@Model.Id">@Model.ProductName</a></h3>
+                                <div class="ratings">
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span><i class="fa fa-star"></i></span>
+                                    <div class="pro-review">
+                                        <span>1 review(s)</span>
+                                    </div>
+                                </div>
+                                <div class="customer-rev">
+                                    <a href="#">(1 customer review)</a>
+                                </div>
+                                <div class="availability mt-10">
+                                    <h5>Số lượng còn lại:</h5>
+                                    <span>@Model.Quantity sản phẩm</span>
+                                </div>
+                                <div class="pricebox">
+                                    <span class="regular-price">@Model.OriginalPrice</span>
+                                </div>
+                                <p>
+                                    @Model.ShorDescription
+                                </p>
+                                <div class="quantity-cart-box d-flex align-items-center">
+                                    <div class="quantity">
+                                        <div class="pro-qty"><input type="text" value="1"></div>
+                                    </div>
+                                    <div class="action_link">
+                                        <a class="buy-btn" href="#" onclick="return AddToCart(@Model.Id,1)">add to cart<i class="fa fa-shopping-cart"></i></a>
+                                    </div>
+                                </div>
+                                <div class="useful-links mt-20">
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Compare"><i class="fa fa-refresh"></i>compare</a>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Wishlist"><i class="fa fa-heart-o"></i>wishlist</a>
+                                </div>
+                                <div class="share-icon mt-20">
+                                    <a class="facebook" href="#"><i class="fa fa-facebook"></i>like</a>
+                                    <a class="twitter" href="#"><i class="fa fa-twitter"></i>tweet</a>
+                                    <a class="pinterest" href="#"><i class="fa fa-pinterest"></i>save</a>
+                                    <a class="google" href="#"><i class="fa fa-google-plus"></i>share</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- product details inner end -->
+                <!-- product details reviews start -->
+                <div class="product-details-reviews mt-34">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="product-review-info">
+                                <ul class="nav review-tab">
+                                    <li>
+                                        <a class="active" data-toggle="tab" href="#tab_one">description</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab_two">information</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab_three">reviews</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content reviews-tab">
+                                    <div class="tab-pane fade show active" id="tab_one">
+                                        <div class="tab-one">
+                                            @Html.Raw(Model.FullDescription)
+                                            
+                                        </div>
+                                        <div class="text-center">
+                                            <button class="btn btn-outline-primary" id="showMore" style="color: blue; border: none;background:transparent">Hiển thị thêm</button>
+                                            <button class="btn btn-outline-primary" id="showLess" style="color: blue; border: none; background: transparent;display:none" >Ẩn đi</button>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="tab-pane fade" id="tab_two">
+                                        Select thuộc tính bỏ vào đây
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                @foreach (var item in Model.ProductAttributes)
+                                                {
+                                                    <tr>
+                                                        <td>@item.Attribute.AttributeName</td>
+                                                        <td>@item.Value</td>
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="tab_three">
+                                        <form action="#" class="review-form">
+                                            <h5>1 review for Simple product 12</h5>
+                                            <div class="total-reviews">
+                                                <div class="rev-avatar">
+                                                    <img src="assets/img/about/avatar.jpg" alt="">
+                                                </div>
+                                                <div class="review-box">
+                                                    <div class="ratings">
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+                                                        <span><i class="fa fa-star"></i></span>
+                                                    </div>
+                                                    <div class="post-author">
+                                                        <p><span>admin -</span> 30 Nov, 2018</p>
+                                                    </div>
+                                                    <p>Aliquam fringilla euismod risus ac bibendum. Sed sit amet sem varius ante feugiat lacinia. Nunc ipsum nulla, vulputate ut venenatis vitae, malesuada ut mi. Quisque iaculis, dui congue placerat pretium, augue erat accumsan lacus</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col">
+                                                    <label class="col-form-label"><span class="text-danger">*</span> Your Name</label>
+                                                    <input type="text" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col">
+                                                    <label class="col-form-label"><span class="text-danger">*</span> Your Email</label>
+                                                    <input type="email" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col">
+                                                    <label class="col-form-label"><span class="text-danger">*</span> Your Review</label>
+                                                    <textarea class="form-control" required></textarea>
+                                                    <div class="help-block pt-10"><span class="text-danger">Note:</span> HTML is not translated!</div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col">
+                                                    <label class="col-form-label"><span class="text-danger">*</span> Rating</label>
+                                                    &nbsp;&nbsp;&nbsp; Bad&nbsp;
+                                                    <input type="radio" value="1" name="rating">
+                                                    &nbsp;
+                                                    <input type="radio" value="2" name="rating">
+                                                    &nbsp;
+                                                    <input type="radio" value="3" name="rating">
+                                                    &nbsp;
+                                                    <input type="radio" value="4" name="rating">
+                                                    &nbsp;
+                                                    <input type="radio" value="5" name="rating" checked>
+                                                    &nbsp;Good
+                                                </div>
+                                            </div>
+                                            <div class="buttons">
+                                                <button class="sqr-btn" type="submit">Continue</button>
+                                            </div>
+                                        </form> <!-- end of review-form -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- product details reviews end -->
+                <!-- related products area start -->
+                <partial name="RelatedProducts" model="relatedProduct" />
+                <!-- related products area end -->
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="quick_view">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <div class="product-details-inner">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div class="product-large-slider slick-arrow-style_2 mb-20" id="slider_imgs">
+
+                            </div>
+                            <div class="pro-nav slick-padding2 slick-arrow-style_2" id="slider_thumnails">
+
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="product-details-des mt-md-34 mt-sm-34">
+                                <h3><a href="#" id="product_name" title="Xem chi tiết"></a></h3>
+                                <div class="ratings">
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span><i class="fa fa-star"></i></span>
+                                    <div class="pro-review">
+                                        <span>1 review(s)</span>
+                                    </div>
+                                </div>
+                                <div class="availability mt-10">
+                                    <h5>Còn lại:</h5>
+                                    <span id="quantity"></span>
+                                </div>
+                                <div class="pricebox">
+                                    <span class="regular-price" id="price">$160.00</span>
+                                </div>
+                                <p id="short_description">
+
+                                </p>
+                                <div class="quantity-cart-box d-flex align-items-center mt-20">
+                                    <div class="quantity">
+                                        <div class="pro-qty"><input type="text" value="1"></div>
+                                    </div>
+                                    <div class="action_link">
+                                        <a class="buy-btn" href="#">
+                                            add to cart<i class="fa fa-shopping-cart"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+
+        $(document).ready(() => {
+            $('#more').hide();
+        });
+
+        var html = "";
+        function QuickView(id) {
+            var slider_imgs = $('#slider_imgs');
+            var slider_thumnails = $('#slider_thumnails');
+
+            
+            RemoveAllSlick(slider_imgs);
+            RemoveAllSlick(slider_thumnails)
+
+            debugger;
+            $.ajax({
+                url: "/Home/QuickView?id=" + id,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    var slider_large = "";
+                    var slider_small = "";
+                    for (var i = 0; i < data.productImages.length; i++) {
+
+                        //slider_large += "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>";
+
+                        slider_imgs.slick('slickAdd', "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>");
+                        slider_thumnails.slick('slickAdd',"<div class='pro-nav-thumb'><img src='" + data.productImages[i].imageUrl + "'alt='' /></div>");
+
+                    }
+
+                    $('#quantity').text(data.quantity);
+                    $('#short_description').text(data.shorDescription);
+                    $('#price').text(data.originalPrice);
+                    $('#product_name').text(data.productName);
+                    $('#product_name').attr('href', "/Customer/ProductHome/ProductDetails?productId=" + data.id);
+                    //slider_imgs.append(slider_large);
+                    //slider_thumnails.append(slider_small);
+                    $('#quick_view').modal('show');
+                }
+            });
+
+
+
+        }
+
+        function RemoveAllSlick(selector) {
+            debugger;
+            var sl = selector;
+            console.log(sl);
+            var totalSlides = selector.slick('getSlick').slideCount;
+
+            while (totalSlides !== 0) {
+                selector.slick('slickRemove', totalSlides - 1);
+                totalSlides--;
+            }
+            return true;
+        }
+
+        $('#showMore').click(function() {
+            $('#more').slideToggle();
+            $('#showMore').hide();
+            $('#showLess').show();
+        });
+        $('#showLess').click(function() {
+            $('#more').slideToggle();
+            $('#showMore').show();
+            $('#showLess').hide();
+        });
+    </script>
+
+}

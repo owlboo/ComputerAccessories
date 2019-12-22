@@ -37,7 +37,14 @@ namespace ComputerAccessoriesV2
             services.AddDbContext<ComputerAccessoriesV2Context>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-
+            services.AddDbContext<QueryDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("QueryConnection")));
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = new TimeSpan(0, 15, 0);
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddIdentity<MyUsers,IdentityRole<int>>(options => {
                 //options.SignIn.RequireConfirmedAccount = true;
@@ -87,7 +94,6 @@ namespace ComputerAccessoriesV2
                 options.LoginPath = "/Customer/Account/SignIn";
                 options.AccessDeniedPath = "/Customer/Account/AccessDeny";
             });
-
             services.AddRazorPages();
         }
 
@@ -107,27 +113,19 @@ namespace ComputerAccessoriesV2
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllerRoute(
-                //    name: "default",
-                //    pattern: "{controller=Home}/{action=Index}/{id?}");
-                //endpoints.MapRazorPages();
+
                 endpoints.MapControllerRoute(
                     name: "areas",
                     pattern: "{area=Admin}/{controller=MainService}/{action=Index}/{id?}"
                     );
-                //endpoints.MapControllerRoute(
-                //    name: "areas",
-                //    pattern: "{area}/{controller}/{action}/{id?}",
-                //    defaults: new { action = "Index" }
-                //    );
+
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });

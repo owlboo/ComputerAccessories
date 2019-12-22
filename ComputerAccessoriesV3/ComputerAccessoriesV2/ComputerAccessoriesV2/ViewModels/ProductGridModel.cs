@@ -18,8 +18,8 @@ namespace ComputerAccessoriesV2.ViewModels
         public DateTime ModifiedDate { get; set; }
         public string Origin { get; set; }
         public string Color { get; set; }
-        public decimal OriginalPrice { get; set; }
-        public decimal PromotionPrice { get; set; }
+        public string OriginalPrice { get; set; }
+        public string PromotionPrice { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public int BrandId { get; set; }
@@ -32,5 +32,6 @@ namespace ComputerAccessoriesV2.ViewModels
         public int Status { get; set; }
 
         public List<ProductImages> ProductImages { get; set; }
+        public List<ProductAttribute> ProductAttributes { get; set; }
     }
 }

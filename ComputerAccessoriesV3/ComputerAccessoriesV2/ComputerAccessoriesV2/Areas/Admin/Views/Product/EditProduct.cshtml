@@ -78,7 +78,7 @@
                     <label asp-for="Product.Brand">Thương hiệu</label>
                 </div>
                 <div class="col-lg-10">
-                    
+
                     <input asp-for="Product.BrandId" class="form-control" />
                 </div>
             </div>
@@ -139,7 +139,17 @@
                 <div class="col-lg-8">
                     <img src="@Model.Product.Thumnail" width="20%" />
                     <br />
-                    <input asp-for="Product.Thumnail" type="file" name="thumnail" class="form-control" style="width:20%" />
+                    <input asp-for="Product.Thumnail" type="file" name="thumnail1" class="form-control" style="width:20%" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-2">
+                    <label asp-for="Product.Thumnail2">Hình nền2</label>
+                </div>
+                <div class="col-lg-8">
+                    <img src="@Model.Product.Thumnail2" width="20%" />
+                    <br />
+                    <input asp-for="Product.Thumnail2" type="file" name="thumnail2" class="form-control" style="width:20%" />
                 </div>
             </div>
 
@@ -192,10 +202,10 @@
                         
                         <div class="col-lg-4" id="@item.Id">
                             <div class="container">
-                                <input hidden id="imageId" value="@item.Id" />
+                                <input hidden id="imageId_@item.Id" value="@item.Id" />
                                 <img src="@item.ImageUrl" alt="@item.ImageUrl" class="image" style="width:100%">
                                 <div class="middle">
-                                    <div class="text"><button style="background:transparent;border:none" onclick="removeImg()"><span><i class="fa fa-remove" title="Xóa" style="font-size:25px; font-weight:100"></i></span></button></div>
+                                    <div class="text"><button style="background:transparent;border:none" onclick="removeImg(@item.Id)"><span><i class="fa fa-remove" title="Xóa" style="font-size:25px; font-weight:100"></i></span></button></div>
                                 </div>
                             </div>
                         </div>
@@ -206,12 +216,13 @@
                     <div class="col-lg-2">
                         <label style="margin-top:5px;">Upload ảnh</label>
                     </div>
-                    <form method="post" asp-action="UploadMoreImages" asp-controller="Product" asp-route-prodId="@Model.Product.Id" id="imgForm" enctype="multipart/form-data">
+                    
+                    <form method="post" id="imgForm" asp-action="UploadMoreImages" asp-controller="Product" asp-route-prodId="@Model.Product.Id"  enctype="multipart/form-data">
                         <div class="col-lg-6">
                             <input type="file" name="importImages" id="importImages" class="form-control" multiple />
                         </div>
                     </form>
-                                      
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -231,12 +242,82 @@
     <script src="~/tinymce/js/tinymce/jquery.tinymce.min.js"></script>
     
     <script>
-        tinymce.init({
-            selector: '#Product_FullDescription',
-            menubar: 'file edit insert view format table tools help',
-            min_height: 100
 
-        });
+        //tinymce.init({
+        //    selector: "textarea",  // change this value according to your HTML
+        //    plugins: "code",
+        //    toolbar: "code",
+        //    menubar: "tools"
+        //});
+
+        //tinymce.init({
+        //    selector: '#Product_FullDescription',
+        //    menubar: "tools",
+        //    min_height: 100,
+        //    plugins: "code",
+        //    toolbar: "code"
+        //});
+        tinymce.init({
+  selector: '#Product_FullDescription',
+  plugins: 'print preview fullpage paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+  imagetools_cors_hosts: ['picsum.photos'],
+  menubar: 'file edit view insert format tools table help',
+  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+  toolbar_sticky: true,
+  autosave_ask_before_unload: true,
+  autosave_interval: "30s",
+  autosave_prefix: "{path}{query}-{id}-",
+  autosave_restore_when_empty: false,
+  autosave_retention: "2m",
+  image_advtab: true,
+  content_css: [
+    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+    '//www.tiny.cloud/css/codepen.min.css'
+  ],
+  link_list: [
+    { title: 'My page 1', value: 'http://www.tinymce.com' },
+    { title: 'My page 2', value: 'http://www.moxiecode.com' }
+  ],
+  image_list: [
+    { title: 'My page 1', value: 'http://www.tinymce.com' },
+    { title: 'My page 2', value: 'http://www.moxiecode.com' }
+  ],
+  image_class_list: [
+    { title: 'None', value: '' },
+    { title: 'Some class', value: 'class-name' }
+  ],
+  importcss_append: true,
+  height: 400,
+  file_picker_callback: function (callback, value, meta) {
+    /* Provide file and text for the link dialog */
+    if (meta.filetype === 'file') {
+      callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+    }
+
+    /* Provide image and alt text for the image dialog */
+    if (meta.filetype === 'image') {
+      callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+    }
+
+    /* Provide alternative source and posted for the media dialog */
+    if (meta.filetype === 'media') {
+      callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+    }
+  },
+  templates: [
+        { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+    { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+    { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+  ],
+  template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+  template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+  height: 600,
+  image_caption: true,
+  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+  noneditable_noneditable_class: "mceNonEditable",
+  toolbar_drawer: 'sliding',
+  contextmenu: "link image imagetools table",
+ });
     </script>
 <script>
 
@@ -246,64 +327,64 @@
         var categoryId = "@Model.Product.CategoryId";
         var brandId = "@Model.Product.BrandId";
         $('#Product_CategoryId').kendoDropDownList({
-                optionLabel: '-Chọn danh mục-',
-                dataTextField: "categoryName",
-                dataValueField: "id",
-                dataSource: {
-                    type: 'json',
-                    serverFiltering: true,
-                    transport: {
-                        read: {
-                            url: window.location.protocol + '//' + window.location.host + "/MainService/GetCategory"
-                        },
-                        requestEnd: function (e) {
-                                var response = e.response;
-                                var type = e.type;
+            optionLabel: '-Chọn danh mục-',
+            dataTextField: "categoryName",
+            dataValueField: "id",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/MainService/GetCategory"
+                    },
+                    requestEnd: function (e) {
+                        var response = e.response;
+                        var type = e.type;
 
-                                if (response.length === 0) {
+                        if (response.length === 0) {
 
-                                }
-                        },
-                    }
-                },
+                        }
+                    },
+                }
+            },
             index: 0,
             value: categoryId
         });
 
         $('#Product_BrandId').kendoDropDownList({
-                optionLabel: '-Chọn thương hiệu-',
-                dataTextField: "brandName",
-                dataValueField: "id",
-                dataSource: {
-                    type: 'json',
-                    serverFiltering: true,
-                    transport: {
-                        read: {
-                            url: window.location.protocol + '//' + window.location.host + "/Brand/GetBrand"
-                        },
-                        requestEnd: function (e) {
-                                var response = e.response;
-                                var type = e.type;
-                                //console.log(type); // displays "read"
-                                if (response.length === 0) {
-                                    //console.log(response); // displays "read"
-                                }
-                        },
-                    }
-                },
+            optionLabel: '-Chọn thương hiệu-',
+            dataTextField: "brandName",
+            dataValueField: "id",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Brand/GetBrand"
+                    },
+                    requestEnd: function (e) {
+                        var response = e.response;
+                        var type = e.type;
+                        //console.log(type); // displays "read"
+                        if (response.length === 0) {
+                            //console.log(response); // displays "read"
+                        }
+                    },
+                }
+            },
             index: 0,
             value: brandId
-            });
+        });
     });
-        function removeImg() {
-         var imgId = $('#imageId').val();
-         debugger;
+    function removeImg(id) {
+        //var imgId = $('#imageId').val();
+        debugger;
         if (confirm('Bạn có muốn xóa hình ảnh này??')) {
             $.ajax({
                 url: "/Product/DeleteImage",
                 type: "post",
                 data: {
-                    _imgId :imgId
+                    _imgId: id
                 },
                 dataType: "json",              
                 success: function (result) {
@@ -315,7 +396,7 @@
                     console.log(err);
                 }
             });
-            }
+        }
         
     };
     $('#saveEditImages').click(function () {

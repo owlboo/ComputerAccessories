@@ -1,5 +1,5 @@
 ﻿
-@*@model ComputerAccessoriesV2.Models.Brand*@
+@model List<ComputerAccessoriesV2.Models.Brand>
 
 <div class="brand-area pt-28 pb-30">
     <div class="container">
@@ -16,27 +16,17 @@
         <div class="row">
             <div class="col-12">
                 <div class="brand-active slick-padding slick-arrow-style">
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br1.png" alt=""></a>
-                    </div>
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br2.png" alt=""></a>
-                    </div>
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br3.png" alt=""></a>
-                    </div>
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br4.png" alt=""></a>
-                    </div>
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br5.png" alt=""></a>
-                    </div>
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br6.png" alt=""></a>
-                    </div>
-                    <div class="brand-item text-center">
-                        <a href="#"><img src="assets/img/brand/br4.png" alt=""></a>
-                    </div>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <div class="brand-item text-center">
+                                <a asp-controller="Shopping" asp-action="ProductListFilter" asp-route-brandId="@item.Id"><img src="@item.Logo" alt=""></a>
+                            </div>
+                        }
+                    }
+
+
                 </div>
             </div>
         </div>

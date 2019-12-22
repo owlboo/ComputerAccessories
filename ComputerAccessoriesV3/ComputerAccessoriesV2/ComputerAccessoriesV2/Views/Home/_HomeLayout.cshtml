@@ -4,26 +4,72 @@
 @using ComputerAccessoriesV2.Extensions
 @using ComputerAccessoriesV2.Helpers
 @using ComputerAccessoriesV2.Models
+@using ComputerAccessoriesV2.ViewModels
+@using System.Security.Claims;
+@using Newtonsoft.Json;
 @inject SignInManager<ComputerAccessoriesV2.Data.MyUsers> SignInManager
 @inject UserManager<ComputerAccessoriesV2.Data.MyUsers> UserManager
 
 @inject RoleManager<IdentityRole<int>> roleManager
 @inject IHttpContextAccessor HttpContextAccessor
-@{ 
+@{
+    var ListShoppingCart = new List<ShoppingCartViewModel>();
     String Name = null;
+    int isActive = 0;
     if (SignInManager.IsSignedIn(User))
     {
+
         var user = await UserManager.GetUserAsync(User);
+
+        isActive = user.IsActivated.Value ? 1 : 0;
+
         Name = user.DisplayName;
+
+        int userId = 0;
+        int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier).Value, out userId);
+        if (userId != 0)
+        {
+            var sessionKey = "SessionSP_" + userId;
+            var session = HttpContextAccessor.HttpContext.Session;
+
+            if (session.GetString(sessionKey) != null)
+            {
+                ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(session.GetString(sessionKey));
+            }
+        }
+
     }
 
-    HttpContextAccessor = new HttpContextAccessor();
+
+
+
+
+    var _db = new ComputerAccessoriesV2Context();
+    List<Brand> brands = _db.Brand.ToList();
+    List<CategoryHomeModel> categoryModel = new List<CategoryHomeModel>();
+    categoryModel = _db.Category.Where(x=>x.ParendId == null).Select(x => new CategoryHomeModel
+    {
+        MainCategory = _db.Category.Where(z => z.Id == x.Id).FirstOrDefault(),
+
+    }).ToList();
+
+    foreach (var category in categoryModel)
+    {
+        category.ListChildrenNode = _db.Category.Where(x => x.ParendId == category.MainCategory.Id).Select(x => new CategoryHomeModel {
+            MainCategory = _db.Category.Where(z => z.Id == x.Id).FirstOrDefault(),
+            ListChildrenNode = _db.Category.Where(z=>z.ParendId == x.Id).Select(z=>new CategoryHomeModel {
+                MainCategory = _db.Category.Where(c=>c.Id ==z.Id).FirstOrDefault()
+            }).ToList()
+        }).ToList();
+
+    }
+    if(ViewBag.Index == null)
+    {
+        ViewBag.Index = 0;
+    }
 }
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-
-
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -31,7 +77,7 @@
     <meta name="description" content="meta description">
 
     <!-- Site title -->
-    <title>Galio - Mega Shop Responsive Bootstrap 4 Template</title>
+    @*<title>Galio - Mega Shop Responsive Bootstrap 4 Template</title>*@
     <!-- Favicon -->
     <link rel="shortcut icon" href="~/assets/img/favicon.ico" type="image/x-icon" />
     <!-- Bootstrap CSS -->
@@ -46,11 +92,23 @@
     <link href="~/assets/css/style.css" rel="stylesheet">
     <link href="~/assets/css/skin-default.css" rel="stylesheet" id="galio-skin">
 
-    @*<link rel="stylesheet" href="~/slick-1.8.1/slick-1.8.1/slick/slick-theme.css" />*@
+    <link rel="stylesheet" href="~/kendo/styles/kendo.bootstrap-v4.min.css" />
 
+    @*<link rel="stylesheet" href="~/slick-1.8.1/slick-1.8.1/slick/slick-theme.css" />*@
+    <style>
+        #cardList {
+            width: 500px;
+        }
+    </style>
 </head>
 
 <body>
+    @if (isActive == 0&&SignInManager.IsSignedIn(User))
+    {
+        <div class="container-fluid text-center" style="background-color:Highlight">
+            <text>Tài khoản của bạn chưa được kích hoạt. Nhấn <a href="#" style="font-weight:500">vào đây</a> để kích hoạt tài khoản của bạn</text>
+        </div>
+    }
 
     <!-- color switcher start -->
     <div class="color-switcher">
@@ -110,7 +168,7 @@
 
         <!-- header area start -->
         <header>
-
+            <span id="notifyActive"></span>
             <!-- header top start -->
             <div class="header-top-area bg-gray text-center text-md-left">
                 <div class="container">
@@ -150,20 +208,11 @@
                                                     </a>
                                                 }
 
-                                            <div class="dropdown-menu" aria-labelledby="myaccount">
-                                                @if (Name != null)
-                                                {
-                                                    <a class="dropdown-item" href="Customer/Profile">@Name</a>
-                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
-                                                }
-                                                else
-                                                {
-                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn">Đăng nhập</a>
-                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">Đăng kí</a>
-                                                }
-
-
-                                            </div>
+                                                <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                    <a class="dropdown-item" asp-action="Index" asp-controller="Profile" asp-area="Customer">Thông tin tài khoản</a>
+                                                    <a class="dropdown-item" asp-action="SignIn" asp-controller="Account" asp-area="Customer">Đăng nhập</a>
+                                                    <a class="dropdown-item" href="/Customer/Account/SignUp">Đăng ký</a>
+                                                </div>
                                             </div>
                                         </li>
                                         <li>
@@ -189,8 +238,8 @@
                     <div class="row align-items-center">
                         <div class="col-lg-3">
                             <div class="brand-logo">
-                                <a href="index.html">
-                                    <img src="assets/img/logo/logo.png" alt="brand logo">
+                                <a asp-action="Index" asp-controller="Home">
+                                    <img src="~/assets/img/logo/logo.png" alt="brand logo">
                                 </a>
                             </div>
                         </div> <!-- end logo area -->
@@ -231,52 +280,29 @@
                                         <button class="search-btn"><i class="fa fa-search"></i></button>
                                     </div>
                                     <div class="header-mini-cart">
-                                        <div class="mini-cart-btn">
-                                            <i class="fa fa-shopping-cart"></i>
-                                            <span class="cart-notification">2</span>
-                                        </div>
+
+                                        @if (ListShoppingCart != null && ListShoppingCart.Count > 0)
+                                        {
+                                            <div class="mini-cart-btn" id="cart_click">
+                                                <i class="fa fa-shopping-cart"></i>
+                                                <span class="cart-notification" id="sumProduct">@ListShoppingCart.Count</span>
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <div class="mini-cart-btn" id="cart_click">
+                                                <i class="fa fa-shopping-cart"></i>
+                                                <span class="cart-notification" id="sumProduct">0</span>
+                                            </div>
+                                        }
+
                                         <div class="cart-total-price">
                                             <span>total</span>
                                             $50.00
                                         </div>
-                                        <ul class="cart-list">
-                                            <li>
-                                                <div class="cart-img">
-                                                    <a href="product-details.html">
-                                                        <img src="assets/img/cart/cart-1.jpg"
-                                                             alt="">
-                                                    </a>
-                                                </div>
-                                                <div class="cart-info">
-                                                    <h4><a href="product-details.html">simple product 09</a></h4>
-                                                    <span>$60.00</span>
-                                                </div>
-                                                <div class="del-icon">
-                                                    <i class="fa fa-times"></i>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="cart-img">
-                                                    <a href="product-details.html">
-                                                        <img src="assets/img/cart/cart-2.jpg"
-                                                             alt="">
-                                                    </a>
-                                                </div>
-                                                <div class="cart-info">
-                                                    <h4><a href="product-details.html">virtual product 10</a></h4>
-                                                    <span>$50.00</span>
-                                                </div>
-                                                <div class="del-icon">
-                                                    <i class="fa fa-times"></i>
-                                                </div>
-                                            </li>
-                                            <li class="mini-cart-price">
-                                                <span class="subtotal">subtotal : </span>
-                                                <span class="subtotal-price">$88.66</span>
-                                            </li>
-                                            <li class="checkout-btn">
-                                                <a href="#">checkout</a>
-                                            </li>
+
+                                        <ul class="cart-list" id="cardList">
                                         </ul>
                                     </div>
                                 </div>
@@ -293,12 +319,8 @@
                         <div class="col-lg-12">
                             <div class="main-header-inner">
                                 <div class="category-toggle-wrap" id="categoryDropDown">
-                                    <div class="category-toggle">
-                                        category
-                                        <div class="cat-icon">
-                                            <i class="fa fa-angle-down"></i>
-                                        </div>
-                                    </div>
+                                    
+                                    <partial name="~/Views/Home/_CategoriesPartial.cshtml" model="categoryModel" />
                                 </div>
                                 @*@Html.Partial("~/Views/Home/_CategoriesPartial.cshtml")*@
                                 <div class="main-menu">
@@ -516,56 +538,12 @@
         </header>
         <!-- header area end -->
         <!-- hero slider start -->
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="slider-wrapper-area">
-                        <div class="hero-slider-active hero__1 slick-dot-style hero-dot">
-                            <div class="single-slider" style="background-image: url(assets/img/slider/slider11_bg.jpg);">
-                                <div class="container p-0">
-                                    <div class="slider-main-content">
-                                        <div class="slider-content-img">
-                                            <img src="assets/img/slider/slider11_lable1.png" alt="">
-                                            <img src="assets/img/slider/slider11_lable2.png" alt="">
-                                            <img src="assets/img/slider/slider11_lable3.png" alt="">
-                                        </div>
-                                        <div class="slider-text">
-                                            <div class="slider-label">
-                                                <img src="assets/img/slider/slider11_lable4.png" alt="">
-                                            </div>
-                                            <h1>headphones az12</h1>
-                                            <p>Typi Non Habent Claritatem Insitam; Est Usus Legentis</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="single-slider" style="background-image: url(assets/img/slider/slider12_bg.jpg);">
-                                <div class="container p-0">
-                                    <div class="slider-main-content">
-                                        <div class="slider-content-img">
-                                            <img src="assets/img/slider/slider11_lable1.png" alt="">
-                                            <img src="assets/img/slider/slider11_lable2.png" alt="">
-                                            <img src="assets/img/slider/slider11_lable3.png" alt="">
-                                        </div>
-                                        <div class="slider-text">
-                                            <div class="slider-label">
-                                                <img src="assets/img/slider/slider11_lable4.png" alt="">
-                                            </div>
-                                            <h1>samson s90</h1>
-                                            <p>Typi Non Habent Claritatem Insitam; Est Usus Legentis</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- hero slider end -->
         <!-- home banner area start -->
 
 
+
+        <span id="kendoNoti"></span>
         <div class="container">
 
             <main role="main" class="pb-3">
@@ -573,15 +551,18 @@
             </main>
         </div>
         <!-- brand area start -->
-        @Html.Partial("~/Views/Home/_BrandSliderPartial.cshtml")
+
+
+        <partial name="~/Views/Home/_BrandSliderPartial.cshtml" model="brands" />
         <!-- brand area end -->
         <!-- footer area start -->
         @Html.Partial("~/Views/Home/_FooterPartial.cshtml")
+
+
         <!-- footer area end -->
 
     </div>
     <!-- Quick view modal start -->
-    
     <!-- Quick view modal end -->
     <!-- Scroll to top start -->
     <div class="scroll-top not-visible">
@@ -604,15 +585,58 @@
     <script src="~/assets/js/main.js"></script>
     <!-- Switcher JS [Please Remove this when Choose your Final Projct] -->
     <script src="~/assets/js/switcher.js"></script>
+
+    <script src="~/kendo/js/kendo.ui.core.min.js"></script>
+    <script src="~/kendo/js/kendo.all.min.js"></script>
+    <script src="~/js/CustomerValidate.js"></script>
     @*<script src="~/slick-1.8.1/slick-1.8.1/slick/slick.min.js"></script>*@
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="new-mail">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
+
+    <script id="errorTemplate" type="text/x-kendo-template">
+        <div class="alert-error">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
+    <script src="~/js/HelperSDK.js"></script>
     <script>
         $(window).on('load', function () {
-            $.get("/Home/Categories", function (data) {
-                $('#categoryDropDown').append(data);
-            });
+            //$.get("/Home/Categories", function (data) {
+            //    $('#categoryDropDown').append(data);
+            //    //$('.category-menu').slideToggle();
+            //});
+            debugger;
+            if (@ViewBag.Index !== 1) {
+                $('.category-menu').hide();
+            }
 
+            $("#kendoNoti").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 30,
+                    right: 30
+                },
+                autoHideAfter: 5 * 1000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }, {
+                    type: "error",
+                    template: $("#errorTemplate").html()
+                }
+                ]
+
+            })
         })
+
     </script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

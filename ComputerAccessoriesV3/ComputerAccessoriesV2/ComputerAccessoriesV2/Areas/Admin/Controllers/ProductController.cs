@@ -45,12 +45,12 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             {
                 Id = x.Id,
                 ProductName = x.ProductName,
-                PromotionPrice = x.PromotionPrice ?? x.PromotionPrice.Value,
+                PromotionPrice = x.PromotionPrice !=null ? x.PromotionPrice.Value.ToString("###.###"): "",
                 BrandId = x.BrandId ?? x.BrandId.Value,
                 BrandName = x.Brand.BrandName,
                 CategoryId = x.CategoryId ?? x.CategoryId.Value,
                 CategoryName = x.Category.CategoryName,
-                OriginalPrice = x.OriginalPrice ?? x.OriginalPrice.Value,
+                OriginalPrice = x.OriginalPrice !=null? x.OriginalPrice.Value.ToString("###,###"):"",
                 Origin = x.Origin,
                 Color = x.Color,
                 Code = x.Code,
@@ -101,15 +101,26 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 int i = 1;
                 foreach (var item in filesUpload)
                 {
-                    if (item.Name == "thumnail")
+                    if (item.Name == "thumnail1")
                     {
-                        var fileName = product.Code + "-thumnail";
+                        var fileName = product.Code + "-thumnail1";
                         var extension = Path.GetExtension(item.FileName);
                         using (var fileStream = new FileStream(Path.Combine(pathImage, fileName + extension), FileMode.Create))
                         {
                             await item.CopyToAsync(fileStream);
                         }
                         productFromDb.Thumnail = @"/" + SD.ProductImages + @"/" + fileName + extension;
+                        await _db.SaveChangesAsync();
+                    }
+                    if (item.Name == "thumnail2")
+                    {
+                        var fileName = product.Code + "-thumnail2";
+                        var extension = Path.GetExtension(item.FileName);
+                        using (var fileStream = new FileStream(Path.Combine(pathImage, fileName + extension), FileMode.Create))
+                        {
+                            await item.CopyToAsync(fileStream);
+                        }
+                        productFromDb.Thumnail2 = @"/" + SD.ProductImages + @"/" + fileName + extension;
                         await _db.SaveChangesAsync();
                     }
                     if (item.Name == "moreimages")
@@ -192,13 +203,22 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 {
                     var fileName = Path.GetFileName(item.FileName);
                     var fileExtension = Path.GetExtension(fileName);
-                    if (item.Name == "thumnail")
+                    if (item.Name == "thumnail1")
                     {
                         using (var fileStream = new FileStream(Path.Combine(pathImage, fileName + fileExtension), FileMode.Create))
                         {
                             await item.CopyToAsync(fileStream);
                         }
                         productFromDb.Thumnail = @"/" + SD.ProductImages + @"/" + fileName + fileExtension;
+                        await _db.SaveChangesAsync();
+                    }
+                    if (item.Name == "thumnail2")
+                    {
+                        using (var fileStream = new FileStream(Path.Combine(pathImage, fileName + fileExtension), FileMode.Create))
+                        {
+                            await item.CopyToAsync(fileStream);
+                        }
+                        productFromDb.Thumnail2 = @"/" + SD.ProductImages + @"/" + fileName + fileExtension;
                         await _db.SaveChangesAsync();
                     }
                 }
@@ -239,35 +259,50 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 int count = 0;
                 var webRootPath = _hostEnvironment.WebRootPath;
                 var pathImage = Path.Combine(webRootPath, SD.ProductImages);
-
-                foreach (var item in files)
+                
+                    foreach (var item in files)
                 {
-                    var fullPath = Path.Combine(pathImage, productFromDb.Code + "-image" + i);
-                    while (checkContain(images, fullPath) == "")
+                    
+                    var fileName = Path.GetFileName(item.FileName);
+                    var extension = Path.GetExtension(fileName);
+                    
+                        if (images.Count != 0)
+                        {
+                            while (checkContain(images, @"/"+SD.ProductImages +@"/"+ productFromDb.Code + "-image" + i + extension) == true)
+                            {
+                                i++;
+                            }
+                        }
+                    var fullPath = Path.Combine(pathImage, productFromDb.Code + "-image" + i + extension);
+                    if (System.IO.File.Exists(fullPath))
                     {
-                        i++;
+                        System.IO.File.Delete(fullPath);
                     }
                     using (var fileStream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        await item.CopyToAsync(fileStream);
-                    }
-                    ProductImages img = new ProductImages
-                    {
-                        ImageUrl = fullPath,
-                        ProductId = prodId,
-                    };
-                    _db.ProductImages.Add(img);
-                    if (await _db.SaveChangesAsync() > 0)
-                    {
-                        count++;
-                    }
+                        {
+                            
+                            await item.CopyToAsync(fileStream);
+                        }
+                        ProductImages img = new ProductImages
+                        {
+                            ImageUrl = @"/"+SD.ProductImages+@"/"+ productFromDb.Code + "-image"+i+extension,
+                            ProductId = prodId,
+                        };
+                            i++;
+                            _db.ProductImages.Add(img);
+                                if (await _db.SaveChangesAsync() > 0)
+                                {
+                                    count++;
+                                }
+                    
+                    
                 }
                 if (count == files.Count)
                 {
-                    return Json(new { code = 1, notice = $"Đã thêm {count} hình ảnh" });
+                    return RedirectToAction(nameof(EditProduct), new {id = prodId });
                 }
             }
-            return Json(new { code = 0, notice = "Cập nhật thất bại" });
+            return RedirectToAction(nameof(EditProduct), new { id = prodId }); ;
         }
 
 
@@ -360,21 +395,17 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             returnUrl = "/Admin/Product/ProductManagement";
             return Json(new { code = 1, url = returnUrl });
         }
-        public string checkContain(List<string> strs, string key)
+        public bool checkContain(List<string> strs, string key)
         {
             string result = "";
             foreach (var item in strs)
             {
                 if (item.Contains(key))
                 {
-                    continue;
-                }
-                else
-                {
-                    result = key;
+                    return true;
                 }
             }
-            return result;
+            return false;
         }
     }
 }
