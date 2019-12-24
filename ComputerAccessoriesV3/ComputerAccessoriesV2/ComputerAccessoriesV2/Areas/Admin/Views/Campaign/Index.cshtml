@@ -1,0 +1,84 @@
+﻿@model List<ComputerAccessoriesV2.ViewModels.AccountViewModel>
+@using ComputerAccessoriesV2.Extensions
+@{
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-lg-10">
+            <h3>Danh sách chiến dịch</h3>
+        </div>
+        <div class="col-lg-1">
+            <a class="btn btn-default" asp-area="Admin" asp-controller="Campaign" asp-action="CreateNewCampaign"><span><i class="fa fa-plus"></i></span>Thêm Chiến dịch mới</a>
+            <div class="alert alert-success" id="showNotification"></div>
+        </div>
+    </div>
+</div>
+<br />
+
+<div id="compaignGrid"></div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#showNotification').hide();
+            $("#compaignGrid").kendoGrid({
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: window.location.protocol + '//' + window.location.host + "/Admin/Campaign/GetAllCampaign"
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                groupable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [{
+                    field: "campaignId",
+                    title: "ID",
+                }, {
+                    field: "campaignName",
+                    title: "Tên chiến dịch"
+                },{
+                    field: "createdDate",
+                    title: "Ngày khởi tạo"
+                },{
+                    field: "startDate",
+                    title: "Ngày bắt đầu"
+                },{
+                    field: "endDate",
+                    title: "Ngày kết thúc"
+                },{
+                    field: "description",
+                    title: "Mô tả"
+                },{
+                    field: "typeId",
+                    title: "Loại chiến dịch ",
+                }, {
+                    field: "status",
+                    template: "#if(status==true){#<text>Đã kích hoạt</text>#}else{#<text>Khóa/Chưa kích hoạt</text>#}#"
+                },{ 
+                    title: "Thao tác",
+                    template:"<a class ='btn btn-default' style='border:none; background:transparent' onclick='return EditCampaign(#: campaignId#)' title='Chỉnh sửa'><span><i class='fa fa-pencil'></i></span></a>"
+                    }]
+            });
+        });
+
+        function show() {
+            $('showNotification').fadeTo(2000, 500).slideDown(500, function () {
+                $('showNotification').slideUp(500);
+            })
+        }
+
+        function EditCampaign(id) {
+            window.location.href = window.location.protocol + '//' + window.location.host + "/Admin/Campaign/EditCampaign?id=" + id;
+        }
+    </script>
+}
