@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Models;
+using ComputerAccessoriesV2.ViewModels.DbQueryModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComputerAccessoriesV2.Data
@@ -27,6 +28,10 @@ namespace ComputerAccessoriesV2.Data
         }
         public virtual DbSet<UserInformationModel> UserInformationModels { get; set; }
 
+        public virtual DbSet<CampaignProduct> CampaignProducts { get; set; }
+
+        public virtual DbSet<ProductAvailableForCompaign> ProductAvailableForCompaign { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -41,6 +46,8 @@ namespace ComputerAccessoriesV2.Data
 
             modelBuilder.Entity<CategoryShoppingModel>(entity => { entity.HasNoKey(); });
             modelBuilder.Entity<UserInformationModel>(entity => { entity.HasNoKey(); });
+            modelBuilder.Entity<CampaignProduct>().HasKey(pc => new { pc.ProductId });
+            modelBuilder.Entity<ProductAvailableForCompaign>(entity => { entity.HasNoKey(); });
 
             OnModelCreatingPartial(modelBuilder);
         }

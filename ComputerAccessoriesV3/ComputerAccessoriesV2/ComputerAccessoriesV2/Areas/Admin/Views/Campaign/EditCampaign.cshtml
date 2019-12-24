@@ -3,13 +3,16 @@
     int campaignId = ViewBag.CampaignId;
 }
 
-
+<div>
+    <button class="k-button" onclick="openFormInsertNewProduct()">Thêm sản phẩm</button>
+    <button class="k-button" onclick="openFormModifyCampaignInfo()">Thay đổi thông tin Campaign</button>
+</div>
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">Hover Data Table</h3>
+                <h3 class="box-title">Danh sách sản phẩm chạy khuyến mãi</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -22,6 +25,112 @@
     </div>
 
 </div>
+
+<div id="modifyCampaignInfoForm" class="modal fade" role="dialog" style="margin-top: 100px;">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#6b7f9a">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><b>Chỉnh sửa thông tin chiến dịch</b></h4>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label>Tên Campaign</label>
+                    <br />
+                    <input id="txtCampaignName" type="text" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Ngày bắt đầu</label>
+                    <br />
+                    <input id="startdatetimepicker" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Ngày kết thúc</label>
+                    <br />
+                    <input id="enddatetimepicker" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Loại giảm giá</label>
+                    <br />
+                    <select id="campaignType" class="form-control"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Trạng thái</label>
+                    <br />
+                    <input type="checkbox" id="cbStatus" class="icheckbox_square" />
+                </div>
+
+                <div class="form-group">
+                    <label>Mô tả chi tiết</label>
+                    <br />
+                    <input type="text" id="txtDescription" class="form-control"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="submitEditCampaignInfo()" type="button" class="btn btn-default"><span><i class="fa fa-check"></i></span> Thay đổi</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="insertNewProductForm" class="modal fade" role="dialog" style="margin-top: 100px;">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#6b7f9a">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><b>Thêm sản phẩm mới vào chiến dịch</b></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <p id="txtNotice"></p>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-lg-2">
+                        <label>Chọn sản phẩm chạy khuyến mãi</label>
+                    </div>
+                    <div class="col-lg-10">
+                        <input id="productSelector" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-lg-2">
+                        <label>Giá gốc: </label>
+                    </div>
+                    <div class="col-lg-10">
+                        <input class="form-control" id="txtOriginPrice" type="number" disabled="disabled" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-lg-2">
+                        <label>Giá khuyến mãi: </label>
+                    </div>
+                    <div class="col-lg-10">
+                        <input class="form-control" id="txtPromotionPrice" type="number" placeholder="Vui lòng nhập giá khuyến mãi" required />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="insertNewProduct()" type="button" class="btn btn-default" id="btn-insertProduct"><span><i class="fa fa-check"></i></span> Tạo</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 @section Scripts{
     <script>
         $(document).ready(() => {
@@ -40,10 +149,6 @@
                                     url: crudCampaignDetailBaseUrl + "/RemoveProductInCampaignDetail",
                                     dataType: "json"
                                 },
-                                create: {
-                                    url: crudCampaignDetailBaseUrl + "/InsertProductToExitCampaign",
-                                    dataType: "json"
-                                },
                                 parameterMap: function(options, operation) {
                                     if (operation !== "read" && options.models) {
                                         return {models: kendo.stringify(options.models)};
@@ -54,12 +159,12 @@
                             pageSize: 20,
                             schema: {
                                 model: {
-                                    id: "id",
+                                    id: "campaignDetailId",
                                     fields: {
-                                        id: { editable: false, nullable: false },
+                                        campaignDetailId: { editable: false, nullable: false },
                                         productId: { editable: false, nullable: false },
                                         productName: { editable: false, nullable: false },
-                                        originPrice: { editable: false, nullable: false },
+                                        originalPrice: { editable: false, nullable: false },
                                         promotionPrice: { type: "number", validation: { required: true, min: 1 } },
                                         campaignId: { editable: false, nullable: false, defaultValue: @campaignId }
                                     }
@@ -71,16 +176,166 @@
                         dataSource: dataSource,
                         pageable: true,
                         height: 550,
-                        toolbar: ["create"],
                         columns: [
-                            { field: "id", title: "ID", width: "120px" },
+                            { field: "campaignDetailId", title: "ID Campaign Detail", width: "120px" },
                             { field: "productId", title: "Mã sản phẩm", width: "120px" },
                             { field: "productName", title: "Tên sản phẩm", width: "120px" },
-                            { field: "originPrice", title: "Giá gốc", width: "120px" },
+                            { field: "originalPrice", title: "Giá gốc", width: "120px" },
                             { field: "promotionPrice", title: "Giá khuyến mãi", width: "120px" },
                             { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }],
                         editable: "inline"
                     });
         });
+
+        function openFormInsertNewProduct() {
+            $('#insertNewProductForm').modal('show');
+
+            $('#productSelector').kendoDropDownList({
+                optionLabel: '-Chọn sản phẩm-',
+                dataTextField: "productName",
+                dataValueField: "productId",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host+"/Admin/Campaign/GetAllProductForNewCampaign"
+                        },
+                        requestEnd: function (e) {
+                                var response = e.response;
+                                var type = e.type;
+                                //console.log(type); // displays "read"
+                                if (response.length === 0) {
+                                    //console.log(response); // displays "read"
+                                }
+                        },
+                    }
+                },
+                index: 0,
+                change: onDataBoundProduct
+            });
+        }
+
+        function insertNewProduct() {
+            var _productId = $('#productSelector').data('kendoDropDownList').value();
+            var _promotionPrice = $('#txtPromotionPrice').val();
+
+            data = {
+                productId: _productId,
+                campaignId: @campaignId,
+                promotionPrice: _promotionPrice
+            }
+
+            $.ajax({
+                url: "/Admin/Campaign/InsertProductToExistCampaign",
+                type: "post",
+                data: data,
+                dataType: "json",
+                success: function (result) {
+                    console.log(result)
+                    alert(result.notify)
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert(error.responseJSON.notify)
+                }
+            });
+        }
+
+        function openFormModifyCampaignInfo() {
+            $('#modifyCampaignInfoForm').modal('show');
+
+            $.ajax({
+                url: "/Admin/Campaign/GetCampaignInfo?id=@campaignId",
+                type: "get",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result)
+                    fillModifyCampaignForm(result);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        function fillModifyCampaignForm(response) {
+            $('#campaignType').kendoDropDownList({
+                dataTextField: "description",
+                dataValueField: "typeId",
+                dataSource: {
+                    serverserverFiltering: true,
+                    type: "json",
+                    transport: {
+                        read: window.location.protocol + '//' + window.location.host + "/Admin/Campaign/GetAllCampaignType",
+                    },
+                },
+                value: response.typeId
+            })
+
+            $("#startdatetimepicker").kendoDateTimePicker({
+                value: response.startDate,
+                dateInput: true
+            });
+
+            $("#enddatetimepicker").kendoDateTimePicker({
+                value: response.endDate,
+                dateInput: true
+            });
+
+            $("#txtCampaignName").val(response.campaignName);
+            $("#txtDescription").val(response.description);
+            $("#cbStatus")[0].checked = response.status;
+        }
+
+        function submitEditCampaignInfo() {
+            var startTime = $('#startdatetimepicker').val();
+            var endTime = $('#enddatetimepicker').val();
+            var campaignType = $('#campaignType').val();
+            var campaignName = $('#txtCampaignName').val();
+            var description = $('#txtDescription').val();
+            var status = $("#cbStatus")[0].checked;
+
+            var data = {
+                CampaignId: @campaignId,
+                CampaignName: campaignName,
+                CampaignType: campaignType,
+                Status: status,
+                StartDate: startTime,
+                EndDate: endTime,
+                Description: description
+            }
+
+            $.ajax({
+                url: "/Admin/Campaign/EditCampaign",
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    alert(result.notify)
+                },
+                error: function (e) {
+                    alert(e.responseJSON.notify)
+                    console.log(e.err)
+                }
+            });
+        }
+
+        function onDataBoundProduct() {
+            var productId = $('#productSelector').data('kendoDropDownList').value();
+
+            $.ajax({
+                url: "/Admin/Product/GetProductOriginPrice?id=" + productId,
+                type: "get",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    document.getElementById('txtOriginPrice').value = result.originPrice;
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
     </script>
 }

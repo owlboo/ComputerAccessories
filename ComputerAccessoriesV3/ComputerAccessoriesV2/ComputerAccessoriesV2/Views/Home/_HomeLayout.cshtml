@@ -209,9 +209,18 @@
                                                 }
 
                                                 <div class="dropdown-menu" aria-labelledby="myaccount">
-                                                    <a class="dropdown-item" asp-action="Index" asp-controller="Profile" asp-area="Customer">Thông tin tài khoản</a>
-                                                    <a class="dropdown-item" asp-action="SignIn" asp-controller="Account" asp-area="Customer">Đăng nhập</a>
-                                                    <a class="dropdown-item" href="/Customer/Account/SignUp">Đăng ký</a>
+                                                    @if (Name != null)
+                                                    {
+                                                        <a class="dropdown-item" href="Customer/Profile">@Name</a>
+                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn">Đăng nhập</a>
+                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">Đăng kí</a>
+                                                    }
+
+
                                                 </div>
                                             </div>
                                         </li>

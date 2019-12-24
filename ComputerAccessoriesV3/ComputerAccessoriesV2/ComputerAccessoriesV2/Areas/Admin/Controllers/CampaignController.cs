@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
@@ -10,6 +12,8 @@ using ComputerAccessoriesV2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace ComputerAccessoriesV2.Areas.Admin.Controllers
@@ -48,50 +52,47 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
-        public async Task<JsonResult> CreateNewCampaign(CampaignViewModel _params)
+        public JsonResult CreateNewCampaign(CampaignViewModel _params)
         {
-            var newCampaign = new Campaign
+            using (var scope = _db.Database.BeginTransaction())
             {
-                CampaignName = _params.CampaignName,
-                TypeId = _params.CampaignType,
-                Status = true,
-                StartDate = _params.StartDate,
-                EndDate = _params.EndDate,
-                CreatedDate = DateTime.Now,
-                Description = _params.Description
-            };
-
-            _db.Campaign.Add(newCampaign);
-
-            var resultInsert = await _db.SaveChangesAsync();
-
-            if (resultInsert <= 0)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Error when insert new Campaign" });
-
-            }
-            else
-            {
-                foreach (var item in _params.ListProduct)
+                try
                 {
-                    _db.CampaignDetails.Add(new CampaignDetails
+                    var resultInsertCampaign = 0;
+                    var newCampaign = new Campaign
                     {
-                        CampaignId = newCampaign.CampaignId,
-                        ProductId = item,
-                    });
-                }
+                        CampaignName = _params.CampaignName,
+                        TypeId = _params.CampaignType,
+                        Status = true,
+                        StartDate = _params.StartDate,
+                        EndDate = _params.EndDate,
+                        CreatedDate = DateTime.Now,
+                        Description = _params.Description
+                    };
 
-                var resultInsertListProduct = await _db.SaveChangesAsync();
-                if (resultInsertListProduct <= 0)
-                {
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(new { message = "Error when insert list Product to CampaignDetail" });
-                }
-                else
-                {
+                    _db.Campaign.Add(newCampaign);
+                    _db.SaveChanges();
+
+                    foreach (var item in _params.ListProduct)
+                    {
+                        _db.CampaignDetails.Add(new CampaignDetails
+                        {
+                            CampaignId = newCampaign.CampaignId,
+                            ProductId = item,
+                        });
+
+                        _db.SaveChanges();
+                    }
+
+                    scope.Commit();
                     Response.StatusCode = (int)HttpStatusCode.OK;
                     return Json(new { newCampaignId = newCampaign.CampaignId });
+                }
+                catch (Exception e)
+                {
+                    scope.Rollback();
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(new { notify = "Error when insert new Campaign", message = e.Message });
                 }
             }
         }
@@ -99,15 +100,98 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditCampaign(int id)
         {
-            ViewBag.CampaignId = id;
-            return View();
+            if (_db.Campaign.Any(o => o.CampaignId == id))
+            {
+                ViewBag.CampaignId = id;
+                return View();
+            }
+            else
+            {
+                return NotFound();
+            }
+
         }
+
 
         [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public JsonResult EditCampaign(CampaignViewModel _params)
         {
-            return Json(null);
+            var campaign = _db.Campaign.Where(x => x.CampaignId == _params.CampaignId).FirstOrDefault();
+            if (campaign == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { notify = "Không tìm thấy Campaign" });
+            }
+            else
+            {
+                using (var scope = _db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var changeStatus = campaign.Status != _params.Status;
+
+                        campaign.CampaignName = _params.CampaignName;
+                        campaign.Description = _params.Description;
+                        campaign.StartDate = _params.StartDate;
+                        campaign.EndDate = _params.EndDate;
+                        campaign.TypeId = _params.CampaignType;
+                        campaign.Status = _params.Status;
+
+                        _db.SaveChanges();
+
+                        if (changeStatus)
+                        {
+                            if (_params.Status)
+                            {
+                                var listAffectProduct = (
+                                from p in _db.Products
+                                join cd in _db.CampaignDetails on p.Id equals cd.ProductId
+                                where cd.CampaignId == _params.CampaignId
+                                select new
+                                {
+                                    p,
+                                    cd
+                                }
+                                ).ToList();
+
+                                listAffectProduct.ForEach(item =>
+                                {
+                                    item.p.PromotionPrice = item.cd.PromotionPrice;
+                                    _db.SaveChanges();
+                                });
+                            }
+                            else
+                            {
+                                var listAffectProduct = (
+                                from p in _db.Products
+                                join cd in _db.CampaignDetails on p.Id equals cd.ProductId
+                                join c in _db.Campaign on cd.CampaignId equals c.CampaignId
+                                where c.CampaignId == _params.CampaignId
+                                select p
+                                ).ToList();
+
+                                listAffectProduct.ForEach(p =>
+                                {
+                                    p.PromotionPrice = null;
+                                    _db.SaveChanges();
+                                });
+                            }
+
+                        }
+                        scope.Commit();
+
+                        Response.StatusCode = (int)HttpStatusCode.OK;
+                        return Json(new { notify = "Thay đổi Campaign Info thành công!" });
+                    }
+                    catch
+                    {
+                        scope.Rollback();
+                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Json(new { notify = "Lỗi khi update thông tin campaign" });
+                    }
+                }
+            }
         }
 
         [Authorize(Policy = Policy.AdminAccess)]
@@ -120,80 +204,36 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         [HttpGet]
         public JsonResult GetAllProductForNewCampaign()
         {
-            var now = DateTime.Now;
-            var listAllProduct = _db.Products.ToList();
-            var listCompaigningProduct =
-                (from product in _db.Products
-                 join campaignDetail in _db.CampaignDetails on product.Id equals campaignDetail.ProductId
-                 join campaign in _db.Campaign on campaignDetail.CampaignId equals campaign.CampaignId 
-                    where campaign.Status.Value == true && campaign.EndDate < now 
-                 select product).ToList();
-            var listAvailableForNewCompaign = listAllProduct.Except(listCompaigningProduct);
-            return (Json(listAvailableForNewCompaign));
+            var context = new QueryDbContext();
+            StringBuilder sqlQuery = new StringBuilder();
+            sqlQuery.Append(@"select p.Id as ProductId, p.ProductName
+                            from dbo.Products p
+                            where Id not in
+                            (select distinct p.Id
+                            from dbo.Products p
+                            join dbo.CampaignDetails cd on cd.ProductId = p.Id
+                            join dbo.Campaign c on c.CampaignId = cd.CampaignId
+                            where c.EndDate > CURRENT_TIMESTAMP and c.Status = 1)");
+
+            var listAvailableProduct = context.ProductAvailableForCompaign.FromSqlRaw(sqlQuery.ToString()).ToList();
+            return (Json(listAvailableProduct));
         }
 
         [HttpGet]
         public JsonResult GetAllProductInCampaign(int campaignId)
         {
-            try
-            {
-                var listProduct = (from product in _db.Products
-                                   join campaignDetail in _db.CampaignDetails on product.Id equals campaignDetail.ProductId
-                                   join campaign in _db.Campaign on campaignId equals campaign.CampaignId
-                                   select new
-                                   {
-                                       ProductId = product.Id,
-                                       Id = campaignDetail.CampaignDetailId,
-                                       productName = product.ProductName,
-                                       originPrice = product.OriginalPrice,
-                                       promotionPrice = campaignDetail.PromotionPrice
-                                   }).ToList();
+            var context = new QueryDbContext();
+            StringBuilder sqlQuery = new StringBuilder();
+            sqlQuery.Append(@"select p.ProductName, cd.PromotionPrice, p.OriginalPrice, cd.ProductId, cd.CampaignDetailId
+                                from dbo.CampaignDetails cd, dbo.Products p
+                                where cd.CampaignId = @campaignId and p.Id = cd.ProductId");
 
-                Response.StatusCode = (int)HttpStatusCode.OK;
-                return Json(listProduct);
-            } catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = e.ToString() });
-            }
+            var listProduct = context.CampaignProducts.FromSqlRaw(sqlQuery.ToString(), new SqlParameter("campaignId", campaignId)).ToList();
+            return (Json(listProduct));
         }
 
         [HttpGet]
-        public async Task<JsonResult> UpdateProductInCampaignDetail([FromQuery(Name ="models")] string models)
-        {
-            var list = ParseListCampaginDetail(models);
-            if(list == null || list.Count == 0)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(models);
-            } else
-            {
-                foreach (var item in list)
-                {
-                    var compainDetailDb = _db.CampaignDetails.Where(x => x.CampaignDetailId == item.id).FirstOrDefault();
-                    var product = _db.Products.Where(x => x.Id == item.productId).FirstOrDefault();
-
-                    compainDetailDb.PromotionPrice = item.promotionPrice;
-                    product.PromotionPrice = item.promotionPrice;
-                }
-
-                var result = await _db.SaveChangesAsync();
-
-                if(result == list.Count)
-                {
-                    Response.StatusCode = (int)HttpStatusCode.OK;
-                    return Json(list);
-                }
-                else
-                {
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(new { message = "Err" });
-                }
-            }
-        }
-
-        [HttpGet]
-        public async Task<JsonResult> RemoveProductInCampaignDetail([FromQuery(Name = "models")] string models)
+        public JsonResult UpdateProductInCampaignDetail([FromQuery(Name = "models")] string models)
         {
             var list = ParseListCampaginDetail(models);
             if (list == null || list.Count == 0)
@@ -203,32 +243,36 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
             else
             {
-                foreach (var item in list)
+                using (var scope = _db.Database.BeginTransaction())
                 {
-                    var compainDetailDb = _db.CampaignDetails.Where(x => x.CampaignDetailId == item.id).FirstOrDefault();
-                    var productDb = _db.Products.Where(x => x.Id == item.id).FirstOrDefault();
+                    try
+                    {
+                        foreach (var item in list)
+                        {
+                            var compainDetailDb = _db.CampaignDetails.Where(x => x.CampaignDetailId == item.campaignDetailId).FirstOrDefault();
+                            var product = _db.Products.Where(x => x.Id == item.productId).FirstOrDefault();
 
-                    _db.Remove(compainDetailDb);
-                    productDb.PromotionPrice = null;
-                }
+                            compainDetailDb.PromotionPrice = item.promotionPrice;
+                            product.PromotionPrice = item.promotionPrice;
+                            _db.SaveChanges();
+                        }
+                        scope.Commit();
 
-                var result = await _db.SaveChangesAsync();
-
-                if (result == list.Count*2)
-                {
-                    Response.StatusCode = (int)HttpStatusCode.OK;
-                    return Json(list);
-                }
-                else
-                {
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(new { message = "Err" });
+                        Response.StatusCode = (int)HttpStatusCode.OK;
+                        return Json(list);
+                    }
+                    catch (Exception e)
+                    {
+                        scope.Rollback();
+                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Json(new { notify = "Err", message = e.Message });
+                    }
                 }
             }
         }
 
         [HttpGet]
-        public async Task<JsonResult> InsertProductToExitCampaign([FromQuery(Name = "models")] string models)
+        public JsonResult RemoveProductInCampaignDetail([FromQuery(Name = "models")] string models)
         {
             var list = ParseListCampaginDetail(models);
             if (list == null || list.Count == 0)
@@ -238,32 +282,81 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
             else
             {
-                foreach (var item in list)
+                using (var scope = _db.Database.BeginTransaction())
                 {
+                    try
+                    {
+                        foreach (var item in list)
+                        {
+                            var compainDetailDb = _db.CampaignDetails.Where(x => x.CampaignDetailId == item.campaignDetailId).FirstOrDefault();
+                            var productDb = _db.Products.Where(x => x.Id == item.productId).FirstOrDefault();
+
+                            _db.Remove(compainDetailDb);
+                            productDb.PromotionPrice = null;
+                        }
+                        scope.Commit();
+
+                        Response.StatusCode = (int)HttpStatusCode.OK;
+                        return Json(list);
+                    }
+                    catch (Exception e)
+                    {
+                        scope.Rollback();
+                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Json(new { notify = "Err", message = e.Message });
+                    }
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult InsertProductToExistCampaign(CampaignDetailViewModel _params)
+        {
+            using (var scope = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (_db.CampaignDetails.Any(cd => cd.CampaignId == _params.campaignId && cd.ProductId == _params.productId))
+                    {
+                        throw new Exception(message: "Đã tồn tại sản phẩm trong Campaign!");
+                    }
+
                     _db.CampaignDetails.Add(new CampaignDetails
                     {
-                        ProductId = item.productId,
-                        PromotionPrice = item.promotionPrice,
-                        CampaignId = item.campaignId
+                        ProductId = _params.productId,
+                        PromotionPrice = _params.promotionPrice,
+                        CampaignId = _params.campaignId
                     });
-                }
 
-                int result = await _db.SaveChangesAsync();
+                    _db.SaveChanges();
 
-                if (result == list.Count)
-                {
+                    var product = _db.Products.Where(x => x.Id == _params.productId).FirstOrDefault();
+                    product.PromotionPrice = _params.promotionPrice;
+
+                    _db.SaveChanges();
+
+                    scope.Commit();
+
                     Response.StatusCode = (int)HttpStatusCode.OK;
-                    return Json(list);
+                    return Json(new { notify = "Thêm sản phẩm vào Campaign thành công!" });
                 }
-                else
+                catch (Exception e)
                 {
+                    scope.Rollback();
                     Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(new { message = "Err" });
+                    return Json(new { notify = e.Message, err = e.Message });
                 }
             }
         }
 
-        private List<CampaignDetailViewModel> ParseListCampaginDetail (String jsonString)
+        [HttpGet]
+        public JsonResult GetCampaignInfo(int id)
+        {
+            var campaignDb = _db.Campaign.Where(x => x.CampaignId == id).FirstOrDefault();
+            return Json(campaignDb);
+        }
+
+        private List<CampaignDetailViewModel> ParseListCampaginDetail(String jsonString)
         {
             return JsonConvert.DeserializeObject<List<CampaignDetailViewModel>>(jsonString);
         }

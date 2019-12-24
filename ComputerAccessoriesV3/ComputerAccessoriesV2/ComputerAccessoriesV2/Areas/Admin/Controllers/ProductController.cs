@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
@@ -395,6 +396,23 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             returnUrl = "/Admin/Product/ProductManagement";
             return Json(new { code = 1, url = returnUrl });
         }
+
+        [HttpGet]
+        public JsonResult GetProductOriginPrice(int id)
+        {
+            var product = _db.Products.Where(x => x.Id == id).FirstOrDefault();
+            if(product != null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return Json(new { originPrice = product.OriginalPrice });
+            }
+            else
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { message = "Error when load product id ="+ id });
+            }
+        }
+
         public bool checkContain(List<string> strs, string key)
         {
             string result = "";

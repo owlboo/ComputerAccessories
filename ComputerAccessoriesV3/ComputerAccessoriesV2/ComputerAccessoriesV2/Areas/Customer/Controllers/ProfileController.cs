@@ -58,7 +58,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             var user = await _userManager.GetUserAsync(User);
             var currentUserDb = _db.AspNetUsers.Where(x => x.Id == user.Id).FirstOrDefault();
 
-            currentUserDb.UserName = _params.UserName;
+            currentUserDb.DisplayName = _params.UserName;
             currentUserDb.PhoneNumber = _params.PhoneNumber;
 
             var result = await _db.SaveChangesAsync();

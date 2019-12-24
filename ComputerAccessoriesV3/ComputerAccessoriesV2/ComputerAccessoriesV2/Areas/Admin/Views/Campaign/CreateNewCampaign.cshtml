@@ -9,69 +9,63 @@
     </div>
     <!-- /.box-header -->
     <!-- form start -->
-    <form>
-        <div class="box-body">
-            <div class="form-group">
-                <label>Tên Campaign</label>
-                <br />
-                <input id="campaignName" type="text" class="form-control">
-            </div>
-
-            <div class="form-group">
-                <label>Chọn sản phẩm chạy giảm giá</label>
-                <br />
-                <select id="multipleProductSelector" class="form-control"></select>
-            </div>
-
-            <div class="form-group">
-                <label>Ngày bắt đầu</label>
-                <br />
-                <input id="startdatetimepicker" class="form-control">
-            </div>
-
-            <div class="form-group">
-                <label>Ngày kết thúc</label>
-                <br />
-                <input id="enddatetimepicker" class="form-control">
-            </div>
-
-            <div class="form-group">
-                <label>Loại giảm giá</label>
-                <br />
-                <select id="campaignType" class="form-control"></select>
-            </div>
-
-            <div class="form-group">
-                <label>Trạng thái</label>
-                <br />
-                <input type="checkbox" id="status" />
-            </div>
-
-            <div class="form-group">
-                <label>Mô tả chi tiết</label>
-                <br />
-                <input type="text" id="description" />
-            </div>
+    <div class="box-body">
+        <div class="form-group">
+            <label>Tên Campaign</label>
+            <br />
+            <input id="campaignName" type="text" class="form-control">
         </div>
 
-        <!-- /.box-body -->
-
-        <div class="box-footer">
-            <button onclick="handleCreateNewCampaign()" id="btnCreateCampaign" class="btn btn-primary">Tạo Campaign</button>
+        <div class="form-group">
+            <label>Chọn sản phẩm chạy giảm giá</label>
+            <br />
+            <select id="multipleProductSelector" class="form-control"></select>
         </div>
-    </form>
+
+        <div class="form-group">
+            <label>Ngày bắt đầu</label>
+            <br />
+            <input id="startdatetimepicker" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Ngày kết thúc</label>
+            <br />
+            <input id="enddatetimepicker" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Loại giảm giá</label>
+            <br />
+            <select id="campaignType" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Trạng thái</label>
+            <br />
+            <input type="checkbox" id="status" />
+        </div>
+
+        <div class="form-group">
+            <label>Mô tả chi tiết</label>
+            <br />
+            <input type="text" id="description"  class="form-control"/>
+        </div>
+    </div>
+
+    <!-- /.box-body -->
+
+    <div class="box-footer">
+        <button onclick="handleCreateNewCampaign()" id="btnCreateCampaign" class="btn btn-primary">Tạo Campaign</button>
+    </div>
 </div>
-
-@section Styles{
-
-}
 
 @section Scripts{
     <script>
         $(document).ready(function () {
             $("#multipleProductSelector").kendoMultiSelect({
                 dataTextField: "productName",
-                dataValueField: "id",
+                dataValueField: "productId",
                 dataSource: {
                     serverserverFiltering: true,
                     type: "json",
@@ -122,8 +116,6 @@
                 ListProduct: selectedProductId,
                 Description: description
             }
-
-            debugger;
 
             $.ajax({
                 url: "/Admin/Campaign/CreateNewCampaign",
