@@ -83,10 +83,10 @@ namespace ComputerAccessoriesV2
                     policy.RequireRole(SD.Customer, SD.Admin, SD.SupperAdmin, SD.Shipper);
                 });
 
-                //options.AddPolicy(Policy.Customer, policy =>
-                //{
-                //    policy.RequireRole(SD.Customer);
-                //});
+                options.AddPolicy(Policy.Customer, policy =>
+                {
+                    policy.RequireRole(SD.Customer);
+                });
             });
 
 
