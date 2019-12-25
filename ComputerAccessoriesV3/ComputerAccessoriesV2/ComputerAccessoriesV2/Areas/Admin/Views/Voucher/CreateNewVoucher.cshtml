@@ -1,0 +1,103 @@
+﻿@{
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+<br />
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Thêm Voucher mới</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    <div class="box-body">
+        <div class="form-group">
+            <label>Tên Voucher</label>
+            <br />
+            <input id="txtVoucherName" type="text" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Ngày bắt đầu</label>
+            <br />
+            <input id="startdatetimepicker" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Ngày kết thúc</label>
+            <br />
+            <input id="enddatetimepicker" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>% giảm giá</label>
+            <br />
+            <input type="number" id="txtVoucherValue" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Giới hạn sử dụng</label>
+            <br />
+            <input type="number" id="txtMax" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Trạng thái</label>
+            <br />
+            <input type="checkbox" id="cbIsActive" />
+        </div>
+    </div>
+
+    <!-- /.box-body -->
+
+    <div class="box-footer">
+        <button onclick="handleCreateNewVoucher()" id="btnCreateCampaign" class="btn btn-primary">Tạo Voucher</button>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#startdatetimepicker").kendoDateTimePicker({
+                value: new Date(),
+                dateInput: true
+            });
+            $("#enddatetimepicker").kendoDateTimePicker({
+                value: new Date(),
+                dateInput: true
+            });
+        });
+
+        function handleCreateNewVoucher() {
+            var dateActive = $('#startdatetimepicker').val();
+            var expiredDate = $('#enddatetimepicker').val();
+            var voucherName = $('#txtVoucherName').val();
+            var isActive = $("#cbIsActive")[0].checked;
+            var value = $("#txtVoucherValue").val();
+            var max = $("#txtMax").val();
+
+            var data = {
+                DateActive: dateActive,
+                ExpiredDate: expiredDate,
+                VoucherName: voucherName,
+                IsActive: isActive,
+                Value: value,
+                Max: max
+            }
+
+            $.ajax({
+                url: "/Admin/Voucher/CreateNewVoucher",
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    alert(result.notify);
+                    window.location.href = window.location.protocol + '//' + window.location.host + "/Admin/Voucher/Index";
+                },
+                error: function (err) {
+                    alert(err.notify);
+                    console.log(err);
+                }
+            });
+        }
+    </script>
+}

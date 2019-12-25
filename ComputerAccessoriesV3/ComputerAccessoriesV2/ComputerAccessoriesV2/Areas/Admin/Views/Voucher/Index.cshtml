@@ -1,0 +1,88 @@
+﻿@model List<ComputerAccessoriesV2.ViewModels.AccountViewModel>
+@using ComputerAccessoriesV2.Extensions
+@{
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-lg-10">
+            <h3>Danh sách Voucher</h3>
+        </div>
+        <div class="col-lg-1">
+            <a class="btn btn-default" asp-area="Admin" asp-controller="Voucher" asp-action="CreateNewVoucher"><span><i class="fa fa-plus"></i></span>Thêm Voucher mới</a>
+            <div class="alert alert-success" id="showNotification"></div>
+        </div>
+    </div>
+</div>
+<br />
+
+<div id="voucherGrid"></div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#showNotification').hide();
+            $("#voucherGrid").kendoGrid({
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: window.location.protocol + '//' + window.location.host + "/Admin/Voucher/GetAllVoucher"
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                groupable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [{
+                    field: "voucherId",
+                    title: "ID",
+                }, {
+                    field: "voucherName",
+                    title: "Tên Voucher"
+                },{
+                    field: "createDate",
+                    title: "Ngày khởi tạo"
+                },{
+                    field: "dateActive",
+                    title: "Ngày bắt đầu"
+                },{
+                    field: "expiredDate",
+                    title: "Ngày kết thúc"
+                },{
+                    field: "value",
+                    title: "Mức giảm giá (%)"
+                },{
+                    field: "used",
+                    title: "Đã sử dụng"
+                },{
+                    field: "max",
+                    title: "Giới hạn"
+                }, {
+                    field: "isActive",
+                    title: "Trạng thái",
+                    template: "#if(isActive==true){#<text>Đã kích hoạt</text>#}else{#<text>Khóa/Chưa kích hoạt</text>#}#"
+                },{
+                    title: "Thao tác",
+                    template:"<a class ='btn btn-default' style='border:none; background:transparent' onclick='return EditVoucher(#: voucherId#)' title='Chỉnh sửa'><span><i class='fa fa-pencil'></i></span></a>"
+                    }]
+            });
+        });
+
+        function show() {
+            $('showNotification').fadeTo(2000, 500).slideDown(500, function () {
+                $('showNotification').slideUp(500);
+            })
+        }
+
+        function EditVoucher(id) {
+            window.location.href = window.location.protocol + '//' + window.location.host + "/Admin/Voucher/EditVoucher?voucherId=" + id;
+        }
+    </script>
+}

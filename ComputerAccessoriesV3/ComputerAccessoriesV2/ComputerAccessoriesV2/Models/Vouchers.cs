@@ -12,7 +12,7 @@ namespace ComputerAccessoriesV2.Models
         public DateTime? DateActive { get; set; }
         public bool? IsActive { get; set; }
         public int? Value { get; set; }
-
-        public virtual Bills Voucher { get; set; }
+        public int Used { get; set; }
+        public int? Max { get; set; }
     }
 }

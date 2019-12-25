@@ -123,7 +123,7 @@ namespace ComputerAccessoriesV2
 
                 endpoints.MapControllerRoute(
                     name: "areas",
-                    pattern: "{area=Admin}/{controller=MainService}/{action=Index}/{id?}"
+                    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
                     );
 
                 endpoints.MapControllers();
