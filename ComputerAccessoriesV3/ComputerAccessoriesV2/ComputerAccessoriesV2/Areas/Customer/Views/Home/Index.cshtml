@@ -10,253 +10,122 @@
 
 @Html.Partial("~/Views/Home/_SliderImageAdvertisingPartial.cshtml")
 <div class="row">
+
     <div class="col-lg-3" id="hot_deals">
-        <div class="main-sidebar category-wrapper mb-24">
-            <div class="section-title-2 d-flex justify-content-between mb-28">
-                <h3>best seller</h3>
-                <div class="category-append"></div>
-            </div> <!-- section title end -->
-            <div class="category-carousel-active row" data-row="4">
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img1.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">Virtual Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
+        <div class="home-sidebar">
+
+            <div class="main-sidebar hot-deals-wrap mb-30">
+                <div class="section-title-2 d-flex justify-content-between mb-28">
+                    <h3>hot deals</h3>
+                    <div class="slick-append"></div>
+                </div> <!-- section title end -->
+                <div class="deals-carousel-active slick-padding slick-arrow-style">
+                    @foreach (var item in Model.ListHotDealProducts)
+                    {
+                        <div class="product-item fix">
+                            <div class="product-thumb">
+                                <a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">
+                                    <img src="@item.Thumnail" class="img-pri" alt="">
+                                    <img src="@item.Thumnail2" class="img-sec" alt="">
+                                </a>
+                                <div class="product-label">
+                                    <span>@item.SaleValue%</span>
                                 </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
+                                <div class="product-action-link">
+                                    <a href="#" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
+                                        <span data-toggle="tooltip"
+                                              data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
+                                    </a>
+
+                                    <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
                                 </div>
                             </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img2.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">Virtual Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
+                            <div class="product-content">
+                                <h4><a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">@item.ProductName</a></h4>
+                                <div class="pricebox">
+                                    @if (String.IsNullOrEmpty(item.PromotionPrice))
+                                    {
+                                        <div class="regular-price">
+                                            @item.OriginalPrice
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <span class="regular-price">@item.PromotionPrice</span>
+                                            <span class="old-price"><del style="font-size:12px; color:red">@item.OriginalPrice</del></span>
+                                        </div>
+                                    }
+                                    <div class="ratings">
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span><i class="fa fa-star"></i></span>
+                                        <div class="pro-review">
+                                            <span>1 review(s)</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img3.jpg" alt="">
-                            </a>
+                    }
+                    <!-- product single item start -->
+                    <!-- product single item end -->
+                    <!-- product single item end -->
+                </div>
+            </div>
+            <div class="main-sidebar category-wrapper mb-24">
+                <div class="section-title-2 d-flex justify-content-between mb-28">
+                    <h3>hot deal</h3>
+                    <div class="category-append"></div>
+                </div> <!-- section title end -->
+                <div class="category-carousel-active row" data-row="4">
+                    @foreach (var item in Model.ListHotDealProducts)
+                    {
+                        <div class="col">
+                            <div class="category-item">
+                                <div class="category-thumb">
+                                    <a asp-action="ProductDetails" asp-controller="ProductHome" asp-route-productId="@item.Id">
+                                        <img src="@item.Thumnail" alt="">
+                                    </a>
+                                </div>
+                                <div class="category-content">
+                                    <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-route-productId="@item.Id">@item.ProductName</a></h4>
+                                    <div class="price-box">
+                                        @if (String.IsNullOrEmpty(item.PromotionPrice))
+                                        {
+                                            <div class="regular-price">
+                                                @item.OriginalPrice
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="regular-price">
+                                                @item.PromotionPrice
+                                            </div>
+                                            <div class="old-price">
+                                                <del style="font-size:12px">@item.OriginalPrice</del>
+                                            </div>
+                                        }
+
+                                    </div>
+                                    <div class="ratings">
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                        <span><i class="fa fa-star"></i></span>
+                                        <div class="pro-review">
+                                            <span>1 review(s)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!-- end single item -->
                         </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">Virtual Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img4.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">Virtual Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img5.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">Virtual Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img6.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">Virtual Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img10.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">simple Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $150.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$180.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
-                <div class="col">
-                    <div class="category-item">
-                        <div class="category-thumb">
-                            <a href="product-details.html">
-                                <img src="assets/img/product/product-img12.jpg" alt="">
-                            </a>
-                        </div>
-                        <div class="category-content">
-                            <h4><a href="product-details.html">external Product 01</a></h4>
-                            <div class="price-box">
-                                <div class="regular-price">
-                                    $140.00
-                                </div>
-                                <div class="old-price">
-                                    <del>$160.00</del>
-                                </div>
-                            </div>
-                            <div class="ratings">
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- end single item -->
-                </div> <!-- end single item column -->
+                    }
+
+                </div>
             </div>
         </div>
     </div>
@@ -267,7 +136,7 @@
                 <div class="col-lg-6">
                     <div class="category-wrapper mb-md-24 mb-sm-24">
                         <div class="section-title-2 d-flex justify-content-between mb-28">
-                            <h3>New Products</h3>
+                            <h3>Sản phẩm mới</h3>
                             <div class="category-append"></div>
                         </div> <!-- section title end -->
                         <div class="category-carousel-active row" data-row="4">
@@ -283,14 +152,23 @@
                                                 </a>
                                             </div>
                                             <div class="category-content">
-                                                <h4><a href="product-details.html">@item.ProductName</a></h4>
+                                                <h4><a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">@item.ProductName</a></h4>
                                                 <div class="price-box">
-                                                    <div class="regular-price">
-                                                        $150.00
-                                                    </div>
-                                                    <div class="old-price">
-                                                        <del></del>
-                                                    </div>
+                                                    @if (String.IsNullOrEmpty(item.PromotionPrice))
+                                                    {
+                                                        <div class="regular-price">
+                                                            @item.OriginalPrice
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="regular-price">
+                                                            @item.PromotionPrice
+                                                        </div>
+                                                        <div class="old-price">
+                                                            <del style="font-size:12px">@item.OriginalPrice</del>
+                                                        </div>
+                                                    }
                                                 </div>
                                                 <div class="ratings">
                                                     <span class="good"><i class="fa fa-star"></i></span>
@@ -317,7 +195,7 @@
                 <div class="col-lg-6">
                     <div class="category-wrapper mb-md-24 mb-sm-24">
                         <div class="section-title-2 d-flex justify-content-between mb-28">
-                            <h3>most views</h3>
+                            <h3>Xem nhiều</h3>
                             <div class="category-append"></div>
                         </div> <!-- section title end -->
                         <div class="category-carousel-active row" data-row="4">
@@ -335,12 +213,21 @@
                                             <div class="category-content">
                                                 <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-area="Customer" asp-route-productId="@item.Id">@item.ProductName</a></h4>
                                                 <div class="price-box">
-                                                    <div class="regular-price">
-                                                        $150.00
-                                                    </div>
-                                                    <div class="old-price">
-                                                        <del></del>
-                                                    </div>
+                                                    @if (String.IsNullOrEmpty(item.PromotionPrice))
+                                                    {
+                                                        <div class="regular-price">
+                                                            @item.OriginalPrice
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="regular-price">
+                                                            @item.PromotionPrice
+                                                        </div>
+                                                        <div class="old-price">
+                                                            <del style="font-size:12px">@item.OriginalPrice</del>
+                                                        </div>
+                                                    }
                                                 </div>
                                                 <div class="ratings">
                                                     <span class="good"><i class="fa fa-star"></i></span>
@@ -364,6 +251,13 @@
                     </div>
                 </div>
                 <!-- Most viewed area start -->
+                <div class="banner-statistic pt-28 pb-36">
+                    <div class="img-container fix img-full">
+                        <a href="#">
+                            <img src="assets/img/banner/banner_static1.jpg" alt="">
+                        </a>
+                    </div>
+                </div>
                 <!-- Most viewed area end -->
             </div>
         </div>
@@ -414,7 +308,20 @@
                         |
                         <text><a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-brandId="@item.BrandId"  style="color:black">@item.CategoryName</a></text>
                         <div class="pricebox">
-                            <span class="regular-price">@item.OriginalPrice VND</span>
+                            @*<span class="regular-price">@item.OriginalPrice VND</span>*@
+                            @if (String.IsNullOrEmpty(item.PromotionPrice))
+                            {
+                                <div class="regular-price">
+                                    @item.OriginalPrice
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <span class="regular-price">@item.PromotionPrice</span>
+                                    <span class="old-price"><del style="font-size:12px">@item.OriginalPrice</del></span>
+                                </div>
+                            }
                             <div class="ratings">
                                 <span class="good"><i class="fa fa-star"></i></span>
                                 <span class="good"><i class="fa fa-star"></i></span>
@@ -470,7 +377,7 @@
                                         <h5>Còn lại:</h5>
                                         <span id="quantity"></span>
                                     </div>
-                                    <div class="pricebox">
+                                    <div class="pricebox" id="priceholder">
                                         <span class="regular-price" id="price">$160.00</span>
                                     </div>
                                     <p id="short_description">
@@ -530,7 +437,13 @@
 
                     $('#quantity').text(data.quantity);
                     $('#short_description').text(data.shorDescription);
-                    $('#price').text(data.originalPrice);
+                    if (data.promotionPrice != "") {
+                        var html = "<span class='old-price'><del style='color:red'>" + data.originalPrice + "</del></span > ";
+                        $('#price').text(data.promotionPrice);
+                        $('#priceholder').append(html);
+                    } else {
+                        $('#price').text(data.originalPrice);
+                    }                   
                     $('#product_name').text(data.productName);
                     $('#product_name').attr('href', "/Customer/ProductHome/ProductDetails?productId=" + data.id);
                     $('#productId').attr('value', data.id);

@@ -29,4 +29,10 @@
         //    }
         //}
     }
+
+    //window.HelperSDK.Cookie = {
+    //    WriteCookie: function (key, value, expired) {
+    //        document.cookie =
+    //    }
+    //}
 })(jQuery);

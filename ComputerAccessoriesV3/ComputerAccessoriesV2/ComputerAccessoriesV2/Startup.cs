@@ -45,7 +45,7 @@ namespace ComputerAccessoriesV2
                 options.IdleTimeout = new TimeSpan(0, 15, 0);
                 options.Cookie.IsEssential = true;
             });
-
+            
             services.AddIdentity<MyUsers,IdentityRole<int>>(options => {
                 //options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequiredLength = 6;
@@ -83,16 +83,19 @@ namespace ComputerAccessoriesV2
                     policy.RequireRole(SD.Customer, SD.Admin, SD.SupperAdmin, SD.Shipper);
                 });
 
-                options.AddPolicy(Policy.Customer, policy =>
-                {
-                    policy.RequireRole(SD.Customer);
-                });
+                //options.AddPolicy(Policy.Customer, policy =>
+                //{
+                //    policy.RequireRole(SD.Customer);
+                //});
             });
+
+
 
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Customer/Account/SignIn";
                 options.AccessDeniedPath = "/Customer/Account/AccessDeny";
+                options.Cookie.IsEssential = true;
             });
             services.AddRazorPages();
         }
@@ -117,7 +120,7 @@ namespace ComputerAccessoriesV2
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
 

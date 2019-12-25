@@ -27,7 +27,7 @@ namespace ComputerAccessoriesV2.Data
             set;
         }
         public virtual DbSet<UserInformationModel> UserInformationModels { get; set; }
-
+        public virtual DbSet<BrandPartialModel> BrandPartials { get; set; }
         public virtual DbSet<CampaignProduct> CampaignProducts { get; set; }
 
         public virtual DbSet<ProductAvailableForCompaign> ProductAvailableForCompaign { get; set; }
@@ -49,6 +49,7 @@ namespace ComputerAccessoriesV2.Data
             modelBuilder.Entity<CampaignProduct>().HasKey(pc => new { pc.ProductId });
             modelBuilder.Entity<ProductAvailableForCompaign>(entity => { entity.HasNoKey(); });
 
+            modelBuilder.Entity<BrandPartialModel>(entity => { entity.HasNoKey(); });
             OnModelCreatingPartial(modelBuilder);
         }
 

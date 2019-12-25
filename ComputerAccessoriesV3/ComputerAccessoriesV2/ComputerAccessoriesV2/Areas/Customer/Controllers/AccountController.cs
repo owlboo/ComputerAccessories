@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 {
@@ -22,18 +23,20 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
     public class AccountController : Controller
     {
         private readonly ComputerAccessoriesV2Context _db;
-        //private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<MyUsers> _userManager;
         private readonly SignInManager<MyUsers> _signInManager;
         private readonly ILogger<LoginViewModel> _logger;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
-        public AccountController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager, SignInManager<MyUsers> signInManager, ILogger<LoginViewModel> logger, RoleManager<IdentityRole<int>> roleManager)
+        private ISession _session => _httpContextAccessor.HttpContext.Session;
+        public AccountController(ComputerAccessoriesV2Context db, IHttpContextAccessor httpContextAccessor, UserManager<MyUsers> userManager, SignInManager<MyUsers> signInManager, ILogger<LoginViewModel> logger, RoleManager<IdentityRole<int>> roleManager)
         {
             _db = db;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _roleManager = roleManager;
+            _httpContextAccessor = httpContextAccessor;
         }
         public IActionResult Index()
         {
@@ -237,7 +240,121 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("SignIn", "Account");
-        }    
+        }
+        [Route("/[controller]/AddToCart")]
+        [HttpPost]
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+
+            //if (!_signInManager.IsSignedIn(User))
+            //{
+            //    return RedirectToAction("Account", "SignIn");
+            //}
+            var user = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            var productFromDb = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
+            var ListShoppingCart = new List<ShoppingCartViewModel>();
+            int sum = 0;
+
+            string cookie1 = Request.Cookies[$"CookieLogin"];
+            if (cookie1 == null)
+            {
+                Response.Cookies.Append($"CookieLogin", "1", new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
+            }
+            try
+            {
+                if (user == null)
+                {
+                    //write cookie for customer who do not log on to system
+                    string cookieKey = "shopping";
+                    var cookie = Request.Cookies[$"Cookie_{MySecurity.Base64Decode(cookieKey)}"];
+                    if (cookie == null)
+                    {
+                        var obj = new ShoppingCartViewModel
+                        {
+                            Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
+                            Quantity = quantity
+                        };
+                        ListShoppingCart.Add(obj);
+                        sum = ListShoppingCart.Count;
+                        CookieOptions options = new CookieOptions
+                        {
+                            Expires = DateTime.Now.AddMinutes(30),
+                            IsEssential = true,
+                            HttpOnly = true
+
+                        };
+                        Response.Cookies.Append($"Cookie_{MySecurity.Base64Decode(cookieKey)}", JsonConvert.SerializeObject(ListShoppingCart), options);
+                        //_response.Append(cookieKey, JsonConvert.SerializeObject(ListShoppingCart), options);
+                    }
+                    else
+                    {
+                        ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
+                        var obj = new ShoppingCartViewModel
+                        {
+                            Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
+                            Quantity = quantity
+                        };
+                        ListShoppingCart.Add(obj);
+                        Response.Cookies.Append(cookieKey, JsonConvert.SerializeObject(ListShoppingCart), new CookieOptions { Expires = DateTime.Now.AddMinutes(30), IsEssential = true });
+                    }
+
+                    //return Json(new { code = 0, returnUrl = "/Customer/Account/SignIn" });
+                }
+                else
+                {
+                    #region write session
+                    var currentUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    string sskey = "SessionSP_" + currentUser;
+                    if (_session.GetString(sskey) == null)
+                    {
+                        var obj = new ShoppingCartViewModel
+                        {
+                            Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
+                            Quantity = quantity
+                        };
+                        ListShoppingCart.Add(obj);
+                        sum = ListShoppingCart.Count;
+                        _session.SetString(sskey, JsonConvert.SerializeObject(ListShoppingCart));
+                    }
+                    else
+                    {
+                        ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(sskey));
+                        if (!ListShoppingCart.Any(x => x.Products.Id == productId))
+                        {
+                            ListShoppingCart.Add(new ShoppingCartViewModel
+                            {
+                                Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
+                                Quantity = quantity
+                            });
+                        }
+                        else
+                        {
+                            foreach (var item in ListShoppingCart)
+                            {
+                                if (item.Products.Id == productId)
+                                {
+                                    item.Quantity += quantity;
+                                }
+                            }
+
+                        }
+                        sum = ListShoppingCart.Count;
+
+                        _session.SetString(sskey, JsonConvert.SerializeObject(ListShoppingCart));
+                    }
+                    #endregion
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { code = 0, returnUrl = "/Customer/Account/SignIn" });
+                throw;
+            }
+
+            return Json(new { code = 1, Name = productFromDb.ProductName, quantity = quantity, sum = sum });
+
+        }
     }
 }
 #endregion

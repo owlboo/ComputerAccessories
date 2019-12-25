@@ -5,16 +5,9 @@
     <UserSecretsId>aspnet-ComputerAccessoriesV2-4E2731AD-E53F-47B7-A483-0EF10AE65AAB</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Controllers\**" />
-    <Content Remove="Controllers\**" />
-    <EmbeddedResource Remove="Controllers\**" />
-    <None Remove="Controllers\**" />
-  </ItemGroup>
-
 
   <ItemGroup>
-    <PackageReference Include="Bootstrap.v3.Datetimepicker.CSS" Version="4.17.45" />
+    <PackageReference Include="IdentityServer4" Version="3.0.2" />
     <PackageReference Include="MailKit" Version="2.4.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />

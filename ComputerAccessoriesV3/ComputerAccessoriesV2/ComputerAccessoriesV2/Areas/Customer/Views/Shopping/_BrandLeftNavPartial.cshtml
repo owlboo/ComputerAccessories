@@ -1,0 +1,9 @@
+﻿@model List<ComputerAccessoriesV2.ViewModels.BrandPartialModel>
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li><i class="fa fa-angle-right"></i><a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-brandId="@item.Id">@item.BrandName</a><span>(@item.ProductCount)</span></li>
+        }
+    </ul>
+
+

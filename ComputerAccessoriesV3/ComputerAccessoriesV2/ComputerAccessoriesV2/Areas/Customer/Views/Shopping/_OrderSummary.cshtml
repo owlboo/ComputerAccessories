@@ -1,1 +1,71 @@
-﻿
+﻿@model ComputerAccessoriesV2.ViewModels.ShoppingCartPreview
+
+
+@if (Model != null && Model.ListProducts.Count > 0)
+{
+    <div class="order-summary-details mt-md-26 mt-sm-26">
+        <h2>Chi tiết đơn hàng</h2>
+        <div class="order-summary-content mb-sm-4">
+            <!-- Order Summary Table -->
+            <div class="order-summary-table table-responsive text-center">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.ListProducts)
+                    {
+                        <tr>
+                            <td><a href="single-product.html">@item.Products.ProductName <strong> × @item.Quantity</strong></a></td>
+                            @{
+                                var total = item.Products.PromotionPrice.HasValue? item.Products.PromotionPrice.Value * item.Quantity: item.Products.OriginalPrice.Value * item.Quantity;
+                            }
+                            <td>@total.ToString("###,###")</td>
+                        </tr>
+                    }
+                    
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Tổng cộng</td>
+                            <td><text id="fPrice"><strong>@Model.TotalPrice.ToString("###,###")</strong></text></td>
+                        </tr>
+                        <tr>
+                            <td>Mã giảm giá</td>
+                            <td class="d-flex justify-content-start">
+                                <div class="col-lg-8">
+                                    <input type="text" id="voucher" class="form-control" placeholder="Nhâp mã giảm giá tại đây" />
+                                </div>
+                                <div class="col-lg-2">
+                                    <button class="btn btn-danger" style="
+                                  color:white" id="submitVoucher" onclick="return getVoucherValueOff()"><i class="fa fa-check"></i> Áp dụng</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tổng tiền</td>
+                            <td><text id="lastPrice"><strong>@Model.TotalPrice.ToString("###,###")</strong></text></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- Order Payment Method -->
+            <div class="order-payment-method">
+                
+                <div class="summary-footer-area">
+                    <div class="custom-control custom-checkbox mb-14">
+                        <input type="checkbox" class="custom-control-input" id="terms" required />
+                        <label class="custom-control-label" for="terms">
+                            I have read and agree to the website <a href="index.html">terms and conditions.</a>
+                        </label>
+                    </div>
+                    <button type="button" id="placeOrder" onclick="return AddToBill()" class="check-btn sqr-btn">Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

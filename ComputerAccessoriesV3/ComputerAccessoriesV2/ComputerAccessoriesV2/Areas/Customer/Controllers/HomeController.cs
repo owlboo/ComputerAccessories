@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using ComputerAccessoriesV2.Data;
+using ComputerAccessoriesV2.Ultilities;
 
 namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 {
@@ -50,6 +51,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                             CategoryId = c.z.y.Id,
                                                             CategoryName = c.z.y.CategoryName,
                                                             OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###.###"),
+                                                            PromotionPrice=c.z.x.PromotionPrice.HasValue? c.z.x.PromotionPrice.Value.ToString("###,###") :"", 
                                                             Code = c.z.x.Code,
                                                             IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
                                                         }).Take(20).ToList();
@@ -67,12 +69,28 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                                 CategoryId = c.z.y.Id,
                                                                 CategoryName = c.z.y.CategoryName,
                                                                 OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###,###"),
+                                                                PromotionPrice=c.z.x.PromotionPrice.HasValue? c.z.x.PromotionPrice.Value.ToString("###,###"):"",
                                                                 Code = c.z.x.Code,
-                                                                IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
+                                                                IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false
                                                             }).Take(20).ToList();
 
-
                 //footer brand slider
+                products.ListHotDealProducts = _db.Products.Where(x => x.PromotionPrice.HasValue).Select(x => new ProductGridModel
+                {
+                    Id = x.Id,
+                    ProductName = x.ProductName,
+                    Thumnail = x.Thumnail,
+                    Thumnail2 = x.Thumnail2,
+                    BrandId = x.BrandId.Value,
+                    BrandName = x.BrandId.HasValue ? x.Brand.BrandName : "",
+                    CategoryId = x.CategoryId.Value,
+                    CategoryName = x.CategoryId.HasValue ? x.Category.CategoryName : "",
+                    OriginalPrice = x.OriginalPrice.Value.ToString("###,###"),
+                    PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
+                    Code = x.Code,
+                    IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
+                    SaleValue = 100-(int)(x.OriginalPrice/x.PromotionPrice)
+                }).Take(20).ToList();
 
                 List<Brand> brands = _db.Brand.ToList();
                 ViewBag.brandsFooter = brands;
@@ -137,8 +155,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 ShorDescription = c.x.ShorDescription,
                 Status = c.x.Status,
                 ViewCounts = c.x.ViewCounts,
-                ProductImages = _db.ProductImages.Where(z => z.ProductId == id).ToList()
-
+                ProductImages = _db.ProductImages.Where(z => z.ProductId == id).ToList(),
+                PromotionPrice = c.x.PromotionPrice.HasValue ? c.x.PromotionPrice.Value.ToString("###,###"):""
+                
             }).FirstOrDefault();
             //ViewBag.products = products;
             return Json(products);
@@ -154,154 +173,326 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             //{
             //    return RedirectToAction("Account", "SignIn");
             //}
-
             var user = User.FindFirst(ClaimTypes.NameIdentifier);
-            if(user == null)
-            {
-                return Json(new {code =0, returnUrl ="/Customer/Account/SignIn" });
-            }
-
-            var currentUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            
             var productFromDb = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
             var ListShoppingCart = new List<ShoppingCartViewModel>();
             int sum = 0;
-            #region write session
-            string sskey = "SessionSP_" + currentUser;
-            if(_session.GetString(sskey) == null)
+            try
             {
-                var obj = new ShoppingCartViewModel
+                if (user == null)
                 {
-                    Products = _db.Products.Where(x=>x.Id==productId).FirstOrDefault(),
-                    Quantity = quantity
-                };
-                ListShoppingCart.Add(obj);
-                sum = ListShoppingCart.Count;
-                _session.SetString(sskey, JsonConvert.SerializeObject(ListShoppingCart));
-            }
-            else
-            {
-                ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(sskey));
-                if(!ListShoppingCart.Any(x=>x.Products.Id == productId))
-                {
-                    ListShoppingCart.Add(new ShoppingCartViewModel
+                    //write cookie for customer who do not log on to system
+                    string cookieKey = "CookieShopping";
+                    var cookie = Request.Cookies[cookieKey];
+                    if (cookie == null)
                     {
-                        Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
-                        Quantity = quantity
-                    });
+                        var obj = new ShoppingCartViewModel
+                        {
+                            Products = _db.Products.Where(x => x.Id == productId).Select(x => new Products
+                            {
+                                Id = x.Id,
+                                OriginalPrice = x.OriginalPrice,
+                                PromotionPrice=x.PromotionPrice,
+                                CategoryId = x.CategoryId,
+                                Thumnail = x.Thumnail,
+                                ProductName = x.ProductName
+                            }).FirstOrDefault(),
+                            Quantity = quantity
+                        };
+                        ListShoppingCart.Add(obj);
+                        sum = ListShoppingCart.Count;
+                        CookieOptions options = new CookieOptions
+                        {
+                            Expires = DateTime.Now.AddMinutes(30),
+                            IsEssential = true,
+                            HttpOnly=true
+                            
+                        };
+                        //var a = JsonConvert.SerializeObject(ListShoppingCart).ToString();
+                        Response.Cookies.Append(cookieKey, JsonConvert.SerializeObject(ListShoppingCart).ToString(), options);
+                        //_response.Append(cookieKey, JsonConvert.SerializeObject(ListShoppingCart), options);
+                        sum = ListShoppingCart.Count;
+                    }
+                    else
+                    {
+                        ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
+                        if(!ListShoppingCart.Any(x=>x.Products.Id == productId))
+                        {
+                            var obj = new ShoppingCartViewModel
+                            {
+                                Products = _db.Products.Where(x => x.Id == productId).Select(x => new Products
+                                {
+                                    Id = x.Id,
+                                    OriginalPrice = x.OriginalPrice,
+                                    CategoryId = x.CategoryId,
+                                    Thumnail = x.Thumnail,
+                                    ProductName = x.ProductName,
+                                    PromotionPrice=x.PromotionPrice
+                                }).FirstOrDefault(),
+                                Quantity = quantity
+                            };
+                            ListShoppingCart.Add(obj);
+                            
+                        }
+                        else
+                        {
+                            foreach (var item in ListShoppingCart)
+                            {
+                                if (item.Products.Id == productId)
+                                {
+                                    item.Quantity += quantity;
+                                }
+                            }
+
+                        }
+
+                        sum = ListShoppingCart.Count;
+                        Response.Cookies.Append(cookieKey, JsonConvert.SerializeObject(ListShoppingCart), new CookieOptions { Expires = DateTime.Now.AddMinutes(30),IsEssential=true});
+                    }
+
+                    //return Json(new { code = 0, returnUrl = "/Customer/Account/SignIn" });
                 }
                 else
                 {
-                    foreach (var item in ListShoppingCart)
+                    #region write session
+                    var currentUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    string sskey = "SessionSP_" + currentUser;
+                    if (_session.GetString(sskey) == null)
                     {
-                        if (item.Products.Id == productId)
+                        var obj = new ShoppingCartViewModel
                         {
-                            item.Quantity += quantity;
-                        }
+                            Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
+                            Quantity = quantity
+                        };
+                        ListShoppingCart.Add(obj);
+                        sum = ListShoppingCart.Count;
+                        _session.SetString(sskey, JsonConvert.SerializeObject(ListShoppingCart));
                     }
+                    else
+                    {
+                        ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(sskey));
+                        if (!ListShoppingCart.Any(x => x.Products.Id == productId))
+                        {
+                            ListShoppingCart.Add(new ShoppingCartViewModel
+                            {
+                                Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
+                                Quantity = quantity
+                            });
+                        }
+                        else
+                        {
+                            foreach (var item in ListShoppingCart)
+                            {
+                                if (item.Products.Id == productId)
+                                {
+                                    item.Quantity += quantity;
+                                }
+                            }
 
+                        }
+                        sum = ListShoppingCart.Count;
+
+                        _session.SetString(sskey, JsonConvert.SerializeObject(ListShoppingCart));
+                    }
+                    #endregion
                 }
-                sum = ListShoppingCart.Count;
-
-                _session.SetString(sskey, JsonConvert.SerializeObject(ListShoppingCart));
             }
-            #endregion
-            return Json(new { code = 1,Name = productFromDb.ProductName, quantity = quantity,sum=sum });
+            catch (Exception e)
+            {
+                return Json(new { code = 0, returnUrl = "/Customer/Account/SignIn" });
+                throw;
+            }
+
+            return Json(new { code = 1, Name = productFromDb.ProductName, quantity = quantity, sum = sum });
+
         }
 
         [Route("/[controller]/ShoppingCartDrop")]
         [HttpPost]
         public IActionResult ShoppingCartDrop()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-            string key = "SessionSP_" + userId;
             List<ShoppingCartViewModel> listProducts = new List<ShoppingCartViewModel>();
-            ShoppingCartPreview previewCart =new ShoppingCartPreview();
+            ShoppingCartPreview previewCart = new ShoppingCartPreview();
             Decimal totalPrice = 0;
-            if(_session.GetString(key) == null)
+            var user = User.FindFirst(ClaimTypes.NameIdentifier);
+            
+            if (user == null)
             {
-                return View(previewCart);
+                string cookieKey = "CookieShopping";
+                var cookie = Request.Cookies[cookieKey];
+                
+                if(cookie == null)
+                {
+                    return View(previewCart);
+                }
+                else
+                {
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
+                    previewCart.ListProducts = listProducts;
+                    foreach (var item in previewCart.ListProducts)
+                    {
+                        var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).Select(x => x.OriginalPrice).FirstOrDefault();
+                        totalPrice += item.Quantity * (productPrice.HasValue ? productPrice.Value : 0);
+                    }
+                    previewCart.TotalPrice = totalPrice;
+                    return View(previewCart);
+                }
             }
             else
             {
-                listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
-                previewCart.ListProducts = listProducts;
-                foreach (var item in previewCart.ListProducts)
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                string key = "SessionSP_" + userId;
+
+                if (_session.GetString(key) == null)
                 {
-                    var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).Select(x => x.OriginalPrice).FirstOrDefault();
-                    totalPrice += item.Quantity * (productPrice.HasValue ? productPrice.Value:0);
+                    return View(previewCart);
                 }
-                previewCart.TotalPrice = totalPrice;
-                return View(previewCart);
+                else
+                {
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
+                    previewCart.ListProducts = listProducts;
+                    foreach (var item in previewCart.ListProducts)
+                    {
+                        var product = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                        totalPrice += item.Quantity * (product.PromotionPrice.HasValue ? product.PromotionPrice.Value : product.OriginalPrice.Value);
+                    }
+                    previewCart.TotalPrice = totalPrice;
+                    return View(previewCart);
+                }
             }
+            
         }
 
         [Route("/[controller]/UpdateQuantity")]
         [HttpPost]
         public JsonResult UpdateQuantity(int productId, int quantity,int currentTotalPrice, bool IsSub)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-            string key = "SessionSP_" + userId;
+            //var userId = String.IsNullOrEmpty(User.FindFirst(ClaimTypes.NameIdentifier).Value) ? 0 : int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var user = User.FindFirst(ClaimTypes.NameIdentifier);
             List<ShoppingCartViewModel> listProducts = new List<ShoppingCartViewModel>();
             ShoppingCartPreview previewCart = new ShoppingCartPreview();
             Decimal totalPrice = currentTotalPrice;
-            if (_session.GetString(key) == null)
+            if (user == null)
             {
-                return Json(new { code = 0 });
-            }
-            else
-            {
-                listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
-                foreach (var item in listProducts)
+                string cookieKey = "CookieShopping";
+                var cookie = Request.Cookies[cookieKey];
+                if(String.IsNullOrEmpty(cookie))
                 {
-                    if(item.Products.Id == productId)
-                    {
-                        item.Quantity = quantity;
-                    }
-                }
-                var unitPrice = _db.Products.Where(x => x.Id == productId).Select(x => x.OriginalPrice).FirstOrDefault();
-                if (IsSub)
-                {
-                    totalPrice -= unitPrice.Value;
+                    return Json(new { code = 0 });
                 }
                 else
                 {
-                    totalPrice += unitPrice.Value;
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
+                    foreach (var item in listProducts)
+                    {
+                        if (item.Products.Id == productId)
+                        {
+                            item.Quantity = quantity;
+                        }
+                    }
+                    var unit = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
+                    if (IsSub)
+                    {
+                        totalPrice -= unit.PromotionPrice.HasValue?unit.PromotionPrice.Value:unit.OriginalPrice.Value;
+                    }
+                    else
+                    {
+                        totalPrice += unit.PromotionPrice.HasValue? unit.PromotionPrice.Value:unit.OriginalPrice.Value;
+                    }
+
+                    Response.Cookies.Append(cookieKey, JsonConvert.SerializeObject(listProducts));
+                    return Json(new { code = 1, totalPrice = totalPrice });
                 }
-                
-                _session.SetString(key, JsonConvert.SerializeObject(listProducts));
-                return Json(new { code = 1, totalPrice = totalPrice });
             }
+            else
+            {
+                var userId = int.Parse(user.Value);
+                string key = "SessionSP_" + userId;
+
+                if (_session.GetString(key) == null)
+                {
+                    return Json(new { code = 0 });
+                }
+                else
+                {
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
+                    foreach (var item in listProducts)
+                    {
+                        if (item.Products.Id == productId)
+                        {
+                            item.Quantity = quantity;
+                        }
+                    }
+                    var unit = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
+                    if (IsSub)
+                    {
+                        totalPrice -= unit.PromotionPrice.HasValue? unit.PromotionPrice.Value:unit.OriginalPrice.Value;
+                    }
+                    else
+                    {
+                        totalPrice += unit.PromotionPrice.HasValue ? unit.PromotionPrice.Value : unit.OriginalPrice.Value;
+                    }
+
+                    _session.SetString(key, JsonConvert.SerializeObject(listProducts));
+                    return Json(new { code = 1, totalPrice = totalPrice });
+                }
+            }
+            
         }
 
         [Route("/[controller]/RemoveProductFromCart")]
         [HttpPost]
         public JsonResult RemoveProductFromCart(int productId, int currentTotalPrice)
         {
-
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-            string key = "SessionSP_" + userId;
             List<ShoppingCartViewModel> listProducts = new List<ShoppingCartViewModel>();
             ShoppingCartPreview previewCart = new ShoppingCartPreview();
             Decimal totalPrice = currentTotalPrice;
-            if(_session.GetString(key) == null)
+            //var userId = String.IsNullOrEmpty(User.FindFirst(ClaimTypes.NameIdentifier).Value) ? 0 : int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var user = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (user == null)
             {
-                return Json(new { code = 0 });
+                string cookieKey = "CookieShopping";
+                var cookie = Request.Cookies[cookieKey];
+                if (String.IsNullOrEmpty(cookie))
+                {
+                    return Json(new { code = 0 });
+                }
+                else
+                {
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
+                    var item = listProducts.Where(x => x.Products.Id == productId).FirstOrDefault();
+                    var unit = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
+                    Decimal price = (unit.PromotionPrice.HasValue?unit.PromotionPrice.Value:unit.OriginalPrice.Value) * item.Quantity;
+                    totalPrice -= price;
+                    listProducts.Remove(item);
+                    Response.Cookies.Append(cookieKey, JsonConvert.SerializeObject(listProducts));
+                    return Json(new { code = 1, totalPrice = totalPrice, name = item.Products.ProductName, counter = listProducts.Count });
+                }
             }
             else
             {
-                
-                listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
-                var item = listProducts.Where(x => x.Products.Id == productId).FirstOrDefault();
-                var unitPrice = _db.Products.Where(x => x.Id == productId && x.OriginalPrice.HasValue).Select(x => x.OriginalPrice).FirstOrDefault();
-                Decimal price = unitPrice.Value * item.Quantity;
-                totalPrice -= price;
-                listProducts.Remove(item);
-                _session.SetString(key, JsonConvert.SerializeObject(listProducts));
-                return Json(new { code = 1, totalPrice = totalPrice, name = item.Products.ProductName, counter = listProducts.Count });
+                var userId = int.Parse(user.Value);
+                string key = "SessionSP_" + userId;
+
+                if (_session.GetString(key) == null)
+                {
+                    return Json(new { code = 0 });
+                }
+                else
+                {
+
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
+                    var item = listProducts.Where(x => x.Products.Id == productId).FirstOrDefault();
+                    var unit = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
+                    Decimal price = (unit.PromotionPrice.HasValue ? unit.PromotionPrice.Value : unit.OriginalPrice.Value) * item.Quantity;
+                    totalPrice -= price;
+                    listProducts.Remove(item);
+                    _session.SetString(key, JsonConvert.SerializeObject(listProducts));
+                    return Json(new { code = 1, totalPrice = totalPrice, name = item.Products.ProductName, counter = listProducts.Count });
+                }
             }
+            
         }
 
     }

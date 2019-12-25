@@ -14,4 +14,10 @@ namespace ComputerAccessoriesV2.ViewModels
         public string Logo { get; set; }
         public bool Status { get; set; }
     }
+    public class BrandPartialModel
+    {
+        public int Id { get; set; }
+        public string BrandName { get; set; }
+        public int ProductCount { get; set; }
+    }
 }
