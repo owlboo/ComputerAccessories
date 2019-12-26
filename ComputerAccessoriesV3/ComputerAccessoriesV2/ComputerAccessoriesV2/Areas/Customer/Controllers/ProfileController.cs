@@ -37,8 +37,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policy.ProfileModify)]
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.userName = user.DisplayName;
             return View();
         }
 
@@ -154,10 +156,22 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policy.ProfileModify)]
-        public IActionResult Orders()
+        public async Task<IActionResult> Orders()
         {
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.userId = user.Id;
             return View();
         }
 
+        [HttpGet]
+        public JsonResult GetUserListOrders(int userId)
+        {
+            var orders = (
+                from b in _db.Bills
+                where b.CustomerId == userId
+                select b
+                ).ToList();
+            return Json(orders);
+        }
     }
 }
