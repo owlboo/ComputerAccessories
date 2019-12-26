@@ -58,7 +58,6 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             {
                 try
                 {
-                    var resultInsertCampaign = 0;
                     var newCampaign = new Campaign
                     {
                         CampaignName = _params.CampaignName,
@@ -293,6 +292,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
                             _db.Remove(compainDetailDb);
                             productDb.PromotionPrice = null;
+
+                            _db.SaveChanges();
                         }
                         scope.Commit();
 

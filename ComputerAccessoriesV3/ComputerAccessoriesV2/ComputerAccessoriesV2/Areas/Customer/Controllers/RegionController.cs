@@ -29,9 +29,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return Json(_db.Districts.Where(x => x.ProvinceId == provinceId).ToList());
         }
 
-        [Route("/[controller]/GetWard")]
+        [Route("/[controller]/GetWards")]
         [HttpGet]
-        public JsonResult GetWard(int districtId)
+        public JsonResult GetWards(int districtId)
         {
             return Json(_db.Ward.Where(x => x.DistrictId == districtId).ToList());
         }

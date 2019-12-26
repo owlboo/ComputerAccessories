@@ -1,7 +1,6 @@
 ﻿@model ComputerAccessoriesV2.Data.MyUsers
 @using ComputerAccessoriesV2.Data
 
-<h3>Account Details</h3>
 <div class="account-details-form">
 
     <div class="col-lg-4">
@@ -9,23 +8,23 @@
     </div>
 
     <div class="single-input-item">
-        <label for="display-name" class="required">Display Name</label>
-        <input type="text" id="display-name" placeholder="Display Name" asp-for="DisplayName" />
+        <label for="display-name" class="required">Tên hiển thị</label>
+        <input type="text" id="display-name" placeholder="Tên hiển thị" asp-for="DisplayName" />
     </div>
     <div class="single-input-item">
-        <label for="display-name" class="required">Phone Number</label>
-        <input type="number" id="phoneNumber" placeholder="Display Name" asp-for="PhoneNumber" />
+        <label for="display-name" class="required">Số điện thoại</label>
+        <input type="number" id="phoneNumber" placeholder="Số điện thoại" asp-for="PhoneNumber" />
     </div>
     <div class="single-input-item">
-        <label for="email" class="required">Email Addres</label>
-        <input disabled="disabled" type="email" id="email" placeholder="Email Address" asp-for="Email" />
+        <label for="email" class="required">Địa chỉ Email</label>
+        <input disabled="disabled" type="email" id="email" placeholder="Địa chỉ Email" asp-for="Email" />
     </div>
     <div class="single-input-item">
-        <label for="Created Date" class="required">Created Date</label>
-        <input disabled="disabled" type="datetime" id="createdDate" placeholder="Created Date" asp-for="CreatedDate" />
+        <label for="Created Date" class="required">Ngày khởi tạo</label>
+        <input disabled="disabled" type="datetime" id="createdDate" placeholder="Ngày khởi tạo" asp-for="CreatedDate" />
     </div>
     <div class="single-input-item">
-        <button onclick="onChangeProfileInfo()" class="check-btn sqr-btn ">Save Changes</button>
+        <button onclick="onChangeProfileInfo()" class="check-btn sqr-btn ">Lưu thay đổi </button>
     </div>
 </div>
 

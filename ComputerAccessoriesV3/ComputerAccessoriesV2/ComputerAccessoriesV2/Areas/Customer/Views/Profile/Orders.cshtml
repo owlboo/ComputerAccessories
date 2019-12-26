@@ -1,29 +1,68 @@
-﻿ <!-- Single Tab Content Start -->
-<h3>Downloads</h3>
-<div class="myaccount-table table-responsive text-center">
-    <table class="table table-bordered">
-        <thead class="thead-light">
-            <tr>
-                <th>Product</th>
-                <th>Date</th>
-                <th>Expire</th>
-                <th>Download</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Haven - Free Real Estate PSD Template</td>
-                <td>Aug 22, 2018</td>
-                <td>Yes</td>
-                <td><a href="#" class="check-btn sqr-btn "><i class="fa fa-cloud-download"></i> Download File</a></td>
-            </tr>
-            <tr>
-                <td>HasTech - Profolio Business Template</td>
-                <td>Sep 12, 2018</td>
-                <td>Never</td>
-                <td><a href="#" class="check-btn sqr-btn "><i class="fa fa-cloud-download"></i> Download File</a></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<!-- Single Tab Content End -->
+﻿@{
+    int userId = ViewBag.userId;
+}
+
+<div id="listOrders"></div>
+
+
+<script>
+    $(document).ready(() => {
+        $("#listOrders").kendoGrid({
+            dataSource: {
+                type: 'json',
+                transport: {
+                    read: window.location.protocol + '//' + window.location.host + "/Customer/Profile/GetUserListOrders?userId=" + @userId
+                    }
+            },
+            messages: {
+                itemsPerPage: "dòng mỗi trang"
+            },
+            groupable: false,
+            sortable: true,
+            resizable: true,
+            columns: [{
+                field: "billId",
+                title: "ID"
+            }, {
+                field: "billName",
+                title: "Mã đơn hàng"
+            }, {
+                field: "totalPrice",
+                title: "Tổng giá tiền"
+            }, {
+                field: "createDate",
+                title: "Ngày khởi tạo"
+            },{
+                field: "voucher",
+                title: "Voucher"
+            },{
+                field: "lastPrice",
+                title: "Giá cuối"
+            },{
+                field: "note",
+                title: "Ghi chú"
+            }, {
+                title: "Xem chi tiết",
+                template: "<a class ='btn btn-default' style='border:none; background:transparent' onclick='return GoOrderDetail(#: billId#)' title='Xem chi tiết'><span><i class='fas fa-search'></i></span></a>"
+            }]
+        });
+    });
+
+    function GoOrderDetail(billId) {
+        window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/Bills/BillDeteil?id=" + billId;
+    }
+
+    $(window).resize(function() {
+    var gridElement = $("#listOrders"),
+        newHeight = gridElement.innerHeight(),
+        otherElements = gridElement.children().not(".k-grid-content"),
+        otherElementsHeight = 0;
+
+    otherElements.each(function(){
+        otherElementsHeight += $(this).outerHeight();
+    });
+
+    gridElement.children(".k-grid-content").height(newHeight - otherElementsHeight);
+});
+
+</script>
