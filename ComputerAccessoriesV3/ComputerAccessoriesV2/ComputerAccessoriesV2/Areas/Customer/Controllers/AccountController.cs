@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Helpers;
 using ComputerAccessoriesV2.Models;
@@ -57,44 +58,145 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return View();
         }
 
-        public IActionResult ConfirmEmail(string Email=null)
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string email, string code)
         {
-            ViewBag.email = Email;
-            return View();
+            var currentEmailAddress= email;
+            if(email == null)
+            {
+                var currentLoginUser = await _userManager.GetUserAsync(User);
+                if(currentLoginUser != null)
+                {
+                    email = currentLoginUser.Email;
+                }
+            }
+
+            var userDb = _db.AspNetUsers.Where(x => x.Email == email).FirstOrDefault();
+            if (code == null)
+            {
+                ViewBag.Email = email;
+                return View();
+            }
+            else
+            {
+                if (userDb.CodeConfirm == code)
+                {
+                    userDb.IsActivated = true;
+                    userDb.LockoutEnabled = false;
+                    _db.SaveChanges();
+
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ViewBag.Error = "Có lỗi xảy ra lúc xác nhận Email";
+                    return View();
+                }
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmEmail(ConfirmEmailViewModel confirmInfo)
+        public JsonResult ConfirmEmail(ConfirmEmailViewModel _params)
         {
-            var user = _db.AspNetUsers.Where(x => x.Email == confirmInfo.Email).FirstOrDefault();
+            var user = _db.AspNetUsers.Where(x => x.Email == _params.Email).FirstOrDefault();
             if (user == null)
             {
-                ViewBag.ErrorMes = "Không tìm thấy Email!";
-                return View();
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { notify = "Không tìm thấy tài khoản với địa chỉ Email đó" });
             }
-            else if (user.CodeConfirm == confirmInfo.ConfirmCode)
+            else if (user.CodeConfirm == _params.ConfirmCode)
             {
                 user.IsActivated = true;
                 user.LockoutEnabled = false;
                 _db.SaveChanges();
-                return RedirectToAction("Index", "HomeController", new { userId = user.Id });
+
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return Json(new { notify = "Xác nhận Email thành công" });
             }
             else
             {
-                ViewBag.ErrorMes = "Không đúng mã code xác nhận!";
-                return View();
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { notify = "Sai Mã xác nhận, Vui lòng thử lại!" });
+            }
+        }
+
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> ForgetPassword(String email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var sercureCode = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var host = Request.Host.ToUriComponent();
+                var protocal = Request.Scheme;
+                
+                var result = EmailHelpers.SendForgetPasswordEmail(user, sercureCode, host, protocal);
+
+                if (result)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return Json(new { notify = "Một Email reset lại mật khẩu đã được gửi đến địa chỉ Email của bạn" });
+                }
+                else
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(new { notify = "Lỗi trong quá trình gửi Email" });
+                }
+
+            }
+            else
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { notify = "Không tìm thấy Email!!" });
+            }
+        }
+
+        public async Task<IActionResult> ResetPassword(string email, string sercureCode)
+        {
+            ViewBag.sercureCode = HttpUtility.UrlEncode(sercureCode);
+            ViewBag.email = email;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> ResetNewPassword(string Email, string SercureCode, string NewPassword, string ConfirmNewPassword)
+        {
+            if (NewPassword.Equals(ConfirmNewPassword))
+            {   
+                var user = await _userManager.FindByEmailAsync(Email);
+
+                var decode = HttpUtility.UrlDecode(SercureCode);
+                    
+                var resultResetPassword = await _userManager.ResetPasswordAsync(user, decode, NewPassword);
+                if (resultResetPassword.Succeeded)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return Json(new { notify = "Thay đổi mật khẩu thành công!" });
+                }
+                else
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return Json(new { notify = "Thay đổi mật khẩu thất bại, có thể bạn đã để thời gian chờ quá lâu!" });
+                }
+            }
+            else
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { notify = "Mật khẩu mới và xác nhận mật khẩu mới phải giống nhau!" });
             }
         }
 
         [HttpPost]
-        [Route("/[controller]/SignUp")]
-        
         public async Task<IActionResult> SignUp(RegisterViewModel model)
         {
             ViewBag.Error = "";
             if (ModelState.IsValid)
             {
-
                 var host = Request.Host;
                 var action = Request.Path.Value;
                 var protocol = Request.Protocol;
@@ -109,7 +211,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 var checkUser = _db.AspNetUsers.Where(x => x.Email == model.Email).FirstOrDefault();
                 if (checkUser != null)
                 {
-                    return Json(new { code = 0 , err="Email của bạn đã tồn tại. Nhấn vào <a href='/Account/ForgetPassword' >Quên mật khẩu</a> để lấy lại mật khẩu"});
+                    return Json(new { code = 0, err = "Email của bạn đã tồn tại. Nhấn vào <a href='/Customer/Account/ForgetPassword' >Quên mật khẩu</a> để lấy lại mật khẩu" });
                 }
 
                 var user = new MyUsers
@@ -130,15 +232,16 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 if (result.Succeeded)
                 {
                     //var userFromDb = _db.AspNetUsers.Where(x => x.Email == model.Email).FirstOrDefault();
-                    if(!await _roleManager.RoleExistsAsync(model.RoleName))
+                    if (!await _roleManager.RoleExistsAsync(model.RoleName))
                     {
-                       await _roleManager.CreateAsync(new IdentityRole<int> { 
-                           Name=model.RoleName
-                       });
+                        await _roleManager.CreateAsync(new IdentityRole<int>
+                        {
+                            Name = model.RoleName
+                        });
                     }
                     await _userManager.AddToRoleAsync(user, model.RoleName);
 
-                    
+
                     var userAddress = new UserAddress
                     {
                         UserId = user.Id,
@@ -151,7 +254,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     //update dia chi
                     var userFromDb = _db.AspNetUsers.Where(x => x.Id == user.Id).FirstOrDefault();
                     userFromDb.Address = model.PlaceDetail + " " + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistrictId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName;
-                    
+
 
                     await _db.SaveChangesAsync();
                     #region Send Mail Confirm
@@ -166,9 +269,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     str.Append("</div>");
                     str.Append("</body>");
                     str.Append("</html>");
-                    EmailHelpers.SendConfirmEmail(userFromDb,"Thông báo","Mã kích hoạt", str.ToString());
+                    EmailHelpers.SendConfirmEmail(userFromDb, "Thông báo", "Mã kích hoạt", str.ToString());
                     #endregion
-                    return Json(new { code = 1, returnUrl = "/Customer/Account/ConfirmEmail?email="+userFromDb.Email, email=userFromDb.Email });
+                    return Json(new { code = 1, returnUrl = "/Customer/Account/ConfirmEmail?email=" + userFromDb.Email, email = userFromDb.Email });
                 }
                 else
                 {
@@ -178,10 +281,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             }
             return Json(new { code = 0, err = "Có lỗi xảy ra trong quá trình khởi tạo, vui lòng thử lại" });
         }
-        public IActionResult SignIn(LoginViewModel model=null, string err = null, string returnUrl=null)
+        public IActionResult SignIn(LoginViewModel model = null, string err = null, string returnUrl = null)
         {
-
-
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier);
             if (currentUser != null)
             {
@@ -214,7 +315,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             if (ModelState.IsValid)
             {
                 var userFromDb = _db.AspNetUsers.Where(x => x.Email == model.Email).SingleOrDefault();
-                if(userFromDb == null)
+                if (userFromDb == null)
                 {
                     return RedirectToAction("SignIn", "Account", new { err = "Không tìm thấy tài khoản!" });
                 }
@@ -224,7 +325,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 {
                     #region CookieLogin
                     string cookie = Request.Cookies[$"CookieLogin{MySecurity.Base64Encode(userFromDb.Id.ToString())}"];
-                    if(cookie != null)
+                    if (cookie != null)
                     {
                         Response.Cookies.Append($"CookieLogin{MySecurity.Base64Encode(userFromDb.Id.ToString())}", MySecurity.DecryptPassword(userFromDb.Email), new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                     }

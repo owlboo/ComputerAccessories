@@ -36,7 +36,6 @@
     $(".mini-cart-btn").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
-        debugger;
         $.ajax({
             
             url: "/Home/ShoppingCartDrop",

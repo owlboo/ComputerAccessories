@@ -24,6 +24,7 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
         public virtual DbSet<BillDetails> BillDetails { get; set; }
+        public virtual DbSet<BillStatus> BillStatus { get; set; }
         public virtual DbSet<Bills> Bills { get; set; }
         public virtual DbSet<Blog> Blog { get; set; }
         public virtual DbSet<Brand> Brand { get; set; }
@@ -39,6 +40,7 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<ProductImages> ProductImages { get; set; }
         public virtual DbSet<Products> Products { get; set; }
         public virtual DbSet<Provinces> Provinces { get; set; }
+        public virtual DbSet<Reviews> Reviews { get; set; }
         public virtual DbSet<SystemConfig> SystemConfig { get; set; }
         public virtual DbSet<TransactionHistory> TransactionHistory { get; set; }
         public virtual DbSet<UserAddress> UserAddress { get; set; }
@@ -158,6 +160,8 @@ namespace ComputerAccessoriesV2.Models
             {
                 entity.HasKey(e => new { e.ProductId, e.BillId });
 
+                entity.Property(e => e.UnitPrice).HasColumnType("money");
+
                 entity.HasOne(d => d.Bill)
                     .WithMany(p => p.BillDetails)
                     .HasForeignKey(d => d.BillId)
@@ -169,6 +173,13 @@ namespace ComputerAccessoriesV2.Models
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_BillDetails_Products");
+            });
+
+            modelBuilder.Entity<BillStatus>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CodeName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Bills>(entity =>
@@ -183,6 +194,8 @@ namespace ComputerAccessoriesV2.Models
 
                 entity.Property(e => e.Note).HasMaxLength(256);
 
+                entity.Property(e => e.ShippingAddress).HasMaxLength(256);
+
                 entity.Property(e => e.TotalPrice).HasColumnType("money");
 
                 entity.Property(e => e.Voucher).HasMaxLength(50);
@@ -196,6 +209,11 @@ namespace ComputerAccessoriesV2.Models
                     .WithMany(p => p.Bills)
                     .HasForeignKey(d => d.GuestAnonyId)
                     .HasConstraintName("FK_Bills_NoStroredGuest");
+
+                entity.HasOne(d => d.StatusNavigation)
+                    .WithMany(p => p.Bills)
+                    .HasForeignKey(d => d.Status)
+                    .HasConstraintName("FK_Bills_BillStatus");
             });
 
             modelBuilder.Entity<Blog>(entity =>
@@ -399,6 +417,22 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.ProvinceName).HasMaxLength(50);
 
                 entity.Property(e => e.ProvinceType).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Reviews>(entity =>
+            {
+                entity.HasKey(e => e.ReviewId)
+                    .HasName("PK_Comments");
+
+                entity.Property(e => e.ReviewId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Review)
+                    .WithOne(p => p.Reviews)
+                    .HasForeignKey<Reviews>(d => d.ReviewId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Comments_Comments");
             });
 
             modelBuilder.Entity<SystemConfig>(entity =>

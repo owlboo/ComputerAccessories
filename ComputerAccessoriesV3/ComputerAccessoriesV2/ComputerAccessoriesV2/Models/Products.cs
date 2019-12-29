@@ -35,6 +35,7 @@ namespace ComputerAccessoriesV2.Models
 
         public virtual Brand Brand { get; set; }
         public virtual Category Category { get; set; }
+        public virtual Reviews Reviews { get; set; }
         public virtual ICollection<BillDetails> BillDetails { get; set; }
         public virtual ICollection<CampaignDetails> CampaignDetails { get; set; }
         public virtual ICollection<ProductAttribute> ProductAttribute { get; set; }
