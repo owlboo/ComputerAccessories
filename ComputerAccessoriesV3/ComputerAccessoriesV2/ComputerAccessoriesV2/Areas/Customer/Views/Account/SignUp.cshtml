@@ -303,7 +303,6 @@
         }
 
         function onDataBoundWard() {
-            debugger;
             var districtId = $('#districtSelector').data('kendoDropDownList').value();
             $('#wardSelector').kendoDropDownList({
                 optionLabel: '-Chọn xã,phường-',
@@ -314,7 +313,7 @@
                     serverFiltering: true,
                     transport: {
                         read: {
-                            url: window.location.protocol + '//' + window.location.host + "/Region/GetWard?districtId=" + districtId
+                            url: window.location.protocol + '//' + window.location.host + "/Region/GetWards?districtId=" + districtId
                         },
                         requestEnd: function (e) {
                             var response = e.response;

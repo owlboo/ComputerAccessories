@@ -22,9 +22,13 @@ namespace ComputerAccessoriesV2.Models
         public bool? IncludedVoucher { get; set; }
         public int? GuestAnonyId { get; set; }
         public string Voucher { get; set; }
+        public int? ShipperId { get; set; }
+        public int? Status { get; set; }
+        public string ShippingAddress { get; set; }
 
         public virtual AspNetUsers Customer { get; set; }
         public virtual NoStroredGuest GuestAnony { get; set; }
+        public virtual BillStatus StatusNavigation { get; set; }
         public virtual ICollection<BillDetails> BillDetails { get; set; }
         public virtual ICollection<TransactionHistory> TransactionHistory { get; set; }
     }

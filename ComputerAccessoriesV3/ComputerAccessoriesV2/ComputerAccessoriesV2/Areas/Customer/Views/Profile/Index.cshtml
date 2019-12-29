@@ -1,4 +1,107 @@
 ﻿@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Profile/_ProfileLayout.cshtml";
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Home/_HomeLayout.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity
+@using ComputerAccessoriesV2.Ultilities
+@using Microsoft.AspNetCore.Http
+@using ComputerAccessoriesV2.Extensions
+@using ComputerAccessoriesV2.Helpers
+@using ComputerAccessoriesV2.Models
+@inject SignInManager<ComputerAccessoriesV2.Data.MyUsers> SignInManager
+@inject UserManager<ComputerAccessoriesV2.Data.MyUsers> UserManager
+
+@inject RoleManager<IdentityRole<int>> roleManager
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    String Name = null;
+    bool isShipper = false;
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        var roles = await UserManager.GetRolesAsync(user);
+        Name = user.DisplayName;
+        isShipper = roles.Contains(SD.Shipper);
+    }
+
+    HttpContextAccessor = new HttpContextAccessor();
+}
+
+<br />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="myaccount-tab-menu nav" role="tablist">
+                <a href="#dashboad" onclick="onDashboardTabClick()" class="active" data-toggle="tab"><i class="fa fa-dashboard"></i>Bảng điều khiển</a>
+                @if (isShipper)
+                {
+                    <a href="#orders" onclick="onShipperOrdersTabClick()" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Đơn hành dành cho Shipper </a>
+
+                }
+                <a href="#orders" onclick="onOrdersTabClick()" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Đơn hàng </a>
+                <a href="#address-edit" onclick="onAddressTabClick()" data-toggle="tab"><i class="fa fa-map-marker"></i> Địa chỉ</a>
+                <a href="#account-info" onclick="onProfileInfoTabClick()" data-toggle="tab"><i class="fa fa-user"></i> Thông tin tài khoản</a>
+                <a href="#change-pass" onclick="onPasswordTabClick()" data-toggle="tab"><i class="fa fa-cloud-download"></i> Thay đổi mật khẩu</a>
+            </div>
+        </div>
+        <!-- My Account Tab Menu End -->
+        <div class="col-md-9">
+            <main role="main" id="profile-container">
+            </main>
+        </div>
+        <!-- brand area end -->
+    </div>
+</div>
+
+<br />
+
+
+@section Scripts {
+    <script>
+
+        function onOrdersTabClick() {
+            $.get("/Customer/Profile/Orders", function (view) {
+                $("#profile-container").empty();
+                $("#profile-container").html(view);
+            })
+        }
+
+        function onShipperOrdersTabClick() {
+            $.get("/Customer/Profile/ShipperOrders", function (view) {
+                $("#profile-container").empty();
+                $("#profile-container").html(view);
+            })
+        }
+
+        function onAddressTabClick() {
+            $.get("/Customer/Profile/Address", function (view) {
+                $("#profile-container").empty();
+                $("#profile-container").html(view);
+            })
+        }
+
+        function onProfileInfoTabClick() {
+            $.get("/Customer/Profile/ProfileInfo", function (view) {
+                $("#profile-container").empty();
+                $("#profile-container").html(view);
+            })
+        }
+
+        function onDashboardTabClick() {
+            $.get("/Customer/Profile/Dashboard", function (view) {
+                $("#profile-container").empty();
+                $("#profile-container").html(view);
+            })
+        }
+
+        function onPasswordTabClick() {
+            $.get("/Customer/Profile/ChangePassword", function (view) {
+                $("#profile-container").empty();
+                $("#profile-container").html(view);
+            })
+        }
+
+    </script>
 }
