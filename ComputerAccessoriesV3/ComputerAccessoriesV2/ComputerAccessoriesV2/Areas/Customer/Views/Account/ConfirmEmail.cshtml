@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Xác nhận Email</title>
+    <title>AdminLTE 2 | Log in</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -38,23 +38,19 @@
         <div class="login-box-body">
             <p class="login-box-msg">Kích hoạt tài khoản</p>
             <br />
-
-            <text>@ViewBag.Error</text>
-
-            <br />
             <div class="form-group has-feedback">
-                <input type="email" class="form-control" id="txtEmail" placeholder="Email" value="@ViewBag.Email">
+                <input type="email" class="form-control" id="Email" placeholder="Email" value="@ViewBag.Email">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="text" class="form-control" id="txtCodeConfirm" placeholder="Nhập mã kích hoạt tại đây">
+                <input type="text" class="form-control" id="CodeConfirm" placeholder="Nhập mã kích hoạt tại đây">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
 
             <div class="row">
                 <!-- /.col -->
                 <div class="col-xs-4">
-                    <button id="submit" onclick="confirmEmail()" class="btn btn-primary btn-block btn-flat">Xác nhận</button>
+                    <button id="submit" class="btn btn-primary btn-block btn-flat">Xác nhận</button>
                 </div>                   <!-- /.col -->
             </div>
         </div>
@@ -91,38 +87,6 @@
             <text style="font-size:14px;">#= title #</text>
             <p style="font-size:12px;">#= message #</p>
         </div>
-    </script>
-
-    <script>
-        function returnToProfile() {
-            window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/Profile";
-        }
-
-        function confirmEmail() {
-            var email = $("#txtEmail").val();
-            var code = $("#txtCodeConfirm").val();
-
-            var data = {
-                Email: email,
-                ConfirmCode: code
-            }
-
-            $.ajax({
-                url: "/Customer/Account/ConfirmEmail",
-                type: "post",
-                dataType: "json",
-                data: data,
-                success: function (success) {
-                    console.log(success);
-                    alert(success.notify);
-                    window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/Profile";
-                },
-                error: function (err) {
-                    console.log(err);
-                    alert(err.notify);
-                }
-            });
-        }
     </script>
 
     <script src="~/js/HelperSDK.js"></script>

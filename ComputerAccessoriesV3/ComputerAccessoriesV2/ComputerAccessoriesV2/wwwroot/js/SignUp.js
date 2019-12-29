@@ -1,6 +1,7 @@
 ﻿
 
 $('#submit').click(function (e) {
+    debugger;
     var popupNotification = $('#notify').data('kendoNotification');
     if ($('#fullname').val().trim() == "") {
         //$("#validation").text("*Vui lòng nhập họ và tên của bạn");
@@ -62,7 +63,7 @@ $('#submit').click(function (e) {
     }
 
     $.ajax({
-        url: "/Customer/Account/SignUp",
+        url: "/Account/SignUp",
         type: "post",
         dataType: "json",
         data: data,

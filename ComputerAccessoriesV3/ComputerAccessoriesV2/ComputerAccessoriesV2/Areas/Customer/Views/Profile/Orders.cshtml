@@ -43,12 +43,26 @@
                 title: "Ghi chú"
             }, {
                 title: "Xem chi tiết",
-                template: "<a class ='btn btn-default' style='border:none; background:transparent' onclick='return GoOrderDetail(#: billId#)' title='Xem chi tiết'><span><i class='fa fa-search'></i></span></a>"
+                template: "<a class ='btn btn-default' style='border:none; background:transparent' onclick='return GoOrderDetail(#: billId#)' title='Xem chi tiết'><span><i class='fas fa-search'></i></span></a>"
             }]
         });
     });
 
     function GoOrderDetail(billId) {
-        window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/Bills/BillDetail?id=" + billId;
+        window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/Bills/BillDeteil?id=" + billId;
     }
+
+    $(window).resize(function() {
+    var gridElement = $("#listOrders"),
+        newHeight = gridElement.innerHeight(),
+        otherElements = gridElement.children().not(".k-grid-content"),
+        otherElementsHeight = 0;
+
+    otherElements.each(function(){
+        otherElementsHeight += $(this).outerHeight();
+    });
+
+    gridElement.children(".k-grid-content").height(newHeight - otherElementsHeight);
+});
+
 </script>

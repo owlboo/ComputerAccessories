@@ -163,25 +163,6 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return View();
         }
 
-        [HttpPost]
-        public JsonResult ChangeShipperBillStatus(int billId, int status)
-        {
-            var billDb = _db.Bills.Where(x => x.BillId == billId).FirstOrDefault();
-            if(billDb == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { notify = "Không tìm thấy đơn hàng!" });
-            } 
-            else
-            {
-                billDb.Status = status;
-                _db.SaveChanges();
-
-                Response.StatusCode = (int)HttpStatusCode.OK;
-                return Json(new { notify = "Thay đổi trạng thái thành công" });
-            }
-        }
-
         [HttpGet]
         public JsonResult GetUserListOrders(int userId)
         {
@@ -191,60 +172,6 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 select b
                 ).ToList();
             return Json(orders);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ShipperOrders()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            ViewBag.userId = user.Id;
-            return View();
-        }
-
-        [HttpGet]
-        public JsonResult  GetListOrderAvailable(int userId)
-        {
-            var shipperOrder = (
-                from b in _db.Bills
-                where b.ShipperId == userId
-                join bs in _db.BillStatus 
-                on b.Status equals bs.Id
-                select new {
-                    b.BillId,
-                    b.LastPrice,
-                    bs.CodeName,
-                    b.ShippingAddress,
-                    b.Note,
-                    StatusCode = bs.Id
-                }).ToList();
-            return Json(shipperOrder);
-        }
-
-        [HttpGet]
-        public JsonResult GetBillStatus()
-        {
-            return Json(_db.BillStatus.ToList());
-        }
-
-        [HttpGet]
-        public JsonResult GetShipperBillDetail(int billId)
-        {
-            var billDetail = (
-                from b in _db.Bills
-                where b.BillId == billId
-                join bd in _db.BillDetails on b.BillId equals bd.BillId
-                join p in _db.Products on bd.ProductId equals p.Id
-                select new
-                {
-                    p.Id,
-                    p.ProductName,
-                    bd.Quantity,
-                    b.LastPrice,
-                    b.Status
-                }
-                );
-
-            return Json(billDetail);
         }
     }
 }

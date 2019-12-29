@@ -1,0 +1,346 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ComputerAccessoriesV2.Ultilities
+@using Microsoft.AspNetCore.Http
+@using ComputerAccessoriesV2.Extensions
+@using ComputerAccessoriesV2.Helpers
+@using ComputerAccessoriesV2.Models
+@inject SignInManager<ComputerAccessoriesV2.Data.MyUsers> SignInManager
+@inject UserManager<ComputerAccessoriesV2.Data.MyUsers> UserManager
+
+@inject RoleManager<IdentityRole<int>> roleManager
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    String Name = null;
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        Name = user.DisplayName;
+    }
+
+    HttpContextAccessor = new HttpContextAccessor();
+}
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="meta description">
+
+    <!-- Site title -->
+    <title>Galio - Mega Shop Responsive Bootstrap 4 Template</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/img/favicon.ico" type="image/x-icon" />
+    <!-- Bootstrap CSS -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font-Awesome CSS -->
+    <link href="~/assets/css/font-awesome.min.css" rel="stylesheet">
+    <!-- helper class css -->
+    <link href="~/assets/css/helper.min.css" rel="stylesheet">
+    <!-- Plugins CSS -->
+    <link href="~/assets/css/plugins.css" rel="stylesheet">
+    <!-- Main Style CSS -->
+    <link href="~/assets/css/style.css" rel="stylesheet">
+    <link href="~/assets/css/skin-default.css" rel="stylesheet" id="galio-skin">
+
+    <link rel="stylesheet" href="~/kendo/styles/kendo.bootstrap-v4.min.css" />
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <!-- header area start -->
+        <header>
+
+            <!-- header top start -->
+            <div class="header-top-area bg-gray text-center text-md-left">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-5">
+                            <div class="header-call-action">
+                                <a href="#">
+                                    <i class="fa fa-envelope"></i>
+                                    info@website.com
+                                </a>
+                                <a href="#">
+                                    <i class="fa fa-phone"></i>
+                                    0123456789
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-7">
+                            <div class="header-top-right float-md-right float-none">
+                                <nav>
+                                    <ul>
+                                        <li>
+                                            <div class="dropdown header-top-dropdown">
+                                                @if (Name != null)
+                                                {
+                                                    <a class="dropdown-toggle" id="myaccount" data-toggle="dropdown"
+                                                       aria-haspopup="true" aria-expanded="false">
+                                                        Xin chào @Name
+                                                        <i class="fa fa-angle-down"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-toggle" id="myaccount" data-toggle="dropdown"
+                                                       aria-haspopup="true" aria-expanded="false">
+                                                        my account
+                                                        <i class="fa fa-angle-down"></i>
+                                                    </a>
+                                                }
+
+                                                <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                    @if (Name != null)
+                                                    {
+                                                        <a class="dropdown-item" href="Customer/Profile">@Name</a>
+                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn">Đăng nhập</a>
+                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">Đăng kí</a>
+                                                    }
+
+
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <a href="#">my wishlist</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">my cart</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">checkout</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- header top end -->
+            <!-- header middle start -->
+            <div class="header-middle-area pt-20 pb-20">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-3">
+                            <div class="brand-logo">
+                                <a asp-action="Index" asp-controller="Home">
+                                    <img src="~/assets/img/logo/logo.png" alt="brand logo">
+                                </a>
+                            </div>
+                        </div> <!-- end logo area -->
+                        <div class="col-lg-9">
+                            <div class="header-middle-right">
+                                <div class="header-middle-shipping mb-20">
+                                    <div class="single-block-shipping">
+                                        <div class="shipping-icon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>
+                                        <div class="shipping-content">
+                                            <h5>Working time</h5>
+                                            <span>Mon- Sun: 8.00 - 18.00</span>
+                                        </div>
+                                    </div> <!-- end single shipping -->
+                                    <div class="single-block-shipping">
+                                        <div class="shipping-icon">
+                                            <i class="fa fa-truck"></i>
+                                        </div>
+                                        <div class="shipping-content">
+                                            <h5>free shipping</h5>
+                                            <span>On order over $199</span>
+                                        </div>
+                                    </div> <!-- end single shipping -->
+                                    <div class="single-block-shipping">
+                                        <div class="shipping-icon">
+                                            <i class="fa fa-money"></i>
+                                        </div>
+                                        <div class="shipping-content">
+                                            <h5>money back 100%</h5>
+                                            <span>Within 30 Days after delivery</span>
+                                        </div>
+                                    </div> <!-- end single shipping -->
+                                </div>
+                                <div class="header-middle-block">
+                                    <div class="header-middle-searchbox">
+                                        <input type="text" placeholder="Search...">
+                                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                                    </div>
+                                    <div class="header-mini-cart">
+                                        <div class="mini-cart-btn">
+                                            <i class="fa fa-shopping-cart"></i>
+                                            <span class="cart-notification">2</span>
+                                        </div>
+                                        <div class="cart-total-price">
+                                            <span>total</span>
+                                            $50.00
+                                        </div>
+                                        <ul class="cart-list">
+                                            <li>
+                                                <div class="cart-img">
+                                                    <a href="product-details.html">
+                                                        <img src="assets/img/cart/cart-1.jpg"
+                                                             alt="">
+                                                    </a>
+                                                </div>
+                                                <div class="cart-info">
+                                                    <h4><a href="product-details.html">simple product 09</a></h4>
+                                                    <span>$60.00</span>
+                                                </div>
+                                                <div class="del-icon">
+                                                    <i class="fa fa-times"></i>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="cart-img">
+                                                    <a href="product-details.html">
+                                                        <img src="assets/img/cart/cart-2.jpg"
+                                                             alt="">
+                                                    </a>
+                                                </div>
+                                                <div class="cart-info">
+                                                    <h4><a href="product-details.html">virtual product 10</a></h4>
+                                                    <span>$50.00</span>
+                                                </div>
+                                                <div class="del-icon">
+                                                    <i class="fa fa-times"></i>
+                                                </div>
+                                            </li>
+                                            <li class="mini-cart-price">
+                                                <span class="subtotal">subtotal : </span>
+                                                <span class="subtotal-price">$88.66</span>
+                                            </li>
+                                            <li class="checkout-btn">
+                                                <a href="#">checkout</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- header middle end -->
+
+        </header>
+        <!-- header area end -->
+        <!-- hero slider start -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="myaccount-tab-menu nav" role="tablist">
+                        <a href="#dashboad" onclick="onDashboardTabClick()" class="active" data-toggle="tab">
+                            <i class="fa fa-dashboard"></i>
+                            Bảng điều khiển
+                        </a>
+                        <a href="#orders" onclick="onOrdersTabClick()" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Đơn hàng </a>
+                        <a href="#address-edit" onclick="onAddressTabClick()" data-toggle="tab"><i class="fa fa-map-marker"></i> Địa chỉ</a>
+                        <a href="#account-info" onclick="onProfileInfoTabClick()" data-toggle="tab"><i class="fa fa-user"></i> Thông tin tài khoản</a>
+                        <a href="#change-pass" onclick="onPasswordTabClick()" data-toggle="tab"><i class="fa fa-cloud-download"></i> Thay đổi mật khẩu</a>
+                    </div>
+                </div>
+                <!-- My Account Tab Menu End -->
+                <div class="col-md-9">
+                    <main role="main" id="profile-container">
+                        @RenderBody()
+                    </main>
+                </div>
+                <!-- brand area end -->
+            </div>
+        </div>
+        <!-- hero slider end -->
+
+        <br />
+
+        <!-- footer area start -->
+        @Html.Partial("~/Views/Home/_FooterPartial.cshtml")
+        <!-- footer area end -->
+        <!-- Scroll to top start -->
+        <div class="scroll-top not-visible">
+            <i class="fa fa-angle-up"></i>
+        </div>
+        <!-- Scroll to Top End -->
+        <!--All jQuery, Third Party Plugins & Activation (main.js) Files-->
+        <script src="~/assets/js/vendor/modernizr-3.6.0.min.js"></script>
+        <!-- Jquery Min Js -->
+        <script src="~/assets/js/vendor/jquery-3.3.1.min.js"></script>
+        <!-- Popper Min Js -->
+        <script src="~/assets/js/vendor/popper.min.js"></script>
+        <!-- Bootstrap Min Js -->
+        <script src="~/assets/js/vendor/bootstrap.min.js"></script>
+        <!-- Plugins Js-->
+        <script src="~/assets/js/plugins.js"></script>
+        <!-- Ajax Mail Js -->
+        <script src="~/assets/js/ajax-mail.js"></script>
+        <!-- Active Js -->
+        <script src="~/assets/js/main.js"></script>
+        <!-- Switcher JS [Please Remove this when Choose your Final Projct] -->
+        <script src="~/assets/js/switcher.js"></script>
+
+        <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
+        <!-- jQuery UI 1.11.4 -->
+        <script src="~/bower_components/jquery-ui/jquery-ui.min.js"></script>
+        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+        <script>
+            $.widget.bridge('uibutton', $.ui.button);
+        </script>
+
+        <script src="~/kendo/js/kendo.all.min.js"></script>
+
+
+        <script>
+
+            function onOrdersTabClick() {
+                $.get("/Customer/Profile/Orders", function (view) {
+                    $("#profile-container").empty();
+                    $("#profile-container").html(view);
+                })
+            }
+
+            function onAddressTabClick() {
+                $.get("/Customer/Profile/Address", function (view) {
+                    $("#profile-container").empty();
+                    $("#profile-container").html(view);
+                })
+            }
+
+            function onProfileInfoTabClick() {
+                $.get("/Customer/Profile/ProfileInfo", function (view) {
+                    $("#profile-container").empty();
+                    $("#profile-container").html(view);
+                })
+            }
+
+            function onDashboardTabClick() {
+                $.get("/Customer/Profile/Dashboard", function (view) {
+                    $("#profile-container").empty();
+                    $("#profile-container").html(view);
+                })
+            }
+
+            function onPasswordTabClick() {
+                $.get("/Customer/Profile/ChangePassword", function (view) {
+                    $("#profile-container").empty();
+                    $("#profile-container").html(view);
+                })
+            }
+
+
+        </script>
+    </div>
+</body>
+
+
+
+</html> 
