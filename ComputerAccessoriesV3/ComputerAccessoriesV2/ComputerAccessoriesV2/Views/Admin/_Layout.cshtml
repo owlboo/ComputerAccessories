@@ -360,38 +360,38 @@
                             <i class="fa fa-files-o"></i>
                             <span>Danh mục sản phẩm</span>
                             @*<span class="pull-right-container">
-                    <span class="label label-primary pull-right">4</span>
-                </span>*@
+                                    <span class="label label-primary pull-right">4</span>
+                                </span>*@
                         </a>
                         @*<ul class="treeview-menu">
-                <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
-                <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
-                <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
-                <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
-            </ul>*@
+                                <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
+                                <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
+                                <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
+                                <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
+                            </ul>*@
                     </li>
                     <li>
                         <a asp-controller="Brand" asp-action="Brand">
                             <i class="fa fa-th"></i> <span> Thương hiệu</span>
                             @*<span class="pull-right-container">
-                    <small class="label pull-right bg-green">new</small>
-                </span>*@
+                                    <small class="label pull-right bg-green">new</small>
+                                </span>*@
                         </a>
                     </li>
                     <li>
                         <a asp-controller="Campaign" asp-action="Index">
                             <i class="fa fa-th"></i> <span> Campaign</span>
                             @*<span class="pull-right-container">
-                    <small class="label pull-right bg-green">new</small>
-                </span>*@
+                                    <small class="label pull-right bg-green">new</small>
+                                </span>*@
                         </a>
                     </li>
                     <li>
                         <a asp-controller="Voucher" asp-action="Index">
                             <i class="fa fa-th"></i> <span> Voucher</span>
                             @*<span class="pull-right-container">
-                    <small class="label pull-right bg-green">new</small>
-                </span>*@
+                                    <small class="label pull-right bg-green">new</small>
+                                </span>*@
                         </a>
                     </li>
                     <li @*class="treeview"*@>
@@ -402,43 +402,35 @@
                                 <i class="fa fa-angle-left pull-right"></i>
                             </span>
                         </a>
-
-                        @*<ul class="treeview-menu">
-                <li><a asp-area="Admin" asp-controller="MainService" asp-action="CreateNewProduct"><i class="fa fa-circle-o"></i> Thêm mới</a></li>
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-circle-o"></i>
-                        <span>Danh mục sản phẩm</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu" id="groupCategory">
-                    </ul>
-                </li>
-
-            </ul>*@
                     </li>
                     <li>
                         <a asp-area="Admin" asp-controller="MainService" asp-action="Attributes">
                             <i class="fa fa-edit"></i> <span>Thuộc tính</span>
                             @*<span class="pull-right-container">
-                    <i class="fa fa-angle-left pull-right"></i>
-                </span>*@
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>*@
                         </a>
                     </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-table"></i> <span>Hóa đơn</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
+                    <li>
+                        <a asp-area="Admin" asp-controller="Bill" asp-action="BillManagement">
+                            <i class="fa fa-money"></i> <span>Hóa đơn</span>
+                            @*<span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>*@
                         </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/tables/simple.html"><i class="fa fa-circle-o"></i> Đang chờ</a></li>
-                            <li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Đã thanh toán</a></li>
-                        </ul>
                     </li>
+                    @*<li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-table"></i> <span>Hóa đơn</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="pages/tables/simple.html"><i class="fa fa-circle-o"></i> Đang chờ</a></li>
+                                <li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Đã thanh toán</a></li>
+                            </ul>
+                        </li>*@
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-users"></i> <span>Tài khoản</span>
@@ -448,9 +440,7 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a asp-area="Admin" asp-controller="MainService" asp-action="AccountManager"><i class="fa fa-circle-o"></i> Tất cả</a></li>
-                            <li><a href="@Url.Action("AccountManager","MainService",new {role = SD.SupperAdmin })"><i class="fa fa-circle-o"></i> Admin Users</a></li>
-                            <li><a href="@Url.Action("AccountManager","MainService",new {role = SD.Customer })"><i class="fa fa-circle-o"></i>Customers</a></li>
-                            <li><a href="@Url.Action("AccountManager","MainService",new {role = SD.Shipper })"><i class="fa fa-circle-o"></i> Shipper</a></li>
+
                         </ul>
                     </li>
                 </ul>
@@ -477,6 +467,7 @@
         </footer>
     </div>
 
+    <span id="kendoNoti"></span>
 
 
     <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
@@ -520,12 +511,26 @@
     <script src="~/dist/js/demo.js" asp-append-version="true"></script>
     <script src="~/js/CustomJS.js" type="text/javascript"></script>
     <script src="~/js/HelperSDK.js" type="text/javascript"></script>
+
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="new-mail">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
+
+    <script id="errorTemplate" type="text/x-kendo-template">
+        <div class="alert-error">
+            <text style="font-size:14px;">#= title #</text>
+            <p style="font-size:12px;">#= message #</p>
+        </div>
+    </script>
     @RenderSection("Scripts", required: false)
     <script>
         $(document).ready(() => {
             $("#rootNotification").kendoNotification({
                 position: {
-                    top:170
+                    top: 170
                 },
                 templates: [{
                     type: "warning",
@@ -533,8 +538,27 @@
                 }, {
                     type: "success",
                     template: "<div class='text-success'><text style='font-size:14px'>#= content #</text></div>"
-                    }]
-            }).data("kendoNotification");    
+                }]
+            });
+
+            $("#kendoNoti").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 50,
+                    right: 30
+                },
+                autoHideAfter: 5 * 1000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }, {
+                    type: "error",
+                    template: $("#errorTemplate").html()
+                }
+                ]
+
+            });
         })
     </script>
 </body>

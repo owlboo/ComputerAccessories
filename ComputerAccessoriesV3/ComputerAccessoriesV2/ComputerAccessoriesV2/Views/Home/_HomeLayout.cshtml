@@ -16,6 +16,7 @@
     var ListShoppingCart = new List<ShoppingCartViewModel>();
     String Name = null;
     int isActive = 0;
+
     if (SignInManager.IsSignedIn(User))
     {
 
@@ -117,6 +118,7 @@
             <text>Tài khoản của bạn chưa được kích hoạt. Nhấn <a href="/Customer/Account/ConfirmEmail" style="font-weight:500">vào đây</a> để kích hoạt tài khoản của bạn</text>
         </div>
     }
+
 
     <div class="wrapper">
 
@@ -523,7 +525,6 @@
 
         <span id="kendoNoti"></span>
         <div class="container">
-            <partial name="~/Views/Home/_BreadcumbPartial.cshtml" />
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
@@ -569,6 +570,7 @@
     <script src="~/js/CustomerValidate.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
     @*<script src="~/slick-1.8.1/slick-1.8.1/slick/slick.min.js"></script>*@
+    <script src="~/js/HelperSDK.js"></script>
     <script id="successTemplate" type="text/x-kendo-template">
         <div class="new-mail">
             <text style="font-size:14px;">#= title #</text>
@@ -577,12 +579,12 @@
     </script>
 
     <script id="errorTemplate" type="text/x-kendo-template">
-        <div class="alert-error">
+        <div class="new">
             <text style="font-size:14px;">#= title #</text>
             <p style="font-size:12px;">#= message #</p>
         </div>
     </script>
-    <script src="~/js/HelperSDK.js"></script>
+
     <script>
         $(window).on('load', function () {
             //$.get("/Home/Categories", function (data) {
@@ -597,7 +599,7 @@
             $("#kendoNoti").kendoNotification({
                 position: {
                     pinned: true,
-                    top: 30,
+                    top: 50,
                     right: 30
                 },
                 autoHideAfter: 5 * 1000,

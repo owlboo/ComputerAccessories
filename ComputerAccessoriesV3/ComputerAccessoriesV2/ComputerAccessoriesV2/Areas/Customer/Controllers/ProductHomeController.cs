@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
     public class ProductHomeController : Controller
     {
         private readonly ComputerAccessoriesV2Context _db;
-        public ProductHomeController(ComputerAccessoriesV2Context db)
+        private readonly QueryDbContext context;
+        public ProductHomeController(ComputerAccessoriesV2Context db,QueryDbContext _context)
         {
+            context = _context;
             _db = db;
         }
         public IActionResult ProductDetails(int productId)
@@ -41,12 +44,38 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
             }).FirstOrDefault();
 
+            List<ProductGridModel> deals = _db.Products.Where(x => x.PromotionPrice.HasValue).Select(x => new ProductGridModel
+            {
+                Id = x.Id,
+                ProductName = x.ProductName,
+                Thumnail = x.Thumnail,
+                Thumnail2 = x.Thumnail2,
+                BrandId = x.BrandId.Value,
+                BrandName = x.BrandId.HasValue ? x.Brand.BrandName : "",
+                CategoryId = x.CategoryId.Value,
+                CategoryName = x.CategoryId.HasValue ? x.Category.CategoryName : "",
+                OriginalPrice = x.OriginalPrice.Value.ToString("###,###"),
+                PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
+                Code = x.Code,
+                IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
+                SaleValue = 100 - (int)(x.OriginalPrice / x.PromotionPrice)
+            }).Take(20).ToList();
 
             List<Products> relatedProducts = _db.Products
                 .Where(x => x.CategoryId == products.CategoryId || x.BrandId == products.BrandId).ToList();
 
+            string brandStr = @"SELECT b.Id,b.BrandName,(SELECT COUNT(Id) FROM dbo.Products WHERE BrandId=b.Id)'ProductCount' FROM dbo.Brand b WHERE 1=1";
+            var brandList = context.BrandPartials.FromSqlRaw(brandStr).ToList();
+
+            string str =
+               @"SELECT c.Id,c.CategoryName,(SELECT Count(id) FROM dbo.Products WHERE CategoryId = c.Id) 'ProductQuantity' FROM dbo.Category c WHERE c.Status = 1";
+            var listCategory = context.CategoryShoppingModel.FromSqlRaw(str).ToList().OrderByDescending(x=>x.ProductQuantity).Take(5).ToList();
+
+            ViewBag.ListDeal = deals;
+            ViewBag.brandList = brandList;
             ViewBag.productName = products.ProductName;
             ViewBag.relatedProduct = relatedProducts;
+            ViewBag.ListTags = listCategory;
             return View(products);
         }
 

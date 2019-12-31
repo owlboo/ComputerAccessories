@@ -32,6 +32,7 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<CampaignDetails> CampaignDetails { get; set; }
         public virtual DbSet<CampaignType> CampaignType { get; set; }
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Comments> Comments { get; set; }
         public virtual DbSet<Districts> Districts { get; set; }
         public virtual DbSet<ErrLogs> ErrLogs { get; set; }
         public virtual DbSet<NoStroredGuest> NoStroredGuest { get; set; }
@@ -298,6 +299,21 @@ namespace ComputerAccessoriesV2.Models
                     .WithMany(p => p.InverseParend)
                     .HasForeignKey(d => d.ParendId)
                     .HasConstraintName("FK_Category_Category");
+            });
+
+            modelBuilder.Entity<Comments>(entity =>
+            {
+                entity.HasKey(e => e.CommentId);
+
+                entity.Property(e => e.CommentId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Comment)
+                    .WithOne(p => p.Comments)
+                    .HasForeignKey<Comments>(d => d.CommentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Comments_Comments");
             });
 
             modelBuilder.Entity<Districts>(entity =>

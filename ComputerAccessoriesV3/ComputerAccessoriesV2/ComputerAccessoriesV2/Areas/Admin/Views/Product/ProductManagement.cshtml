@@ -22,13 +22,93 @@
 
 <div class="row">
     <div class="col-xs-12">
+        <div class="box box-default">
+            <div class="box-header with-border">
+                <h3 class="box-title">Lọc</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body" style="">
+                <div class="row">
+
+                    <!-- /.col -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Danh mục</label>
+                            <div class="input-group date">
+                                <input id="categoryDrop"  style="width:200%;height:150%" class="form-control"/>                              
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <!-- /.form-group -->
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Thương hiệu</label>
+                            <div class="input-group date">
+                                <input id="branDrop" style="width:200%;height:150%" class="form-control"/>
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <!-- /.form-group -->
+                    </div>
+
+                    <!-- /.col -->
+                </div>
+                <div class="row">
+
+                    <!-- /.col -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Từ ngày</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control pull-right" id="datepicker1">
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <!-- /.form-group -->
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Đến ngày</label>
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control pull-right" id="datepicker2">
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <!-- /.form-group -->
+                    </div>
+
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <div class="box-footer">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <a class="btn btn-success" onclick="Filter()">Lọc</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
         <div class="box">
             <div class="box-header">
                 <h3 class="box-title">Hover Data Table</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                
+
 
                 <div id="productGrid">
 
@@ -44,6 +124,55 @@
     <script>
         $(document).ready(function () {
             debugger;
+            categoryDrop
+            $('#branDrop').kendoDropDownList({
+                autoBind:true,
+                optionLabel: '-Chọn thương hiệu-',
+                dataTextField: "brandName",
+                dataValueField: "id",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url:window.location.protocol + '//' + window.location.host+ "/Brand/GetBrand"
+                        },
+                        requestEnd: function (e) {
+                            var response = e.response;
+                            var type = e.type;
+                            if (response.length === 0) {
+
+                            }
+                        },
+                    }
+                },
+                index: 0
+            });
+            $('#categoryDrop').kendoDropDownList({
+                autoBind:true,
+                optionLabel: '-Chọn danh mục-',
+                dataTextField: "categoryName",
+                dataValueField: "id",
+                dataSource: {
+                    type: 'json',
+                    serverFiltering: true,
+                    transport: {
+                        read: {
+                            url:window.location.protocol + '//' + window.location.host+ "/MainService/GetCategoryDrop"
+                        },
+                        requestEnd: function (e) {
+                            var response = e.response;
+                            var type = e.type;
+                            if (response.length === 0) {
+
+                            }
+                        },
+                    }
+                },
+                index: 0
+            });
+
+
             $("#productGrid").kendoGrid({
                 dataSource: {
                     type: "json",

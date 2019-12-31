@@ -67,6 +67,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
             string brandStr = @"SELECT b.Id,b.BrandName,(SELECT COUNT(Id) FROM dbo.Products WHERE BrandId=b.Id)'ProductCount' FROM dbo.Brand b WHERE 1=1";
             var brandList = context.BrandPartials.FromSqlRaw(brandStr).ToList();
+
+            
             ViewBag.category = listCategory;
             ViewBag.brands = brandList;
             return View(listProducts);
@@ -121,7 +123,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             StringBuilder sqlQuery = new StringBuilder();
 
             sqlQuery.Append(
-                @"SELECT u.Id 'UserId',u.DisplayName,u.PhoneNumber,ua.ProvinceId,(SELECT ProvinceName FROM dbo.Provinces WHERE ProvinceId=ua.ProvinceId)'ProvinceName',ua.DistrictId,(SELECT DistrictName FROM dbo.Districts WHERE DistrictId = ua.DistrictId) 'DistrictName', ua.WardId, (SELECT WardName FROM dbo.Ward WHERE WardId = ua.WardId) 'WardName',ua.PlaceDetails FROM dbo.AspNetUsers u LEFT JOIN dbo.UserAddress ua ON ua.UserId = u.Id WHERE u.Id = @userId");
+                @"SELECT u.Id 'UserId',u.DisplayName,u.PhoneNumber,ua.ProvinceId,u.Email,(SELECT ProvinceName FROM dbo.Provinces WHERE ProvinceId=ua.ProvinceId)'ProvinceName',ua.DistrictId,(SELECT DistrictName FROM dbo.Districts WHERE DistrictId = ua.DistrictId) 'DistrictName', ua.WardId, (SELECT WardName FROM dbo.Ward WHERE WardId = ua.WardId) 'WardName',ua.PlaceDetails FROM dbo.AspNetUsers u LEFT JOIN dbo.UserAddress ua ON ua.UserId = u.Id WHERE u.Id = @userId");
 
             var userInfo = context.UserInformationModels.FromSqlRaw(sqlQuery.ToString(), new SqlParameter("userId", userId)).FirstOrDefault();
 
@@ -217,7 +219,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             Note = model.Note,
                             GuestAnonyId = guest.Id,
                             TotalPrice = totalPrice,
-                            LastPrice = totalPrice
+                            LastPrice = totalPrice,
+                            Status=1,
+                            ShippingAddress=model.PlaceDetail+" "+GetFullAddress(model.ProvinceId,model.DistrictId,model.WardId)
                         };
                         _db.Bills.Add(billObj);
                         await _db.SaveChangesAsync();
@@ -237,7 +241,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             {
                                 BillId = billObj.BillId,
                                 ProductId = item.Products.Id,
-                                Quantity = item.Quantity
+                                Quantity = item.Quantity,
+                                UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                             };
                             _db.BillDetails.Add(billDetail);
                             await _db.SaveChangesAsync();
@@ -276,7 +281,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             TotalPrice = totalPrice,
                             LastPrice = totalPrice-lPrice,
                             IncludedVoucher = true,
-                            Voucher = voucher
+                            Voucher = voucher,
+                            ShippingAddress = model.PlaceDetail + " " + GetFullAddress(model.ProvinceId, model.DistrictId, model.WardId),
+                            Status=1
                         };
                         _db.Bills.Add(billObj);
                         await _db.SaveChangesAsync();
@@ -296,7 +303,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             {
                                 BillId = billObj.BillId,
                                 ProductId = item.Products.Id,
-                                Quantity = item.Quantity
+                                Quantity = item.Quantity,
+                                UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                             };
                             _db.BillDetails.Add(billDetail);
                             await _db.SaveChangesAsync();
@@ -350,7 +358,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 CustomerId = userId,
                                 TotalPrice = totalPrice,
                                 LastPrice = totalPrice,
-                                GuestAnonyId = guest.Id
+                                GuestAnonyId = guest.Id,
+                                Status=1,
+                                ShippingAddress = model.PlaceDetail + " " + GetFullAddress(model.ProvinceId, model.DistrictId, model.WardId)
                             };
                             _db.Bills.Add(billObj);
                             await _db.SaveChangesAsync();
@@ -370,7 +380,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 {
                                     BillId = billObj.BillId,
                                     ProductId = item.Products.Id,
-                                    Quantity = item.Quantity
+                                    Quantity = item.Quantity,
+                                    UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                                 };
                                 _db.BillDetails.Add(billDetail);
                                 await _db.SaveChangesAsync();
@@ -427,7 +438,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 LastPrice = totalPrice-lPrice,
                                 IncludedVoucher = true,
                                 Voucher = voucher,
-                                GuestAnonyId= guest.Id
+                                GuestAnonyId= guest.Id,
+                                Status=1,
+                                ShippingAddress = model.PlaceDetail + " " + GetFullAddress(model.ProvinceId, model.DistrictId, model.WardId)
                             };
                             _db.Bills.Add(billObj);
                             await _db.SaveChangesAsync();
@@ -447,7 +460,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 {
                                     BillId = billObj.BillId,
                                     ProductId = item.Products.Id,
-                                    Quantity = item.Quantity
+                                    Quantity = item.Quantity,
+                                    UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                                 };
                                 _db.BillDetails.Add(billDetail);
                                 await _db.SaveChangesAsync();
@@ -477,7 +491,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             }
             try
             {
-                var userAddress = _db.UserAddress.Where(x => x.UserId == UserId).FirstAsync();
+                var userAddress = _db.UserAddress.Where(x => x.UserId == UserId).FirstOrDefault();
                 string key = "SessionSP_" + UserId;
                 var listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
                 if (listProducts.Count == 0)
@@ -496,7 +510,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         BillName = AccountHelpers.Guild(6),
                         CreateDate = DateTime.Now,
                         TotalPrice = totalPrice,
-                        LastPrice = totalPrice
+                        LastPrice = totalPrice,
+                        Status = 1,
+                        ShippingAddress = userAddress.PlaceDetails + " " + GetFullAddress(userAddress.ProvinceId, userAddress.DistrictId, userAddress.WardId)
                     };
                     _db.Bills.Add(billObj);
                     await _db.SaveChangesAsync();
@@ -507,7 +523,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         {
                             BillId = billObj.BillId,
                             ProductId = item.Products.Id,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                         };
                         _db.BillDetails.Add(objBillDt);
                         await _db.SaveChangesAsync();
@@ -557,7 +574,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         TotalPrice = totalPrice,
                         LastPrice = totalPrice-lPrice,
                         IncludedVoucher=true,
-                        Voucher = voucher.VoucherName
+                        Voucher = voucher.VoucherName,
+                        Status = 1,
+                        ShippingAddress = userAddress.PlaceDetails + " " + GetFullAddress(userAddress.ProvinceId, userAddress.DistrictId, userAddress.WardId)
                     };
                     _db.Bills.Add(billObj);
                     await _db.SaveChangesAsync();
@@ -568,7 +587,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         {
                             BillId = billObj.BillId,
                             ProductId = item.Products.Id,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            UnitPrice = item.Products.PromotionPrice.HasValue? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                         };
                         _db.BillDetails.Add(objBillDt);
                         await _db.SaveChangesAsync();
@@ -592,6 +612,15 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
             }
             
+        }
+
+        private string GetFullAddress(int provinceId,int districtId, int wardId)
+        {
+            var provinceName = _db.Provinces.Where(x => x.ProvinceId == provinceId).Select(x => x.ProvinceName).FirstOrDefault();
+            var districtName = _db.Districts.Where(x => x.DistrictId == districtId).Select(x => x.DistrictName).FirstOrDefault();
+            var wardName = _db.Ward.Where(x => x.WardId == wardId).Select(x => x.WardName).FirstOrDefault();
+
+            return wardName + ", " + districtName + ", " + provinceName;
         }
     }
 }
