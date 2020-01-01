@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +15,12 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
     public class ProductHomeController : Controller
     {
         private readonly ComputerAccessoriesV2Context _db;
-        public ProductHomeController(ComputerAccessoriesV2Context db)
+        private readonly UserManager<MyUsers> _userManager;
+
+        public ProductHomeController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
         public IActionResult ProductDetails(int productId)
         {
@@ -75,6 +80,32 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         //    return View(relatedProducts);
         //}
 
+        [HttpGet]
+        public async Task<IActionResult> ProductReview(int productId)
+        {
+            /*            var reviews = (
+                            from r in _db.Reviews
+                            where r.ProductId == productId
+                            select r
+                            ).ToList();
 
+                        switch(sortType)
+                        {
+                            case 1:
+                                reviews.Sort((x, y) => DateTime.Compare(x.CreatedDate, y.CreatedDate));
+                                break;
+                            case 2:
+                                reviews.Sort((x, y) => (x.LikedNumber >= y.LikedNumber ? 1 : 0));
+                                break;
+                            case 3:
+                                reviews.Sort((x, y) => (x.LikedNumber >= y.LikedNumber ? 0 : 1));
+                                break;
+                            default:
+                                break;
+                        }*/
+            ViewBag.CurrentUserId = (await _userManager.GetUserAsync(User)).Id;
+            ViewBag.ProductId = productId;
+            return View();
+        }
     }
 }

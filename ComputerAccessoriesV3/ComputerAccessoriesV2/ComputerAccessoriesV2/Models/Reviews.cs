@@ -14,6 +14,6 @@ namespace ComputerAccessoriesV2.Models
         public int? LikedNumber { get; set; }
         public string GuestName { get; set; }
 
-        public virtual Products Review { get; set; }
+        public virtual Products Product { get; set; }
     }
 }

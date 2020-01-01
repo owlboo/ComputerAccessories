@@ -424,15 +424,13 @@ namespace ComputerAccessoriesV2.Models
                 entity.HasKey(e => e.ReviewId)
                     .HasName("PK_Comments");
 
-                entity.Property(e => e.ReviewId).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Review)
-                    .WithOne(p => p.Reviews)
-                    .HasForeignKey<Reviews>(d => d.ReviewId)
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Reviews)
+                    .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Comments_Comments");
+                    .HasConstraintName("FK_Reviews_Product");
             });
 
             modelBuilder.Entity<SystemConfig>(entity =>
