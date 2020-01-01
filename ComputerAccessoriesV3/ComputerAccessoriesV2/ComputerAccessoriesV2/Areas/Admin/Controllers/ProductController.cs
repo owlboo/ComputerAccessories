@@ -432,19 +432,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             var listReview = (
                 from r in _db.Reviews
-                let user = _db.AspNetUsers.Where(u => u.Id == r.UserId).FirstOrDefault()
                 where r.ProductId == id
-                select new
-                {
-                    r.GuestName,
-                    r.CreatedDate,
-                    r.Description,
-                    r.LikedNumber,
-                    r.Star,
-                    r.ReviewId,
-                    r.UserId,
-                    user.DisplayName
-                }
+                select r
                 ).ToList();
             return Json(listReview);
         }
@@ -471,13 +460,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         [HttpPost]
         [Route("/[controller]/UploadPreview")]
-        public async Task<JsonResult> UploadPreview([FromBody]ReviewViewModel _params)
+        public async Task<JsonResult> UploadPreview(ReviewViewModel _params)
         {
             using (var scope = _db.Database.BeginTransaction())
             {
                 try
                 {
-                    var newReview = new Reviews
+                    _db.Reviews.Add(new Reviews
                     {
                         CreatedDate = DateTime.Now,
                         Description = _params.Description,
@@ -486,8 +475,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         LikedNumber = 0,
                         ProductId = _params.ProductId,
                         Star = _params.Star
-                    };
-                    _db.Reviews.Add(newReview);
+                    });
 
                     await _db.SaveChangesAsync();
                     await scope.CommitAsync();
