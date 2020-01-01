@@ -25,6 +25,7 @@ namespace ComputerAccessoriesV2.Models
         public int? ShipperId { get; set; }
         public int? Status { get; set; }
         public string ShippingAddress { get; set; }
+        public DateTime? DeliveredDate { get; set; }
 
         public virtual AspNetUsers Customer { get; set; }
         public virtual NoStroredGuest GuestAnony { get; set; }
