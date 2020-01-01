@@ -465,7 +465,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 await _db.SaveChangesAsync();
 
                 Response.StatusCode = (int)HttpStatusCode.OK;
-                return Json(new { notify = "Like thành công ^-^" });
+                return Json(new { notify = "Like thành công ^-^ !!" });
             }
         }
 
