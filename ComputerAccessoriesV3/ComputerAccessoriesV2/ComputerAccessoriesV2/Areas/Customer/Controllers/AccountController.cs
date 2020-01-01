@@ -264,7 +264,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     str.Append("</head>");
                     str.Append("<body>");
                     str.Append("<div class='text-center'> ");
-                    str.Append(" <h3 class='text-left'>Cảm ơn bạn đã đăng ký tài khoản</h3>");
+                    str.Append("<h3 class='text-left'>Cảm ơn bạn đã đăng ký tài khoản</h3>");
                     str.Append("<p class='text-left'> Mã kích hoạt tài khoản của bạn là: <strong style='font-size:20px'>" + userFromDb.CodeConfirm + "</strong></p>");
                     str.Append("</div>");
                     str.Append("</body>");

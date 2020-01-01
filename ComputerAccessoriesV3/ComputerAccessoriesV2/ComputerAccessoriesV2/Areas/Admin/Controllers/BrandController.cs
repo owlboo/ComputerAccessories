@@ -36,17 +36,106 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         [Route("/[controller]/GetBrand")]
         [HttpGet]
-        public JsonResult GetBrand()
+        public JsonResult GetBrand(int? status, string fromTime, string toTime,string text)
         {
-            return Json(_db.Brand.Select(x => new Brand
+            var from = new DateTime();
+            var to = new DateTime();
+            if (String.IsNullOrEmpty(fromTime) && string.IsNullOrEmpty(toTime)&&!status.HasValue)
             {
-                Id = x.Id,
-                BrandName = x.BrandName,
-                Logo = x.Logo,
-                CreatedDate = x.CreatedDate,
-                ModifiedDate =x.ModifiedDate,
-                Status =x.Status
-            }).ToList());
+
+                if (!String.IsNullOrEmpty(text))
+                {
+                    return Json(_db.Brand.Where(x => x.BrandName.Contains(text)).Select(x => new Brand
+                    {
+                        Id = x.Id,
+                        BrandName = x.BrandName,
+                        Logo = x.Logo,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        Status = x.Status
+                    }).ToList());
+                }
+                return Json(_db.Brand.Select(x => new Brand
+                {
+                    Id = x.Id,
+                    BrandName = x.BrandName,
+                    Logo = x.Logo,
+                    CreatedDate = x.CreatedDate,
+                    ModifiedDate = x.ModifiedDate,
+                    Status = x.Status
+                }).ToList());
+            }
+            if (status.HasValue)
+            {
+                bool stt = status.Value == 0 ? false : true;
+                if (String.IsNullOrEmpty(toTime)&&String.IsNullOrEmpty(fromTime))
+                {
+                    
+                    return Json(_db.Brand.Where(x=>x.Status == stt).Select(x => new Brand
+                    {
+                        Id = x.Id,
+                        BrandName = x.BrandName,
+                        Logo = x.Logo,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        Status = x.Status
+                    }).ToList());
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(fromTime))
+                    {
+                        from = DateTime.Now.AddMonths(-1);
+                    }
+                    else
+                    {
+                        from = DateTime.Parse(fromTime);
+                    }
+                    if (String.IsNullOrEmpty(toTime))
+                    {
+                        to = DateTime.Now;
+                    }
+                    else
+                    {
+                        toTime += " 23:59:59";
+                        to = DateTime.Parse(toTime);
+                    }
+                    return Json(_db.Brand.Where(x => x.CreatedDate >= from && x.CreatedDate <= to && x.Status == stt).Select(x => new Brand
+                    {
+                        Id = x.Id,
+                        BrandName = x.BrandName,
+                        Logo = x.Logo,
+                        CreatedDate = x.CreatedDate,
+                        ModifiedDate = x.ModifiedDate,
+                        Status = x.Status
+                    }).ToList());
+                }
+                
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(toTime))
+                {
+                    to = DateTime.Now;
+                }
+                else
+                {
+                    from = DateTime.Parse(fromTime);
+                    toTime += " 23:59:59";
+                    to = DateTime.Parse(toTime);
+                }
+                return Json(_db.Brand.Where(x => x.CreatedDate >= from && x.CreatedDate <= to).Select(x => new Brand
+                {
+                    Id = x.Id,
+                    BrandName = x.BrandName,
+                    Logo = x.Logo,
+                    CreatedDate = x.CreatedDate,
+                    ModifiedDate = x.ModifiedDate,
+                    Status = x.Status
+                }).ToList());
+            }
+            
+
         }
         public IActionResult EditBrand(int? id)
         {

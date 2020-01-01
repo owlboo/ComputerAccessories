@@ -5,6 +5,8 @@
     Layout = "~/Views/Home/_HomeLayout.cshtml";
 
     var relatedProduct = ViewBag.relatedProduct as List<Products>;
+    List<ProductGridModel> listDeals = ViewBag.ListDeal as List<ProductGridModel>;
+    var listTags = ViewBag.ListTags as List<CategoryShoppingModel>;
 }
 
 
@@ -107,13 +109,13 @@
                                     <div class="tab-pane fade show active" id="tab_one">
                                         <div class="tab-one">
                                             @Html.Raw(Model.FullDescription)
-                                            
+
                                         </div>
                                         <div class="text-center">
                                             <button class="btn btn-outline-primary" id="showMore" style="color: blue; border: none;background:transparent">Hiển thị thêm</button>
-                                            <button class="btn btn-outline-primary" id="showLess" style="color: blue; border: none; background: transparent;display:none" >Ẩn đi</button>
+                                            <button class="btn btn-outline-primary" id="showLess" style="color: blue; border: none; background: transparent;display:none">Ẩn đi</button>
                                         </div>
-                                        
+
                                     </div>
                                     <div class="tab-pane fade" id="tab_two">
                                         Select thuộc tính bỏ vào đây
@@ -143,8 +145,99 @@
                 <partial name="RelatedProducts" model="relatedProduct" />
                 <!-- related products area end -->
             </div>
+            <div class="col-lg-3">
+                <div class="shop-sidebar-wrap fix mt-md-22 mt-sm-22">
+                    <!-- featured category start -->
+                    <div class="sidebar-widget mb-22">
+                        <div class="section-title-2 d-flex justify-content-between mb-28">
+                            <h3>featured</h3>
+                            <div class="category-append"></div>
+                        </div> <!-- section title end -->
+                        <div class="category-carousel-active row" data-row="3">
+                            @if (listDeals.Count > 0)
+                            {
+                                @foreach (var item in listDeals)
+                                {
+                                    <div class="col">
+                                        <div class="category-item">
+                                            <div class="category-thumb">
+                                                <a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">
+                                                    <img src="@item.Thumnail" alt="">
+                                                </a>
+                                            </div>
+                                            <div class="category-content">
+                                                <h4><a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">@item.ProductName</a></h4>
+                                                <div class="price-box">
+                                                    @if (String.IsNullOrEmpty(item.PromotionPrice))
+                                                    {
+                                                        <div class="regular-price">
+                                                            @item.OriginalPrice
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="regular-price">
+                                                            @item.PromotionPrice
+                                                        </div>
+                                                        <div class="old-price">
+                                                            <del style="font-size:12px">@item.OriginalPrice</del>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="ratings">
+                                                    <span class="good"><i class="fa fa-star"></i></span>
+                                                    <span class="good"><i class="fa fa-star"></i></span>
+                                                    <span class="good"><i class="fa fa-star"></i></span>
+                                                    <span class="good"><i class="fa fa-star"></i></span>
+                                                    <span><i class="fa fa-star"></i></span>
+                                                    <div class="pro-review">
+                                                        <span>1 review(s)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end single item -->
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
 
+                    <div class="sidebar-widget mb-22">
+                        <div class="sidebar-title mb-10">
+                            <h3>Manufacturers</h3>
+                        </div>
+                        <div class="sidebar-widget-body">
+                            <partial name="~/Areas/Customer/Views/Shopping/_BrandLeftNavPartial.cshtml" model="ViewBag.brandList" />
+                        </div>
+                    </div>
+                    <!-- manufacturer end -->
+                    <!-- product tag start -->
+                    <div class="sidebar-widget mb-22">
+                        <div class="sidebar-title mb-20">
+                            <h3>tag</h3>
+                        </div>
+                        <div class="sidebar-widget-body">
+                            <div class="product-tag">
+                                @foreach (var item in listTags)
+                                {
+                                    <a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-categoryId="@item.Id">@item.CategoryName</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- product tag end -->
+                    <!-- sidebar banner start -->
+                    <div class="sidebar-widget mb-22">
+                        <div class="img-container fix img-full mt-30">
+                            <a href="#"><img src="~/assets/img/banner/banner_shop.jpg" alt=""></a>
+                        </div>
+                    </div>
+                    <!-- sidebar banner end -->
+                </div>
+            </div>
+            <!-- sidebar end -->
         </div>
+    </div>
     </div>
 </div>
 

@@ -10,6 +10,7 @@ namespace ComputerAccessoriesV2.ViewModels
     {
         public Products Products { get; set; }
         public int Quantity { get; set; }
+        public Decimal UniPrice { get; set; }
     }
     public class ShoppingCartPreview
     {

@@ -17,5 +17,7 @@ namespace ComputerAccessoriesV2.ViewModels
         public int WardId { get; set; }
         public string PhoneNumber { get; set; }
         public string PlaceDetails { get; set; }
+        //public string FullAddress { get; set; }
+        public string Email { get; set; }
     }
 }
