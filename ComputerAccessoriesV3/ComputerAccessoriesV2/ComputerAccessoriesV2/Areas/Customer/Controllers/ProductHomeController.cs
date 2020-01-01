@@ -131,7 +131,14 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             default:
                                 break;
                         }*/
-            ViewBag.CurrentUserId = (await _userManager.GetUserAsync(User)).Id;
+            var currentUser = await _userManager.GetUserAsync(User);
+            if(currentUser != null)
+            {
+                ViewBag.CurrentUserId = (await _userManager.GetUserAsync(User)).Id;
+            } else
+            {
+                ViewBag.CurrentUserId = null;
+            }
             ViewBag.ProductId = productId;
             return View();
         }

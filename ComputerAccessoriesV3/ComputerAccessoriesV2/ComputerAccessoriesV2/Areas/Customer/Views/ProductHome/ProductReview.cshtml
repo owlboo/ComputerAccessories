@@ -1,4 +1,7 @@
-﻿<div id="reviews-holder">
+﻿@{
+    var isLogin = (ViewBag.CurrentUserId != null) ? 1 : 0;
+}
+<div id="reviews-holder">
     <div class="form-group row">
         <div class="col">
             <label class="col-form-label"><span class="text-danger">*</span> Độ hài lòng về sản phẩm</label>
@@ -50,14 +53,11 @@
 </div>
 
 <script>
-
-    var isLogin = @ViewBag.CurrentUserId != null
-
     $(document).ready(function () {
-        var dataSource = new kendo.data.DataSource({
+            var dataSource = new kendo.data.DataSource({
             transport: {
-                read: {
-                    url: "/Product/GetProductReviews?id=" + @ViewBag.ProductId,
+            read: {
+                url: "/Product/GetProductReviews?id=" + @ViewBag.ProductId,
                     dataType: "json"
                 }
             },
@@ -65,26 +65,27 @@
         });
 
         $("#pager").kendoPager({
-            dataSource: dataSource
+        dataSource: dataSource
         });
 
         $("#listReview").kendoListView({
-            dataSource: dataSource,
+        dataSource: dataSource,
             pageable: true,
             template: kendo.template($("#template").html())
         });
     });
 
     function uploadReview() {
-        var guestName = (!isLogin) ? $("#txtName").val() : null;
+        var guestName = (!@isLogin) ? $("#txtName").val() : null;   
+        var userId = @(isLogin == 1 ? ViewBag.CurrentUserId : 0);  
 
         var data = {
             ProductId:  @ViewBag.ProductId,
             Description: $("#txtDescription").val(),
             Star: parseInt($('input[name=rating]:checked').val()),
             LikedNumber: 0,
-            UserId: @ViewBag.CurrentUserId,
-            GuestName: guestName
+            UserId: userId,
+            GuestName: guestName,
         };
 
         $.ajax({
