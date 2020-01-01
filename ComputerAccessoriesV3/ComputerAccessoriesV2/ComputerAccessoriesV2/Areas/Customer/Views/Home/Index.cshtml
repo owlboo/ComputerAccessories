@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Home/_HomeLayout.cshtml";
     ProductGridModel product = ViewBag.products;
-
+    var newArrival = ViewBag.newArrival as List<ProductGridModel>;
 }
 
 
@@ -139,7 +139,7 @@
                             <h3>Sản phẩm mới</h3>
                             <div class="category-append"></div>
                         </div> <!-- section title end -->
-                        <div class="category-carousel-active row" data-row="4">
+                        <div class="category-carousel-active row" data-row="3">
                             @if (Model.ListNewProducts.Count > 0)
                             {
                                 @foreach (var item in Model.ListNewProducts)
@@ -198,7 +198,7 @@
                             <h3>Xem nhiều</h3>
                             <div class="category-append"></div>
                         </div> <!-- section title end -->
-                        <div class="category-carousel-active row" data-row="4">
+                        <div class="category-carousel-active row" data-row="3">
                             @if (Model.ListMostViewsProducts.Count > 0)
                             {
                                 @foreach (var item in Model.ListMostViewsProducts)
@@ -254,13 +254,91 @@
                 <div class="banner-statistic pt-28 pb-36">
                     <div class="img-container fix img-full">
                         <a href="#">
-                            <img src="assets/img/banner/banner_static1.jpg" alt="">
+                            <img src="~/assets/img/banner/banner_static1.jpg" alt="">
                         </a>
                     </div>
                 </div>
                 <!-- Most viewed area end -->
             </div>
         </div>
+        @if (newArrival.Count > 0)
+        {
+            <div class="feature-category-area">
+                <div class="section-title mb-30">
+                    <div class="title-icon">
+                        <i class="fa fa-flask"></i>
+                    </div>
+                    <h3>New Arrivals</h3>
+                </div> <!-- section title end -->
+                <!-- featured category start -->
+                <div class="featured-carousel-active slick-padding slick-arrow-style">
+                    @foreach (var item in newArrival)
+                    {
+                    <div class="product-item fix">
+                        <div class="product-thumb">
+                            <a asp-action="ProductDetails" asp-controller="ProductHome" asp-area="Customer" asp-route-productId="@item.Id">
+                                <img src="@item.Thumnail" class="img-pri" alt="">
+                                <img src="@item.Thumnail2" class="img-sec" alt="">
+                            </a>
+                            <div class="product-label">
+                                <span>hot</span>
+                            </div>
+                            <div class="product-action-link">
+                                @*<a href="#" data-toggle="modal" data-target="#quick_view">
+                    <span data-toggle="tooltip"
+                          data-placement="left" title="Quick view"><i class="fa fa-search"></i></span>
+                </a>*@
+                                <a href="#" data-toggle="modal" data-target="#quick_view" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
+                                    <span data-toggle="tooltip"
+                                          data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
+                                </a>
+                                <a href="#" data-toggle="tooltip" data-placement="left" title="Wishlist"><i class="fa fa-heart-o"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="left" title="Compare"><i class="fa fa-refresh"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-area="Customer" asp-route-productId="@item.Id">@item.ProductName</a></h4>
+                            <text><a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-categoryId="@item.CategoryId" style="color:black">@item.BrandName</a></text>
+                            |
+                            <text><a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-brandId="@item.BrandId" style="color:black">@item.CategoryName</a></text>
+                            <div class="pricebox">
+                                @*<span class="regular-price">@item.OriginalPrice VND</span>*@
+                                @if (String.IsNullOrEmpty(item.PromotionPrice))
+                                {
+                                    <div class="regular-price">
+                                        @item.OriginalPrice
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <span class="regular-price">@item.PromotionPrice</span>
+                                        <span class="old-price"><del style="font-size:12px">@item.OriginalPrice</del></span>
+                                    </div>
+                                }
+                                <div class="ratings">
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span class="good"><i class="fa fa-star"></i></span>
+                                    <span><i class="fa fa-star"></i></span>
+                                    <div class="pro-review">
+                                        <span>1 review(s)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    
+                    <!-- product single item end -->
+                </div>
+                <!-- featured category end -->
+            </div>
+        }
+
+
     </div>
 </div>
 
@@ -377,8 +455,9 @@
                                         <h5>Còn lại:</h5>
                                         <span id="quantity"></span>
                                     </div>
-                                    <div class="pricebox" id="priceholder">
-                                        <span class="regular-price" id="price">$160.00</span>
+                                    <div class="pricebox" >
+                                        <span class="regular-price" id="price">$16000</span>
+                                        <span id="priceholder" class="old-price"></span>
                                     </div>
                                     <p id="short_description">
                                         
@@ -438,9 +517,9 @@
                     $('#quantity').text(data.quantity);
                     $('#short_description').text(data.shorDescription);
                     if (data.promotionPrice != "") {
-                        var html = "<span class='old-price'><del style='color:red'>" + data.originalPrice + "</del></span > ";
+                        var html = "<del style='color:red'>" + data.originalPrice + "</del>";
                         $('#price').text(data.promotionPrice);
-                        $('#priceholder').append(html);
+                        $('#priceholder').html(html);
                     } else {
                         $('#price').text(data.originalPrice);
                     }                   

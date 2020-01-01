@@ -32,6 +32,8 @@ namespace ComputerAccessoriesV2.Data
 
         public virtual DbSet<ProductAvailableForCompaign> ProductAvailableForCompaign { get; set; }
 
+        public virtual DbSet<ShipperModel> Shippers { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -50,6 +52,7 @@ namespace ComputerAccessoriesV2.Data
             modelBuilder.Entity<ProductAvailableForCompaign>(entity => { entity.HasNoKey(); });
 
             modelBuilder.Entity<BrandPartialModel>(entity => { entity.HasNoKey(); });
+            modelBuilder.Entity<ShipperModel>(entity => { entity.HasNoKey(); });
             OnModelCreatingPartial(modelBuilder);
         }
 

@@ -124,9 +124,15 @@ namespace ComputerAccessoriesV2
             app.UseEndpoints(endpoints =>
             {
 
+                //endpoints.MapControllerRoute(
+                //    name: "areas",
+                //    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
+                //    );
+
                 endpoints.MapControllerRoute(
-                    name: "areas",
-                    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
+                    name: "default_route",
+                    pattern: "{area}/{controller}/{action}/{id?}",
+                    defaults: new {area="Admin", controller = "Bill", action = "BillManagement" }
                     );
 
                 endpoints.MapControllers();

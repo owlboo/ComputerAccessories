@@ -92,6 +92,37 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     SaleValue = 100-(int)(x.OriginalPrice/x.PromotionPrice)
                 }).Take(20).ToList();
 
+
+
+                List<ProductGridModel> newArrivals = _db.Products.Select(x => new ProductGridModel
+                {
+                    Id = x.Id,
+                    ProductName = x.ProductName,
+                    Thumnail = x.Thumnail,
+                    Thumnail2 = x.Thumnail2,
+                    BrandId = x.BrandId.Value,
+                    BrandName = x.BrandId.HasValue ? x.Brand.BrandName : "",
+                    CategoryId = x.CategoryId.Value,
+                    CategoryName = x.CategoryId.HasValue ? x.Category.CategoryName : "",
+                    OriginalPrice = x.OriginalPrice.Value.ToString("###,###"),
+                    PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
+                    Code = x.Code,
+                    IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
+                    SaleValue = 100 - (int)(x.OriginalPrice / x.PromotionPrice)
+                }).OrderByDescending(x=>x.Id).Take(20).ToList();
+
+                var listNewArrivals = new List<ProductGridModel>();
+
+                foreach (var item in newArrivals)
+                {
+                    if((DateTime.Now - item.CreatedDate).TotalDays > 10)
+                    {
+                        listNewArrivals.Add(item);
+                    }
+                }
+
+
+                ViewBag.newArrival = listNewArrivals;
                 List<Brand> brands = _db.Brand.ToList();
                 ViewBag.brandsFooter = brands;
                 ViewBag.Index = 1;

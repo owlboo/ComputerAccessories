@@ -142,6 +142,17 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }).ToList());
         }
 
+        [Route("/[controller]/GetCategoryDrop")]
+        [HttpGet]
+        public JsonResult GetCategoryDrop()
+        {
+            return Json(_db.Category.Select(x => new Category
+            {
+                Id = x.Id,
+                CategoryName = x.CategoryName
+            }).ToList());
+        }
+
         [Authorize(Policy = Policy.AdminModify)]
         public IActionResult CreateNewCategory()
         {
@@ -213,14 +224,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             {
                 if (string.IsNullOrEmpty(fromTime) || string.IsNullOrEmpty(toTime))
                 {
-                    var lstAttributes = _db.Category.Select(x => new AttributeViewModel
+                    var lstAttributes = _db.Attributes.Select(x => new AttributeViewModel
                     {
                         Id = x.Id,
                         CategoryId = x.Id,
-                        AttributeName = x.Attributes.FirstOrDefault().AttributeName,
+                        AttributeName = x.AttributeName,
                         CreatedDate = x.CreatedDate,
                         ModifiedDate = x.ModifiedDate,
-                        CategoryName = x.CategoryName
+                        CategoryName = x.Category.CategoryName
                     }).ToList();
                     return Json(lstAttributes);
                 }

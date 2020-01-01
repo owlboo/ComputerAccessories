@@ -1,28 +1,16 @@
 ﻿
 @model List<ComputerAccessoriesV2.ViewModels.ProductGridModel>
+@using ComputerAccessoriesV2.ViewModels;
 
 @{
     ViewData["Title"] = "Danh sách sản phẩm";
     Layout = "~/Views/Home/_HomeLayout.cshtml";
+    var listCategory = ViewBag.category as List<CategoryShoppingModel>;
+    listCategory = listCategory.OrderByDescending(x => x.ProductQuantity).Take(5).ToList();
 }
 
 <div class="row">
-<div class="breadcrumb-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="breadcrumb-wrap">
-                    <nav aria-label="breadcrumb">
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">shop left sidebar</li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <partial name="~/Views/Home/_BreadcumbPartial.cshtml" />
 <!-- breadcrumb area end -->
 <!-- page wrapper start -->
 <div class="page-main-wrapper">
@@ -47,58 +35,17 @@
                 <partial name="_BrandLeftNavPartial" model="ViewBag.brands" />
             </div>
         </div>
-        <!-- manufacturer end -->
-        <!-- pricing filter start -->
-        @*<div class="sidebar-widget mb-30">
-            <div class="sidebar-title mb-10">
-                <h3>filter by price</h3>
-            </div>
-            <div class="sidebar-widget-body">
-                <div class="price-range-wrap">
-                    <div class="price-range" data-min="50" data-max="400"></div>
-                    <div class="range-slider">
-                        <form action="#" class="d-flex justify-content-between">
-                            <button class="filter-btn">filter</button>
-                            <div class="price-input d-flex align-items-center">
-                                <label for="amount">Price: </label>
-                                <input type="text" id="amount">
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>*@
-        <!-- pricing filter end -->
-        <!-- product size start -->
-        @*<div class="sidebar-widget mb-30">
-            <div class="sidebar-title mb-10">
-                <h3>size</h3>
-            </div>
-            <div class="sidebar-widget-body">
-                <ul>
-                    <li><i class="fa fa-angle-right"></i><a href="#">s</a><span>(10)</span></li>
-                    <li><i class="fa fa-angle-right"></i><a href="#">m</a><span>(12)</span></li>
-                    <li><i class="fa fa-angle-right"></i><a href="#">l</a><span>(20)</span></li>
-                    <li><i class="fa fa-angle-right"></i><a href="#">XL</a><span>(12)</span></li>
-                </ul>
-            </div>
-        </div>*@
-        <!-- product size end -->
-        <!-- product tag start -->
+
         <div class="sidebar-widget mb-30">
             <div class="sidebar-title mb-10">
                 <h3>tags</h3>
             </div>
             <div class="sidebar-widget-body">
                 <div class="product-tag">
-                    <a href="#">camera</a>
-                    <a href="#">computer</a>
-                    <a href="#">tablet</a>
-                    <a href="#">watch</a>
-                    <a href="#">smart phones</a>
-                    <a href="#">handbag</a>
-                    <a href="#">shoe</a>
-                    <a href="#">men</a>
+                    @foreach (var item in listCategory)
+                    {
+                        <a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-categoryId="@item.Id">@item.CategoryName</a>
+                    }
                 </div>
             </div>
         </div>

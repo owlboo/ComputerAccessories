@@ -1,0 +1,186 @@
+﻿@model ComputerAccessoriesV2.ViewModels.BillDetailModel
+@{
+    ViewData["Title"] = "BillDetails";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+@{ 
+    Decimal totalPrice = 0;
+    int totalProduct = 0;
+}
+
+    <section class="content" style="margin-top:100px">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-user"></i>
+
+                        <h3 class="box-title">Thông tin khách hàng</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <p>Tên khách hàng: </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <text class="text-bold" style="font-size:16px">@Model.userInfo.DisplayName</text>
+                                </div>
+                                
+                                
+                            </div>
+                            <div class="form-group   row">
+                                <div class="col-md-4">
+                                    <p>Số điện thoại: </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <text class="text-bold" style="font-size:16px">@Model.userInfo.PhoneNumber</text>
+                                </div>
+                                
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <p>Tên khách hàng: </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <text class="text-bold" style="font-size:16px">@Model.userInfo.Email</text>
+                                </div>
+                                
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <p>Tên khách hàng: </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <text class="text-bold" style="font-size:16px">@Model.FullAddress</text>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+
+            <div class="col-md-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-product-hunt"></i>
+
+                        <h3 class="box-title">Thông tin sản phẩm</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.shoppingCart.ListProducts)
+                                {
+                                    <tr>
+                                        <td><a href="single-product.html">@item.Products.ProductName</a></td>
+                                        @{
+                                            var total = item.UniPrice * item.Quantity;
+                                            totalPrice += total;
+                                            totalProduct += item.Quantity;
+                                        }
+                                        <td>@item.Quantity</td>
+                                        <td>@total.ToString("###,###")</td>
+                                    </tr>
+                                }
+
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>Tổng cộng</td>
+                                    <td>@totalProduct</td>
+                                    <td><text id="fPrice"><strong>@totalPrice.ToString("###,###")</strong></text></td>
+                                </tr>
+                                <tr>
+                                    <td>Mã giảm giá</td>
+                                    <td></td>
+                                    <td class="d-flex justify-content-start">
+                                        <div class="col-lg-8">
+                                            <label>@Model.VoucherApplied</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Tổng tiền</td>
+                                    <td></td>
+                                    <td><text id="lastPrice"><strong>@Model.FinalPrice.ToString("###,###")</strong></text></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <i class="fa fa-info"></i>
+
+                        <h3 class="box-title">Thông tin đơn hàng</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                                <div class="col-md-2">
+                                    <p>Shipper: </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <text class="text-bold">@Model.ShipperName</text>
+                                </div>
+                                
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-2">
+                                    <p>Trạng thái: </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <text class="text-bold">@Model.BillStatus</text>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a class="btn btn-primary" href="/Admin/Bill/BillManagement"><span><i class="fa fa-arrow-circle-o-left"></i></span> Quay lại</a>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
