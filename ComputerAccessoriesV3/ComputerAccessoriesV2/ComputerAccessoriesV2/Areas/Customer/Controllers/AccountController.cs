@@ -58,6 +58,14 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return View();
         }
 
+        private string GetFullAddress(int provinceId, int districtId, int wardId)
+        {
+            var provinceName = _db.Provinces.Where(x => x.ProvinceId == provinceId).Select(x => x.ProvinceName).FirstOrDefault();
+            var districtName = _db.Districts.Where(x => x.DistrictId == districtId).Select(x => x.DistrictName).FirstOrDefault();
+            var wardName = _db.Ward.Where(x => x.WardId == wardId).Select(x => x.WardName).FirstOrDefault();
+
+            return wardName + ", " + districtName + ", " + provinceName;
+        }
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string email, string code)
         {
@@ -213,7 +221,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 {
                     return Json(new { code = 0, err = "Email của bạn đã tồn tại. Nhấn vào <a href='/Customer/Account/ForgetPassword' >Quên mật khẩu</a> để lấy lại mật khẩu" });
                 }
-
+                string fullAddress = model.PlaceDetail + " " + GetFullAddress(model.ProvinceId, model.DistrictId, model.WardId);
                 var user = new MyUsers
                 {
                     UserName = model.Email,
@@ -223,7 +231,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     IsActivated = false,
                     CreatedDate = DateTime.Now,
                     PhoneNumber = model.PhoneNumber,
-                    CodeConfirm = AccountHelpers.GenerateCodeConfirm()
+                    CodeConfirm = AccountHelpers.GenerateCodeConfirm(),
+                    Address = fullAddress
 
                 };
                 var result = await _userManager.CreateAsync(user, model.Password).ConfigureAwait(true);

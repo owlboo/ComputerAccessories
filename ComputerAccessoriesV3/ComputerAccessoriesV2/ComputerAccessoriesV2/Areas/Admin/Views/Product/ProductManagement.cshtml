@@ -6,7 +6,6 @@
     Layout = "~/Views/Admin/_Layout.cshtml";
 }
 
-<link rel="stylesheet" href="~/font-awesome/font-awesome/css/font-awesome.css" />
 
 <div class="page-header">
     <div class="row">
@@ -19,9 +18,8 @@
     </div>
 </div>
 <br />
-
-<div class="row">
-    <div class="col-xs-12">
+<section class="content">
+    <div class="row">
         <div class="box box-default">
             <div class="box-header with-border">
                 <h3 class="box-title">Lọc</h3>
@@ -36,22 +34,18 @@
                 <div class="row">
 
                     <!-- /.col -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            <label>Danh mục</label>
-                            <div class="input-group date">
-                                <input id="categoryDrop"  style="width:200%;height:150%" class="form-control"/>                              
-                            </div>
+                            <label>Danh mục</label> 
+                                <input id="categoryDrop" class="form-control" />
                         </div>
                         <!-- /.form-group -->
                         <!-- /.form-group -->
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label>Thương hiệu</label>
-                            <div class="input-group date">
-                                <input id="branDrop" style="width:200%;height:150%" class="form-control"/>
-                            </div>
+                                <input id="branDrop" class="form-control" />
                         </div>
                         <!-- /.form-group -->
                         <!-- /.form-group -->
@@ -62,27 +56,27 @@
                 <div class="row">
 
                     <!-- /.col -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label>Từ ngày</label>
                             <div class="input-group date">
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control pull-right" id="datepicker1">
+                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control"  id="datepicker1">
                             </div>
                         </div>
                         <!-- /.form-group -->
                         <!-- /.form-group -->
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label>Đến ngày</label>
                             <div class="input-group date">
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control pull-right" id="datepicker2">
+                                <input type="text" @*asp-for="CreatedDate"*@ class="form-control" id="datepicker2">
                             </div>
                         </div>
                         <!-- /.form-group -->
@@ -116,15 +110,17 @@
             </div>
             <!-- /.box-body -->
         </div>
-    </div>
 
-</div>
+    </div>
+</section>
+
 
 @section Scripts{ 
     <script>
         $(document).ready(function () {
             debugger;
-            categoryDrop
+            $('#datepicker1').datepicker();
+            $('#datepicker2').datepicker();
             $('#branDrop').kendoDropDownList({
                 autoBind:true,
                 optionLabel: '-Chọn thương hiệu-',
@@ -135,7 +131,8 @@
                     serverFiltering: true,
                     transport: {
                         read: {
-                            url:window.location.protocol + '//' + window.location.host+ "/Brand/GetBrand"
+                            url: window.location.protocol + '//' + window.location.host + "/Brand/GetBrand"
+                            
                         },
                         requestEnd: function (e) {
                             var response = e.response;
@@ -177,7 +174,18 @@
                 dataSource: {
                     type: "json",
                     transport: {
-                        read: window.location.protocol + '//' + window.location.host+"/Product/GetProduct"
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host + "/Product/GetProduct",
+                            data: function () {
+                                return {
+                                    FromTime: $('#datepicker1').val(),
+                                    ToTime: $("#datepicker2").val(),
+                                    BrandId: $("#branDrop").data('kendoDropDownList').value(),
+                                    CategoryId: $("#categoryDrop").data("kendoDropDownList").value()
+                                }
+                            }
+                        }
+
                     },
                     pageSize: 20
                 },
@@ -234,7 +242,13 @@
                     width: 150
                 }]
             });
+
         });
+
+
+        function Filter() {
+            $('#productGrid').data("kendoGrid").dataSource.read();
+        }
 
         //onlick='EditProductDetails(#=data.id#)'
         function EditProductDetails(id) {

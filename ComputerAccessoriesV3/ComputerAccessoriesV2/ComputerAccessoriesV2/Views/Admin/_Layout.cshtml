@@ -468,7 +468,7 @@
     </div>
 
     <span id="kendoNoti"></span>
-
+    <span id="noitifyHolder"></span>
 
     <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
     <!-- jQuery UI 1.11.4 -->
@@ -539,6 +539,22 @@
                     type: "success",
                     template: "<div class='text-success'><text style='font-size:14px'>#= content #</text></div>"
                 }]
+            });
+
+            $("#noitifyHolder").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 50,
+                    right: 30
+                },
+                autoHideAfter: 5 * 1000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }
+                ]
+
             });
 
             $("#kendoNoti").kendoNotification({

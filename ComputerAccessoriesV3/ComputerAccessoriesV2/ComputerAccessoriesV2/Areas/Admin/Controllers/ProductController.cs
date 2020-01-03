@@ -8,6 +8,7 @@ using ComputerAccessoriesV2.DI;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using LinqKit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,18 +45,58 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         }
 
         [Route("/[controller]/GetProduct")]
-        public JsonResult GetProduct()
+        public JsonResult GetProduct(int?CategoryId,int?BrandId,string FromTime,string ToTime)
         {
-            return Json(_db.Products.Select(x => new ProductGridModel
+            var from = new DateTime();
+           
+            var to = new DateTime();
+
+            var predicate = PredicateBuilder.True<Products>();
+
+            var query = _db.Products.Include("Brand").Include("Category").AsNoTracking().AsQueryable();
+            if (CategoryId.HasValue)
+            {
+                predicate = predicate.And(x => x.CategoryId == CategoryId.Value);
+            }
+            if (BrandId.HasValue)
+            {
+                //query.Where(x => x.BrandId == BrandId.Value);
+                predicate = predicate.And(x => x.BrandId == BrandId.Value);
+            }
+
+            if (!String.IsNullOrEmpty(FromTime))
+            {
+                from = DateTime.Parse(FromTime);
+                if (from.Year < 2018)
+                    from = new DateTime(2019, 11, 1);
+                
+            }
+
+
+            if (!String.IsNullOrEmpty(ToTime))
+            {
+                to = DateTime.Parse(ToTime);
+                if (to < from)
+                {
+                    //query.Where(x => x.CreatedDate >= to && x.CreatedDate <= from);
+                    predicate.And(x => x.CreatedDate >= to && x.CreatedDate <= from);
+                }
+                else
+                {
+                    //query.Where(x => x.CreatedDate >= from && x.CreatedDate <= to);
+                    predicate.And(x => x.CreatedDate >= from && x.CreatedDate <= to);
+                }
+            }
+            return Json(query.Where(predicate).Select(x => new ProductGridModel
             {
                 Id = x.Id,
                 ProductName = x.ProductName,
-                PromotionPrice = x.PromotionPrice !=null ? x.PromotionPrice.Value.ToString("###.###"): "",
+                PromotionPrice = x.PromotionPrice != null ? x.PromotionPrice.Value.ToString("###.###") : "",
                 BrandId = x.BrandId ?? x.BrandId.Value,
                 BrandName = x.Brand.BrandName,
                 CategoryId = x.CategoryId ?? x.CategoryId.Value,
                 CategoryName = x.Category.CategoryName,
-                OriginalPrice = x.OriginalPrice !=null? x.OriginalPrice.Value.ToString("###,###"):"",
+                OriginalPrice = x.OriginalPrice != null ? x.OriginalPrice.Value.ToString("###,###") : "",
                 Origin = x.Origin,
                 Color = x.Color,
                 Code = x.Code,
