@@ -238,11 +238,12 @@
                                 <div class="header-middle-block">
                                     <div class="header-middle-searchbox">
                                         <div class="row">
-                                            <div class="col-11">
-                                                <input id="searchView" style="width:100%">
+                                            <div class="col-11" style="border:none">
+                                                <input id="searchView" style="width:100%;">
+                                                <button class="search-btn" style="margin-top:1px"><i class="fa fa-search"></i></button>
                                             </div>
                                             <div class="col-1">
-                                                <button class="search-btn"><i class="fa fa-search"></i></button>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -286,8 +287,8 @@
 
 
                                         <div class="cart-total-price">
-                                            <span>total</span>
-                                            $50.00
+                                            <span>TC</span>
+                                            <p style="color:white;font-size:16px" id="sumPrice">0</p>
                                         </div>
 
                                         <ul class="cart-list" id="cardList">
@@ -320,19 +321,17 @@
                                             <li class="static">
                                                 <a>Phân loại<i class="fa fa-angle-down"></i></a>
                                                 <ul class="megamenu dropdown">
-                                                    <li class="mega-title">
-                                                        <a href="#">Hãng</a>
-                                                        <ul>
-                                                            @for (int i = 0; i < brands.Count && i <= 5; i++)
-                                                            {
-                                                                <li>
-                                                                    <a href="shop-grid-left-sidebar.html">
-                                                                        @brands[i].BrandName
-                                                                    </a>
-                                                                </li>
-                                                            }
-                                                        </ul>
-                                                    </li>
+                                                    @*<li class="mega-title">
+
+
+
+        </li>*@
+                                                    @for (int i = 0; i < brands.Count; i++)
+                                                    {
+                                                        <a asp-action="ProductListFilter" asp-controller="Shopping" asp-route-brandId="@brands[i].Id">
+                                                            @brands[i].BrandName
+                                                        </a>
+                                                    }
                                                 </ul>
                                             </li>
                                             <li>

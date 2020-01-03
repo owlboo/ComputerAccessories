@@ -36,9 +36,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             return View();
         }
 
-        public IActionResult ProductListFilter(int? categoryId , int? brandId)
+        public IActionResult ProductListFilter(int? categoryId , int? brandId,int?sortKey)
         {
-            var context = new QueryDbContext();
+            var context = new QueryDbContext();           
             var listProducts = _db.Products.Where(x => x.CategoryId == categoryId || x.BrandId == brandId).Select(x =>
                 new ProductGridModel
                 {
@@ -53,8 +53,24 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     Quantity = x.Quantity.Value,
                     Thumnail = x.Thumnail,
                     Thumnail2 = x.Thumnail2,
-                    ShorDescription = x.ShorDescription
+                    ShorDescription = x.ShorDescription,
+                    ProductName =x.ProductName
                 }).ToList();
+            if (sortKey.HasValue)
+            {
+                switch (sortKey.Value)
+                {
+                    case 1:
+                        listProducts=listProducts.OrderBy(x => x.OriginalPrice).ToList();
+                        break;
+                    case 2:
+                        listProducts=listProducts.OrderByDescending(x => x.OriginalPrice).ToList();
+                        break;
+                    case 3:
+                        listProducts = listProducts.OrderByDescending(x => x.ViewCounts).ToList();
+                        break;
+                }
+            }
             string str =
                 @"SELECT c.Id,c.CategoryName,(SELECT Count(id) FROM dbo.Products WHERE CategoryId = c.Id) 'ProductQuantity' FROM dbo.Category c WHERE c.Status = 1";
 
@@ -68,7 +84,17 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             string brandStr = @"SELECT b.Id,b.BrandName,(SELECT COUNT(Id) FROM dbo.Products WHERE BrandId=b.Id)'ProductCount' FROM dbo.Brand b WHERE 1=1";
             var brandList = context.BrandPartials.FromSqlRaw(brandStr).ToList();
 
-            
+            if (categoryId.HasValue&&categoryId.Value !=0)
+                ViewBag.categoryId = categoryId.Value;
+            else
+                ViewBag.categoryId = 0;
+            if (brandId.HasValue&&brandId.Value!=0)
+                ViewBag.brandId = brandId.Value;
+            else
+                ViewBag.brandId = 0;
+
+
+
             ViewBag.category = listCategory;
             ViewBag.brands = brandList;
             return View(listProducts);
@@ -193,6 +219,13 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     {
                         return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
                     }
+                    foreach (var item in listProducts)
+                    {
+                        if (item.Quantity >= item.Products.Quantity)
+                        {
+                            return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
+                        }
+                    }
                     var guest = new NoStroredGuest
                     {
                         CustomerName = model.Name,
@@ -245,6 +278,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                             };
                             _db.BillDetails.Add(billDetail);
+                            var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                            productFromDb.Quantity += item.Quantity;
                             await _db.SaveChangesAsync();
                         }
                         Response.Cookies.Delete(key);
@@ -256,6 +291,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         {
                             totalPrice +=(item.Products.PromotionPrice.HasValue? item.Products.PromotionPrice.Value: item.Products.OriginalPrice.Value) * item.Quantity;
                         }
+
                         var voucherDb = _db.Vouchers.Where(x => x.VoucherName == voucher && x.Used < x.Max).FirstOrDefault();
                         decimal lPrice = 0;
                         if (voucher != null)
@@ -307,6 +343,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                             };
                             _db.BillDetails.Add(billDetail);
+                            var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                            productFromDb.Quantity -= item.Quantity;
                             await _db.SaveChangesAsync();
                         }
                         Response.Cookies.Delete(key);
@@ -328,6 +366,13 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         if (listProducts.Count == 0)
                         {
                             return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
+                        }
+                        foreach (var item in listProducts)
+                        {
+                            if (item.Quantity >= item.Products.Quantity)
+                            {
+                                return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
+                            }
                         }
                         if (String.IsNullOrEmpty(voucher))
                         {
@@ -384,6 +429,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                     UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                                 };
                                 _db.BillDetails.Add(billDetail);
+                                var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                                productFromDb.Quantity -= item.Quantity;
                                 await _db.SaveChangesAsync();
                             }
                             _session.Remove(key);
@@ -463,6 +510,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                     Quantity = item.Quantity,
                                     UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                                 };
+                                var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                                productFromDb.Quantity -= item.Quantity;
                                 _db.BillDetails.Add(billDetail);
                                 await _db.SaveChangesAsync();
                             }
@@ -502,6 +551,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     foreach (var item in listProducts)
                     {
                         totalPrice +=(item.Products.PromotionPrice.HasValue? item.Products.PromotionPrice.Value: item.Products.OriginalPrice.Value) * item.Quantity;
+                        if (item.Quantity > item.Products.Quantity)
+                        {
+                            return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
+                        }
                     }
 
                     var billObj = new Bills
@@ -526,6 +579,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             Quantity = item.Quantity,
                             UnitPrice = item.Products.PromotionPrice.HasValue ? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                         };
+                        var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                        productFromDb.Quantity -= item.Quantity;
                         _db.BillDetails.Add(objBillDt);
                         await _db.SaveChangesAsync();
                     }
@@ -547,6 +602,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     foreach (var item in listProducts)
                     {
                         totalPrice +=(item.Products.PromotionPrice.HasValue? item.Products.PromotionPrice.Value: item.Products.OriginalPrice.Value) * item.Quantity;
+                        if (item.Quantity > item.Products.Quantity)
+                        {
+                            return Json(new { code = 0, returnUrl = "/Customer/Home/Index" });
+                        }
                     }
 
                     var voucher = _db.Vouchers.Where(x => x.VoucherName == code && x.Used < x.Max).FirstOrDefault();
@@ -590,6 +649,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             Quantity = item.Quantity,
                             UnitPrice = item.Products.PromotionPrice.HasValue? item.Products.PromotionPrice.Value : item.Products.OriginalPrice.Value
                         };
+                        var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                        productFromDb.Quantity -= item.Quantity;
                         _db.BillDetails.Add(objBillDt);
                         await _db.SaveChangesAsync();
                     }

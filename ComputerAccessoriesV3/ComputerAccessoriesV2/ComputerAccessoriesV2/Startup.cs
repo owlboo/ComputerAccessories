@@ -18,6 +18,7 @@ using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.DI;
 using ComputerAccessoriesV2.SchedulerTask;
 using Coravel;
+using ReflectionIT.Mvc.Paging;
 
 namespace ComputerAccessoriesV2
 {
@@ -112,6 +113,7 @@ namespace ComputerAccessoriesV2
                 options.Cookie.IsEssential = true;
             });
             services.AddRazorPages();
+            services.AddPaging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -154,7 +156,7 @@ namespace ComputerAccessoriesV2
                 endpoints.MapControllerRoute(
                     name: "default_route",
                     pattern: "{area}/{controller}/{action}/{id?}",
-                    defaults: new { area = "Admin", controller = "Bill", action = "BillManagement" }
+                    defaults: new { area = "Customer", controller = "Home", action = "Index" }
                     );
 
                 endpoints.MapControllers();
