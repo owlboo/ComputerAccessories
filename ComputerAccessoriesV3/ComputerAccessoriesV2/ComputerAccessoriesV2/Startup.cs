@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
+using ComputerAccessoriesV2.DI;
 
 namespace ComputerAccessoriesV2
 {
@@ -45,8 +46,9 @@ namespace ComputerAccessoriesV2
                 options.IdleTimeout = new TimeSpan(0, 15, 0);
                 options.Cookie.IsEssential = true;
             });
-            
-            services.AddIdentity<MyUsers,IdentityRole<int>>(options => {
+
+            services.AddIdentity<MyUsers, IdentityRole<int>>(options =>
+            {
                 //options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireLowercase = false;
@@ -66,6 +68,8 @@ namespace ComputerAccessoriesV2
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
+            services.AddSingleton<IRedis>(new RedisImpl());
+            ;
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policy.AdminAccess, policy =>
@@ -89,7 +93,11 @@ namespace ComputerAccessoriesV2
                 });
             });
 
-
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = "35.194.1.21:6379,password=!@#)(*_-*&Ah1~";
+                option.InstanceName = "ComputerAccessories";
+            });
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -120,7 +128,7 @@ namespace ComputerAccessoriesV2
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
 
@@ -132,7 +140,7 @@ namespace ComputerAccessoriesV2
                 endpoints.MapControllerRoute(
                     name: "default_route",
                     pattern: "{area}/{controller}/{action}/{id?}",
-                    defaults: new {area="Admin", controller = "Bill", action = "BillManagement" }
+                    defaults: new { area = "Admin", controller = "Bill", action = "BillManagement" }
                     );
 
                 endpoints.MapControllers();

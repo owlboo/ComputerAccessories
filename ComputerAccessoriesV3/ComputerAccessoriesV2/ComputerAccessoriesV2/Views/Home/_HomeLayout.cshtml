@@ -56,7 +56,7 @@
     var _db = new ComputerAccessoriesV2Context();
     List<Brand> brands = _db.Brand.ToList();
     List<CategoryHomeModel> categoryModel = new List<CategoryHomeModel>();
-    categoryModel = _db.Category.Where(x=>x.ParendId == null).Select(x => new CategoryHomeModel
+    categoryModel = _db.Category.Where(x => x.ParendId == null).Select(x => new CategoryHomeModel
     {
         MainCategory = _db.Category.Where(z => z.Id == x.Id).FirstOrDefault(),
 
@@ -64,15 +64,17 @@
 
     foreach (var category in categoryModel)
     {
-        category.ListChildrenNode = _db.Category.Where(x => x.ParendId == category.MainCategory.Id).Select(x => new CategoryHomeModel {
+        category.ListChildrenNode = _db.Category.Where(x => x.ParendId == category.MainCategory.Id).Select(x => new CategoryHomeModel
+        {
             MainCategory = _db.Category.Where(z => z.Id == x.Id).FirstOrDefault(),
-            ListChildrenNode = _db.Category.Where(z=>z.ParendId == x.Id).Select(z=>new CategoryHomeModel {
-                MainCategory = _db.Category.Where(c=>c.Id ==z.Id).FirstOrDefault()
+            ListChildrenNode = _db.Category.Where(z => z.ParendId == x.Id).Select(z => new CategoryHomeModel
+            {
+                MainCategory = _db.Category.Where(c => c.Id == z.Id).FirstOrDefault()
             }).ToList()
         }).ToList();
 
     }
-    if(ViewBag.Index == null)
+    if (ViewBag.Index == null)
     {
         ViewBag.Index = 0;
     }
@@ -235,8 +237,14 @@
                                 </div>
                                 <div class="header-middle-block">
                                     <div class="header-middle-searchbox">
-                                        <input type="text" placeholder="Search...">
-                                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <input id="searchView" style="width:100%">
+                                            </div>
+                                            <div class="col-1">
+                                                <button class="search-btn"><i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="header-mini-cart">
                                         @if (SignInManager.IsSignedIn(User))
@@ -307,201 +315,30 @@
                                     <nav id="mobile-menu">
                                         <ul>
                                             <li class="active">
-                                                <a href="#"><i class="fa fa-home"></i>Home <i class="fa fa-angle-down"></i></a>
-                                                <ul class="dropdown">
-                                                    <li><a href="index.html">Home version 01</a></li>
-                                                    <li><a href="index-2.html">Home version 02</a></li>
-                                                    <li><a href="index-3.html">Home version 03</a></li>
-                                                    <li><a href="index-4.html">Home version 04</a></li>
-                                                </ul>
+                                                <a href="#" onclick="goHome()"><i class="fa fa-home"></i>Trang chủ <i class="fa fa-angle-down"></i></a>
                                             </li>
                                             <li class="static">
-                                                <a href="#">pages <i class="fa fa-angle-down"></i></a>
+                                                <a>Phân loại<i class="fa fa-angle-down"></i></a>
                                                 <ul class="megamenu dropdown">
                                                     <li class="mega-title">
-                                                        <a href="#">column 01</a>
+                                                        <a href="#">Hãng</a>
                                                         <ul>
-                                                            <li>
-                                                                <a href="shop-grid-left-sidebar.html">
-                                                                    shop grid left
-                                                                    sidebar
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-right-sidebar.html">
-                                                                    shop grid right
-                                                                    sidebar
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-full-3-col.html">
-                                                                    shop grid full 3
-                                                                    column
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-full-4-col.html">
-                                                                    shop grid full 4
-                                                                    column
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="mega-title">
-                                                        <a href="#">column 02</a>
-                                                        <ul>
-                                                            <li><a href="product-details.html">product details</a></li>
-                                                            <li>
-                                                                <a href="product-details-affiliate.html">
-                                                                    product
-                                                                    details
-                                                                    affiliate
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="product-details-variable.html">
-                                                                    product details
-                                                                    variable
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="product-details-group.html">
-                                                                    product details
-                                                                    group
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="mega-title">
-                                                        <a href="#">column 03</a>
-                                                        <ul>
-                                                            <li><a href="cart.html">cart</a></li>
-                                                            <li><a href="checkout.html">checkout</a></li>
-                                                            <li><a href="compare.html">compare</a></li>
-                                                            <li><a href="wishlist.html">wishlist</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="mega-title">
-                                                        <a href="#">column 04</a>
-                                                        <ul>
-                                                            <li><a href="my-account.html">my-account</a></li>
-                                                            <li><a href="login-register.html">login-register</a></li>
-                                                            <li><a href="about-us.html">about us</a></li>
-                                                            <li><a href="contact-us.html">contact us</a></li>
+                                                            @for (int i = 0; i < brands.Count && i <= 5; i++)
+                                                            {
+                                                                <li>
+                                                                    <a href="shop-grid-left-sidebar.html">
+                                                                        @brands[i].BrandName
+                                                                    </a>
+                                                                </li>
+                                                            }
                                                         </ul>
                                                     </li>
                                                 </ul>
                                             </li>
                                             <li>
-                                                <a href="#">shop <i class="fa fa-angle-down"></i></a>
-                                                <ul class="dropdown">
-                                                    <li>
-                                                        <a href="#">shop grid layout <i class="fa fa-angle-right"></i></a>
-                                                        <ul class="dropdown">
-                                                            <li>
-                                                                <a href="shop-grid-left-sidebar.html">
-                                                                    shop grid left
-                                                                    sidebar
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-left-sidebar-3-col.html">
-                                                                    left
-                                                                    sidebar 3 col
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-right-sidebar.html">
-                                                                    shop grid right
-                                                                    sidebar
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-right-sidebar-3-col.html">
-                                                                    grid right
-                                                                    sidebar 3 col
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-full-3-col.html">
-                                                                    shop grid full 3
-                                                                    column
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-grid-full-4-col.html">
-                                                                    shop grid full 4
-                                                                    column
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">shop list layout <i class="fa fa-angle-right"></i></a>
-                                                        <ul class="dropdown">
-                                                            <li>
-                                                                <a href="shop-list-left-sidebar.html">
-                                                                    shop list left
-                                                                    sidebar
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="shop-list-right-sidebar.html">
-                                                                    shop list right
-                                                                    sidebar
-                                                                </a>
-                                                            </li>
-                                                            <li><a href="shop-list-full.html">shop list full width</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">products details <i class="fa fa-angle-right"></i></a>
-                                                        <ul class="dropdown">
-                                                            <li><a href="product-details.html">product details</a></li>
-                                                            <li>
-                                                                <a href="product-details-affiliate.html">
-                                                                    product
-                                                                    details
-                                                                    affiliate
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="product-details-variable.html">
-                                                                    product details
-                                                                    variable
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="product-details-group.html">
-                                                                    product details
-                                                                    group
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="product-details-box.html">
-                                                                    product details box
-                                                                    slider
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>
+                                                <a href="#">Bài viết <i class="fa fa-angle-down"></i></a>
                                             </li>
-                                            <li>
-                                                <a href="#">Blog <i class="fa fa-angle-down"></i></a>
-                                                <ul class="dropdown">
-                                                    <li><a href="blog-left-sidebar.html">blog left sidebar</a></li>
-                                                    <li><a href="blog-left-sidebar-2-col.html">blog left sidebar 2 col</a></li>
-                                                    <li><a href="blog-right-sidebar.html">blog right sidebar</a></li>
-                                                    <li><a href="blog-full-2-column.html">blog full 2 column</a></li>
-                                                    <li><a href="blog-full-3-column.html">blog full 3 column</a></li>
-                                                    <li><a href="blog-details.html">blog details</a></li>
-                                                    <li><a href="blog-details-audio.html">blog details audio</a></li>
-                                                    <li><a href="blog-details-video.html">blog details video</a></li>
-                                                    <li><a href="blog-details-image.html">blog details image</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="contact-us.html">Contact us</a></li>
+                                            <li><a href="contact-us.html">Liên hệ</a></li>
                                         </ul>
                                     </nav>
                                 </div>
@@ -619,11 +456,73 @@
 
     </script>
 
+    <script>
+        var productData = new kendo.data.DataSource({
+            serverFiltering: true,
+            transport: {
+                read: {
+                    url: "/Product/SearchProduct",
+                    type: "GET",
+                    dataType: "json",
+                    data: function () {
+                        return { productName: $('#searchView').val() };
+                    }
+                }
+            },
+        });
+        $(document).ready(() => {
+            $("#searchView").kendoAutoComplete({
+                dataTextValue: "id",
+                dataTextField: "productName",
+                headerTemplate:
+                    '<div class="row">' +
+                        '<div class="col-3">' +
+                            '<p class="text-center">Ảnh</p>' +
+                        '</div>' +
+                        '<div class="col-8">' +
+                            '<p class="text-center"></p>' +
+                        '</div>' +
+                        '</div>' +
+                    '</div>',
+                template:
+                    '<div class="row">' +
+                        '<div class="col-3">' +
+                            '<img class="img-responsive center-block" src="#:data.thumbnail#"></img>' +
+                        '</div>' +
+                        '<div class="col-8 text-center">' +
+                            '<p>#: data.productName #</p>' +
+                            '<p>Giá hiện tại: #: data.price # VNĐ</p>' +
+                        '</div>' +
+                    '</div>',
+                footerTemplate: ' Tìm thấy #: instance.dataSource.total() # sản phẩm',
+                select: goToProduct,
+                dataSource: productData,
+                ignoreCase: true,
+                filtering: function (e) {
+                    if (!e.filter.value) {
+                        e.preventDefault();
+                    }
+                },
+                height: 400
+            }).data("kendoAutoComplete");
+        });
+
+        function goToProduct(data) {
+            window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/ProductHome/ProductDetails?productId=" + data.dataItem.id;
+        }
+    </script>
+
     <div class="modal fade" tabindex="-1" role="dialog" id="spinnerModal">
         <div class="modal-dialog modal-dialog-centered text-center" role="document">
             <span class="fa fa-spinner fa-spin fa-3x w-100"></span>
         </div>
     </div>
+
+    <script>
+        function goHome() {
+            window.location.href = window.location.protocol + '//' + window.location.host;
+        }
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>

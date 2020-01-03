@@ -44,17 +44,16 @@
                             <div class="product-details-des mt-md-34 mt-sm-34">
                                 <h3><a asp-action="ProductDetails" asp-route-productId="@Model.Id">@Model.ProductName</a></h3>
                                 <div class="ratings">
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span><i class="fa fa-star"></i></span>
+                                    @for (int i = 1; i < Model.ReviewStarPoint; i++)
+                                    {
+                                        <span class="good"><i class="fa fa-star"></i></span>
+                                    }
                                     <div class="pro-review">
-                                        <span>1 review(s)</span>
+                                        <span>@Model.ReviewCount lượt đánh giá</span>
                                     </div>
                                 </div>
                                 <div class="customer-rev">
-                                    <a href="#">(1 customer review)</a>
+                                    <a>(@Model.ViewCounts lượt xem)</a>
                                 </div>
                                 <div class="availability mt-10">
                                     <h5>Số lượng còn lại:</h5>
@@ -71,12 +70,12 @@
                                         <div class="pro-qty"><input type="text" value="1"></div>
                                     </div>
                                     <div class="action_link">
-                                        <a class="buy-btn" href="#" onclick="return AddToCart(@Model.Id,1)">add to cart<i class="fa fa-shopping-cart"></i></a>
+                                        <a class="buy-btn" href="#" onclick="return AddToCart(@Model.Id,1)">Thêm giỏ hàng<i class="fa fa-shopping-cart"></i></a>
                                     </div>
                                 </div>
                                 <div class="useful-links mt-20">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Compare"><i class="fa fa-refresh"></i>compare</a>
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Wishlist"><i class="fa fa-heart-o"></i>wishlist</a>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="So sánh"><i class="fa fa-refresh"></i>So sánh</a>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Thêm vào danh sách yêu thích"><i class="fa fa-heart-o"></i>Thêm vào danh sách yêu thích</a>
                                 </div>
                                 <div class="share-icon mt-20">
                                     <a class="facebook" href="#"><i class="fa fa-facebook"></i>like</a>
@@ -96,13 +95,13 @@
                             <div class="product-review-info">
                                 <ul class="nav review-tab">
                                     <li>
-                                        <a class="active" data-toggle="tab" href="#tab_one">description</a>
+                                        <a class="active" data-toggle="tab" href="#tab_one">Thông tin</a>
                                     </li>
                                     <li>
-                                        <a data-toggle="tab" href="#tab_two">information</a>
+                                        <a data-toggle="tab" href="#tab_two">Thuộc tính</a>
                                     </li>
                                     <li>
-                                        <a onclick="LoadReview(@Model.Id)" data-toggle="tab" href="#tab_three">reviews</a>
+                                        <a onclick="LoadReview(@Model.Id)" data-toggle="tab" href="#tab_three">Đánh giá</a>
                                     </li>
                                 </ul>
                                 <div class="tab-content reviews-tab">
@@ -150,7 +149,7 @@
                     <!-- featured category start -->
                     <div class="sidebar-widget mb-22">
                         <div class="section-title-2 d-flex justify-content-between mb-28">
-                            <h3>featured</h3>
+                            <h3>Sản phẩm mới</h3>
                             <div class="category-append"></div>
                         </div> <!-- section title end -->
                         <div class="category-carousel-active row" data-row="3">
@@ -204,7 +203,7 @@
 
                     <div class="sidebar-widget mb-22">
                         <div class="sidebar-title mb-10">
-                            <h3>Manufacturers</h3>
+                            <h3>Hãng nổi bật</h3>
                         </div>
                         <div class="sidebar-widget-body">
                             <partial name="~/Areas/Customer/Views/Shopping/_BrandLeftNavPartial.cshtml" model="ViewBag.brandList" />
@@ -288,7 +287,7 @@
                                     </div>
                                     <div class="action_link">
                                         <a class="buy-btn" href="#">
-                                            add to cart<i class="fa fa-shopping-cart"></i>
+                                            Thêm vào giỏ hàng<i class="fa fa-shopping-cart"></i>
                                         </a>
                                     </div>
                                 </div>

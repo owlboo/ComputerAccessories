@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using ComputerAccessoriesV2.Data;
-using ComputerAccessoriesV2.Ultilities;
+using Microsoft.Extensions.Caching.Distributed;
+using ComputerAccessoriesV2.DI;
 
 namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 {
@@ -22,16 +21,18 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
     {
         private readonly ComputerAccessoriesV2Context _db;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly SignInManager<MyUsers> _signInManager;
+        private readonly IRedis _redis;
         private ISession _session => _httpContextAccessor.HttpContext.Session;
-        public HomeController(ComputerAccessoriesV2Context db, IHttpContextAccessor httpContextAccessor, SignInManager<MyUsers> signInManager)
+        public HomeController(ComputerAccessoriesV2Context db, IHttpContextAccessor httpContextAccessor, SignInManager<MyUsers> signInManager, IRedis redis)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
             _signInManager = signInManager;
+            _redis = redis;
         }
-        public IActionResult Index()
+
+        public IActionResult Index() 
         {
             try
             {

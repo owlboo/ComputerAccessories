@@ -649,6 +649,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View();
         }
         #endregion
+
+        [HttpGet]
+        public JsonResult GetBillReport(DateTime startDate, DateTime endDate)
+        {
+            var bills = _db.Bills.Where(x => x.CreateDate > startDate && x.CreateDate < endDate).ToList();
+            return Json(bills);
+        }
+
         [Route("/[controller]/GetUsers")]
         public JsonResult GetUsers()
         {
@@ -749,6 +757,5 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
             
         }
-
     }
 }

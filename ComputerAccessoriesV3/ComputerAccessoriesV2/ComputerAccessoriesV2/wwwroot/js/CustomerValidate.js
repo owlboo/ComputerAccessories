@@ -1,6 +1,5 @@
 ﻿
 function AddToCart(productId, quantity) {
-    debugger;
     var data = {
         productId: productId,
         quantity: quantity
@@ -11,6 +10,12 @@ function AddToCart(productId, quantity) {
         type: "post",
         dataType: "json",
         data: data,
+        beforeSend: function () {
+            $('#spinnerModal').modal('show');
+        },
+        complete: function () {
+            $('#spinnerModal').modal('hide');
+        },
         success: function (result) {
             if (result.code == 1) {
                 $('#kendoNoti').data('kendoNotification').show({
