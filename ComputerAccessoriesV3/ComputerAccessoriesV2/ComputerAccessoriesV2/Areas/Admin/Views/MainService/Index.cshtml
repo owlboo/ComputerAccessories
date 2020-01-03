@@ -1,243 +1,204 @@
 ﻿
+
+
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Admin/_Layout.cshtml";
+
+
+
 }
 
 <br />
-<br />
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Custom Tabs -->
-                <div class="nav-tabs-custom">
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a href="#tab_1" data-toggle="tab">Bảng điều khiển</a></li>
-                        <li><a href="#tab_2" data-toggle="tab">Hóa đơn</a></li>
-                        <li><a href="#tab_3" data-toggle="tab">Sản phẩm</a></li>
-                        <li>
-                            <a href="#tab_4" data-toggle="tab">Tài khoản</a>
-                        </li>
-                        <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="tab_1">
-                            <b>How to use:</b>
 
-                            <p>
-                                Exactly like the original bootstrap tabs except you should use
-                                the custom wrapper <code>.nav-tabs-custom</code> to achieve this style.
-                            </p>
-                            A wonderful serenity has taken possession of my entire soul,
-                            like these sweet mornings of spring which I enjoy with my whole heart.
-                            I am alone, and feel the charm of existence in this spot,
-                            which was created for the bliss of souls like mine. I am so happy,
-                            my dear friend, so absorbed in the exquisite sense of mere tranquil existence,
-                            that I neglect my talents. I should be incapable of drawing a single stroke
-                            at the present moment; and yet I feel that I never was a greater artist than now.
-                        </div>
-                        <!-- /.tab-pane -->
-                        <div class="tab-pane" id="tab_2">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="box box-default">
-                                        <div class="box-header">
-                                            <h4>Báo cáo sản lượng hóa đơn</h4>
-                                        </div>
-                                        <div class="box-body">
-                                            <div class="col-md-12">
-                                                <div class="form-group row">
-                                                    <div class="col-md-6">
-                                                        <div class="col-md-2">
-                                                            <label>Từ ngày: </label>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <input id="fromTime" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="col-md-2">
-                                                            <label>Đến ngày: </label>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <input id="toTime" class="form-control" />
-                                                        </div>
-                                                    </div>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Custom Tabs -->
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab_1" data-toggle="tab">Bảng điều khiển</a></li>
+                    <li><a href="#tab_2" data-toggle="tab">Hóa đơn</a></li>
+                    <li><a href="#tab_3" data-toggle="tab">Sản phẩm</a></li>
+                    <li>
+                        <a href="#tab_4" data-toggle="tab">Tài khoản</a>
+                    </li>
+                    <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab_1">
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs">
+                                <li id="tab_sales_wrapper"><a href="#tab_chartSalesWrapper" data-toggle="tab">Doanh số</a></li>
+                                <li id="tab_account_wrapper"><a href="#tab_chartAccountWrapper" data-toggle="tab">Tài khoản</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tab_chartSalesWrapper" class="tab-pane fade">
 
-                                                </div>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <p>Ngày bắt đầu</p>
+                                            <input id="salesReportStartDatePicker" />
                                         </div>
-                                        <div class="box-footer">
-                                            <button class="btn btn-primary" id="exportBill">Xuất báo cáo</button>
+
+                                        <div class="col">
+                                            <p>Ngày kết thúc</p>
+                                            <input id="salesReportEndDatePicker" />
                                         </div>
                                     </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                        <!-- /.tab-pane -->
-                        <div class="tab-pane" id="tab_3">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="box box-default">
-                                        <div class="box-header">
-                                            <h4>Báo cáo sản phẩm</h4>
-                                        </div>
-                                        <div class="box-body">
-                                            <div class="col-md-12">
-                                                <div class="form-group row">
-                                                    <div class="col-md-6">
-                                                        <div class="col-md-2">
-                                                            <label>Từ ngày: </label>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <input id="productFromTime" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="col-md-2">
-                                                            <label>Đến ngày: </label>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <input id="productToTime" class="form-control" />
-                                                        </div>
-                                                    </div>
 
-                                                </div>
-                                            </div>
+                                    <button onclick="onFilterSalesChart()" class="btn btn-primary">Lọc</button>
+
+                                    <div id="salesReport"></div>
+                                </div>
+
+                                <div id="tab_chartAccountWrapper" class="tab-pane fade">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p>Ngày bắt đầu</p>
+                                            <input id="accountReportStartDatePicker" />
                                         </div>
-                                        <div class="box-footer">
-                                            <button class="btn btn-primary" id="exportProducts">Xuất báo cáo</button>
+
+                                        <div class="col">
+                                            <p>Ngày kết thúc</p>
+                                            <input id="accountReportEndDatePicker" />
                                         </div>
                                     </div>
-                                </div>
 
+                                    <button onclick="onFilterAccountChart()" class="btn btn-primary">Lọc</button>
+                                    <div id="accountReport"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="tab_4">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="box box-default">
-                                        <div class="box-header">
-                                            <h4>Báo cáo tài khoản</h4>
-                                        </div>
-                                        <div class="box-body">
-                                            <div class="col-md-12">
-                                                <div class="form-group row">
-                                                    <div class="col-md-6">
-                                                        <div class="col-md-2">
-                                                            <label>Từ ngày: </label>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <input id="accountFromTime" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="col-md-2">
-                                                            <label>Đến ngày: </label>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <input id="accountToTime" class="form-control" />
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="box-footer">
-                                            <button class="btn btn-primary" id="exportAccount">Xuất báo cáo</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <!-- /.tab-pane -->
                     </div>
-                    <!-- /.tab-content -->
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="tab_2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box box-default">
+                                    <div class="box-header">
+                                        <h4>Báo cáo sản lượng hóa đơn</h4>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="col-md-12">
+                                            <div class="form-group row">
+                                                <div class="col-md-6">
+                                                    <div class="col-md-2">
+                                                        <label>Từ ngày: </label>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <input id="fromTime" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="col-md-2">
+                                                        <label>Đến ngày: </label>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <input id="toTime" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button class="btn btn-primary" id="exportBill">Xuất báo cáo</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="tab_3">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box box-default">
+                                    <div class="box-header">
+                                        <h4>Báo cáo sản phẩm</h4>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="col-md-12">
+                                            <div class="form-group row">
+                                                <div class="col-md-6">
+                                                    <div class="col-md-2">
+                                                        <label>Từ ngày: </label>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <input id="productFromTime" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="col-md-2">
+                                                        <label>Đến ngày: </label>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <input id="productToTime" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button class="btn btn-primary" id="exportProducts">Xuất báo cáo</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab_4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box box-default">
+                                    <div class="box-header">
+                                        <h4>Báo cáo tài khoản</h4>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="col-md-12">
+                                            <div class="form-group row">
+                                                <div class="col-md-6">
+                                                    <div class="col-md-2">
+                                                        <label>Từ ngày: </label>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <input id="accountFromTime" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="col-md-2">
+                                                        <label>Đến ngày: </label>
+                                                    </div>
+                                                    <div class="col-md-10">
+                                                        <input id="accountToTime" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button class="btn btn-primary" id="exportAccount">Xuất báo cáo</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.tab-pane -->
                 </div>
-                <!-- nav-tabs-custom -->
+                <!-- /.tab-content -->
             </div>
-        </div>
-    </section>
-
-<div class="tab-content">
-    <div id="general" class="tab-pane fade in active">
-        <h3>Tổng quan</h3>
-        <p>Thông tin.....</p>
-    </div>
-    <div id="sales" class="tab-pane fade">
-        <h3>Doanh số</h3>
-        <p>Thông tin.....</p>
-
-        <div class="demo-section k-content wide">
-            <div id="salesReport" style="background: center no-repeat"></div>
+            <!-- nav-tabs-custom -->
         </div>
     </div>
-    <div id="viewerCount" class="tab-pane fade">
-        <h3>Số lượt xem trang</h3>
-        <p>Thông tin.....</p>
-    </div>
-</div>
+</section>
 
-<script>
-    document.ready(() => {
-        loadViewerCountReport();
-    });
-    function loadViewerCountReport() {
-        $("#salesReport").kendoChart({
-                title: {
-                    text: "Gross domestic product growth \n /GDP annual %/"
-                },
-                legend: {
-                    position: "bottom"
-                },
-                chartArea: {
-                    background: ""
-                },
-                seriesDefaults: {
-                    type: "line",
-                    style: "smooth"
-                },
-                series: [{
-                    name: "India",
-                    data: [3.907, 7.943, 7.848, 9.284, 9.263, 9.801, 3.890, 8.238, 9.552, 6.855]
-                },{
-                    name: "World",
-                    data: [1.988, 2.733, 3.994, 3.464, 4.001, 3.939, 1.333, -2.245, 4.339, 2.727]
-                },{
-                    name: "Russian Federation",
-                    data: [4.743, 7.295, 7.175, 6.376, 8.153, 8.535, 5.247, -7.832, 4.3, 4.3]
-                },{
-                    name: "Haiti",
-                    data: [-0.253, 0.362, -3.519, 1.799, 2.252, 3.343, 0.843, 2.877, -5.416, 5.590]
-                }],
-                valueAxis: {
-                    labels: {
-                        format: "{0}%"
-                    },
-                    line: {
-                        visible: false
-                    },
-                    axisCrossingValue: -10
-                },
-                categoryAxis: {
-                    categories: [2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011],
-                    majorGridLines: {
-                        visible: false
-                    },
-                    labels: {
-                        rotation: "auto"
-                    }
-                },
-                tooltip: {
-                    visible: true,
-                    format: "{0}%",
-                    template: "#= series.name #: #= value #"
-                }
-            });
-    }
-</script>@section Scripts{ 
+
+@section Scripts{
     <script>
         $(document).ready(function () {
             $('#fromTime').datepicker();
@@ -300,5 +261,112 @@
             var win = window.open(url, "_blank");
             win.focus();
         });
+
+        $("#tab_sales_wrapper").on("click", function () {
+            loadSalesChart();
+        });
+
+        $("#tab_account_wrapper").on("click", function () {
+            loadAccountChart();
+        });
+
+        function loadAccountChart() {
+            console.log("loadAccountChart");
+            $("#accountReportStartDatePicker").datepicker();
+            $("#accountReportEndDatePicker").datepicker();
+        }
+
+        function onFilterAccountChart() {
+            console.log("onFilterAccountChart");
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Admin/MainService/GetAccountReport",
+                        dataType: "json",
+                        data: function () {
+                            return {
+                                startDate: $("#accountReportStartDatePicker").val(),
+                                endDate: $("#accountReportEndDatePicker").val()
+                            }
+                        }
+                    }
+                },
+            });
+
+
+            $("#accountReport").kendoChart({
+                title: {
+                    text: "Tài khoản đăng kí mới"
+                },
+                dataSource: dataSource,
+                series: [{
+                    type: "line",
+                    aggregate: "avg",
+                    field: "value",
+                    categoryField: "date"
+                }],
+                categoryAxis: {
+                    baseUnit: "weeks"
+                }
+            });
+        }
+
+        function loadSalesChart() {
+            console.log("loadSalesChart");
+            $("#salesReportStartDatePicker").datepicker();
+            $("#salesReportEndDatePicker").datepicker();
+        }
+
+        function onFilterSalesChart() {
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Admin/MainService/GetSalesReport",
+                        dataType: "json",
+                        data: function () {
+                            return {
+                                startDate: $("#salesReportStartDatePicker").val(),
+                                endDate: $("#salesReportEndDatePicker").val()
+                            }
+                        }
+                    }
+                },
+            });
+
+
+            $("#salesReport").kendoChart({
+                title: {
+                    text: "Biểu đồ doanh số"
+                },
+                dataSource: dataSource,
+                series:
+                    [{
+                        type: "line",
+                        field: "value",
+                        categoryField: "date",
+                        axis: "revenue"
+                    },
+                    {
+                        type: "area",
+                        field: "totalRevenue",
+                        categoryField: "date",
+                        axis: "count"
+                    }],
+                valueAxes:
+                    [{
+                        name: "count",
+                        color: "#007eff"
+                    }, {
+                        name: "revenue",
+                        color: "#73c100"
+                    }],
+                tooltip: {
+                    visible: true,
+                    format: "{0}",
+                    template: "#= date #: #= count # : #= revenue #"
+                }
+            });
+        }
     </script>
+
 }
