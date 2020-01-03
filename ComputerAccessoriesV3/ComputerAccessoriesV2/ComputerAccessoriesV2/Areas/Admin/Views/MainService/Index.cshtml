@@ -1,16 +1,7 @@
-﻿
-
-
-
-@{
+﻿@{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Admin/_Layout.cshtml";
-
-
-
 }
-
-<br />
 
 <section class="content">
     <div class="row">
@@ -18,13 +9,10 @@
             <!-- Custom Tabs -->
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#tab_1" data-toggle="tab">Bảng điều khiển</a></li>
+                    <li><a href="#tab_1" data-toggle="tab">Bảng điều khiển</a></li>
                     <li><a href="#tab_2" data-toggle="tab">Hóa đơn</a></li>
                     <li><a href="#tab_3" data-toggle="tab">Sản phẩm</a></li>
-                    <li>
-                        <a href="#tab_4" data-toggle="tab">Tài khoản</a>
-                    </li>
-                    <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                    <li><a href="#tab_4" data-toggle="tab">Tài khoản</a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="tab_1">
@@ -34,40 +22,84 @@
                                 <li id="tab_account_wrapper"><a href="#tab_chartAccountWrapper" data-toggle="tab">Tài khoản</a></li>
                             </ul>
                             <div class="tab-content">
-                                <div id="tab_chartSalesWrapper" class="tab-pane fade">
+                                <div id="tab_chartSalesWrapper" class="tab-pane">
+                                    <div class="col">
+                                        <div class="box box-default">
+                                            <div class="box-header">
 
-                                    <div class="row">
-                                        <div class="col">
-                                            <p>Ngày bắt đầu</p>
-                                            <input id="salesReportStartDatePicker" />
-                                        </div>
+                                            </div>
 
-                                        <div class="col">
-                                            <p>Ngày kết thúc</p>
-                                            <input id="salesReportEndDatePicker" />
+                                            <div class="box-body">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6">
+                                                            <div class="col-md-2">
+                                                                <label>Từ ngày: </label>
+                                                            </div>
+                                                            <div class="col-md-10">
+                                                                <input id="salesReportStartDatePicker" class="form-control" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="col-md-2">
+                                                                <label>Đến ngày: </label>
+                                                            </div>
+
+                                                            <div class="col-md-10">
+                                                                <input id="salesReportEndDatePicker" class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="box-footer">
+                                                <button onclick="onFilterSalesChart()" class="btn btn-primary">Lọc</button>
+                                            </div>
                                         </div>
+                                        <div id="salesReport"></div>
                                     </div>
-
-                                    <button onclick="onFilterSalesChart()" class="btn btn-primary">Lọc</button>
-
-                                    <div id="salesReport"></div>
                                 </div>
 
-                                <div id="tab_chartAccountWrapper" class="tab-pane fade">
-                                    <div class="row">
-                                        <div class="col">
-                                            <p>Ngày bắt đầu</p>
-                                            <input id="accountReportStartDatePicker" />
-                                        </div>
+                                <div id="tab_chartAccountWrapper" class="tab-pane">
+                                    <div class="col">
+                                        <div class="box box-default">
+                                            <div class="box-header">
 
-                                        <div class="col">
-                                            <p>Ngày kết thúc</p>
-                                            <input id="accountReportEndDatePicker" />
+                                            </div>
+
+                                            <div class="box-body">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6">
+                                                            <div class="col-md-2">
+                                                                <label>Từ ngày: </label>
+                                                            </div>
+                                                            <div class="col-md-10">
+                                                                <input id="accountReportStartDatePicker" class="form-control" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="col-md-2">
+                                                                <label>Đến ngày: </label>
+                                                            </div>
+
+                                                            <div class="col-md-10">
+                                                                <input id="accountReportEndDatePicker" class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="box-footer">
+                                                <button onclick="onFilterAccountChart()" class="btn btn-primary">Lọc</button>
+                                            </div>
                                         </div>
+                                        <div id="accountReport"></div>
                                     </div>
-
-                                    <button onclick="onFilterAccountChart()" class="btn btn-primary">Lọc</button>
-                                    <div id="accountReport"></div>
                                 </div>
                             </div>
                         </div>
@@ -344,26 +376,37 @@
                         type: "line",
                         field: "value",
                         categoryField: "date",
-                        axis: "revenue"
+                        axis: "count"
                     },
                     {
-                        type: "area",
+                        type: "line",
                         field: "totalRevenue",
                         categoryField: "date",
-                        axis: "count"
+                        axis: "revenue"
                     }],
                 valueAxes:
                     [{
-                        name: "count",
-                        color: "#007eff"
-                    }, {
                         name: "revenue",
-                        color: "#73c100"
+                        color: "#73c100",
+                        title: { text: "Tổng giá trị đơn hàng (nghìn đồng)" }
+                    },
+                    {
+                        name: "count",
+                        color: "#007eff",
+                        title: { text: "Số lượng đơn hàng" }
                     }],
+                categoryAxis: {
+                    // Align the first two value axes to the left
+                    // and the last two to the right.
+                    //
+                    // Right alignment is done by specifying a
+                    // crossing value greater than or equal to
+                    // the number of categories.
+                    axisCrossingValues: [10000, 0]
+                },
                 tooltip: {
                     visible: true,
-                    format: "{0}",
-                    template: "#= date #: #= count # : #= revenue #"
+                    template: "#= date #: #= value # : #= totalRevenue #"
                 }
             });
         }

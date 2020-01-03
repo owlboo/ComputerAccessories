@@ -718,7 +718,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     result.Add(new LineChartItem
                     {
                         Value = billList.Where(x => x.CreateDate.Value.Date == day.Date).Count(),
-                        TotalRevenue = (int)Math.Round(billList.Where(x => x.CreateDate.Value.Date == day.Date).Sum(x => x.TotalPrice).Value),
+                        TotalRevenue = (int)Math.Round(billList.Where(x => x.CreateDate.Value.Date == day.Date).Sum(x => x.TotalPrice).Value/1000),
                         Date = day.ToString("dd/MM")
                     }); ;
                 }
@@ -731,7 +731,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     {
                         Value = billList.Where(x => x.CreateDate.Value.Month == month.Month).Count(),
                         Date = month.ToString("MM/yy"),
-                        TotalRevenue = (int)Math.Round(billList.Where(x => x.CreateDate.Value.Month == month.Month).Sum(x => x.TotalPrice).Value)
+                        TotalRevenue = (int)Math.Round(billList.Where(x => x.CreateDate.Value.Month == month.Month).Sum(x => x.TotalPrice).Value/1000)
                     }); ;
                 }
             }
