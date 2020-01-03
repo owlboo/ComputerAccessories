@@ -227,6 +227,99 @@ namespace ComputerAccessoriesV2.Helpers
             }
             return pck;
         }
+
+        public ExcelPackage ExportBillDetails(ExportBillDetailModel dataExport)
+        {
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = null;
+
+            ws = pck.Workbook.Worksheets.Add("Chi tiết hóa đơn");
+
+
+            #region Format Header
+            ws.Cells["C2:D2"].Merge = true;
+            ws.Cells["C2:D2"].Value = "CHI TIẾT HÓA ĐƠN";
+            ws.Cells["C2:D2"].Style.Font.Size = 16;
+            ws.Cells["C2:D2"].Style.Font.Bold = true;
+            ws.Cells["C2:D2"].AutoFitColumns();
+
+            ws.Cells["C4"].Value = "Mã hóa đơn";
+            ws.Cells["C4"].Style.Font.Bold = true;
+            ws.Cells["C4"].AutoFitColumns();
+            ws.Cells["D4"].Value = dataExport.BillCode;
+            ws.Cells["D4"].AutoFitColumns();
+
+            ws.Cells["C5"].Value = "Tên khách hàng";
+            ws.Cells["C5"].Style.Font.Bold = true;
+            ws.Cells["C5"].AutoFitColumns();
+            ws.Cells["D5"].Value = dataExport.CustomerName;
+            ws.Cells["D5"].AutoFitColumns();
+
+            ws.Cells["C6"].Value = "Số điện thoại";
+            ws.Cells["C6"].AutoFitColumns();
+            ws.Cells["C6"].Style.Font.Bold = true;
+            ws.Cells["D6"].Value = dataExport.CustomerPhone;
+            ws.Cells["D6"].AutoFitColumns();
+
+            ws.Cells["C7"].Value = "Email khách hàng";
+            ws.Cells["C7"].Style.Font.Bold = true;
+            ws.Cells["C7"].AutoFitColumns();
+            ws.Cells["D7"].Value = dataExport.CustomerEmail;
+
+            ws.Cells["C8"].Value = "Ngày thanh toán";
+            ws.Cells["C8"].Style.Font.Bold = true;
+            ws.Cells["C8"].AutoFitColumns();
+            ws.Cells["D8"].Value = dataExport.CreatedDate.ToLocalTime().ToString();
+
+            ws.Cells["C9"].Value = "Địa chỉ giao hàng";
+            ws.Cells["C9"].Style.Font.Bold = true;
+            ws.Cells["C9"].AutoFitColumns();
+            ws.Cells["D9"].Value = dataExport.ShippingAddress;
+
+            #endregion
+
+            int row = 11;
+            Decimal totalPrice = 0;
+            int index = 0;
+            string[] title = new string[] { "STT", "Tên sản phẩm", "Mã sản phẩm", "Giá gốc", "Giá bán", "Số lượng", "Tổng tiền" };
+            string col = "ABCDEFG";
+
+            foreach (var c in col)
+            {
+                ws.Cells[c + row.ToString()].Value = title[index];
+                ws.Cells[c + row.ToString()].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                ws.Cells[c + row.ToString()].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells[c + row.ToString()].Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                ws.Cells[c + row.ToString()].Style.Font.Bold = true;
+                index++;
+            }
+
+            int stt = 0;
+            int totalProduct = 0;
+            row++;
+            foreach (var data in dataExport.ListProducts)
+            {
+                ws.Cells["A" + row.ToString()].Value = ++stt;
+                ws.Cells["B" + row.ToString()].Value = data.ProductName;
+                ws.Cells["B" + row.ToString()].AutoFitColumns();
+                ws.Cells["C" + row.ToString()].Value = data.ProductCode;
+                ws.Cells["D" + row.ToString()].Value = data.OriginPrice;
+                ws.Cells["E" + row.ToString()].Value = data.SellPrice;
+                ws.Cells["F" + row.ToString()].Value = data.Quantity;
+                ws.Cells["G" + row.ToString()].Value = data.SellPrice * data.Quantity;
+                totalPrice+= data.SellPrice * data.Quantity;
+                totalProduct += data.Quantity;
+                row++;
+            }
+
+            ws.Cells["F" + row.ToString()].Value = totalProduct;
+            ws.Cells["F" + row.ToString()].Style.Font.Bold = true;
+            ws.Cells["G" + row.ToString()].Value = totalPrice;
+            ws.Cells["G" + row.ToString()].Style.Font.Bold = true;
+
+            return pck;
+
+        }
     }
 
     

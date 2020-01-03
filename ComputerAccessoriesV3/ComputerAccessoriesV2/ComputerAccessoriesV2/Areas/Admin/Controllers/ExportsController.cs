@@ -243,6 +243,67 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        public async Task<IActionResult> ExportBillDetails(int billId)
+        {
+
+            try
+            {
+                var billDetailModel = await _db.Bills.Include(x => x.Customer).Include(x => x.GuestAnony).Where(x => x.BillId == billId).Select(x => new ExportBillDetailModel
+                {
+                    BillCode = x.BillName,
+                    CreatedDate = x.CreateDate.Value,
+                    ShippingAddress = x.ShippingAddress,
+                    CustomerEmail = x.GuestAnonyId.HasValue ? x.GuestAnony.Email : x.Customer.Email,
+                    CustomerName = x.GuestAnonyId.HasValue ? x.GuestAnony.CustomerName : x.Customer.DisplayName,
+                    CustomerPhone = x.GuestAnonyId.HasValue ? x.GuestAnony.PhoneNumber : x.Customer.PhoneNumber,
+                    ListProducts = _db.BillDetails.Include(z => z.Product).Where(z => z.BillId == x.BillId).Select(z => new BillDetailExports
+                    {
+                        ProductCode = z.Product.Code,
+                        ProductName = z.Product.ProductName,
+                        Quantity = z.Quantity.Value,
+                        SellPrice = z.UnitPrice.Value,
+                        OriginPrice =z.Product.OriginalPrice.Value
+                    }).ToList()
+                }).FirstOrDefaultAsync();
+                string webRootPath = _hostingEnvironment.WebRootPath;
+                var customeMail = billDetailModel.CustomerEmail;
+                if (!Directory.Exists(webRootPath + @"/exports"))
+                {
+                    Directory.CreateDirectory(webRootPath + @"/exports");
+                }
+
+                string fileName = customeMail+"_chitiethoadon_"+billDetailModel.BillCode+ ".xlsx";
+                var path = Path.Combine(webRootPath + @"/exports", fileName);
+
+
+
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(webRootPath + @"/exports" + "/" + fileName);
+                }
+                FileInfo file = new FileInfo(path);
+                ExcelHelpers excelHelpers = new ExcelHelpers();
+                excelHelpers.ExportBillDetails(billDetailModel).SaveAs(file);
+                var memory = new MemoryStream();
+                using (var fileStream = new FileStream(path, FileMode.Open))
+                {
+
+                    await fileStream.CopyToAsync(memory);
+                    fileStream.Close();
+                }
+
+                memory.Position = 0;
+                return File(memory, GetContentType(path), fileName);
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         private string GetContentType(string path)
         {
             var types = GetMimeTypes();

@@ -11,7 +11,7 @@
         <div class="row">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Lọc</h3>
+                    <h3 class="box-title ">Lọc</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -279,7 +279,7 @@
                     {
                         field: "shipper", title: "Nhân viên giao hàng", width: 200, editor:shipperDropDownList,template: "#if(shipper==null){#<text>Chưa có</text>#}else{#<text>#=shipper.shipperName#</text>#}#",filterable: false
                     },
-                    { command: ["edit", {name:"details", iconClass: "k-icon k-i-eye",text: "View Details", click: showDetails}], title: "&nbsp;", width: 200 }],
+                    { command: ["edit", { name: "details", iconClass: "k-icon k-i-eye", text: "Xem chi tiết", click: showDetails }, {name:"export",iconClass:"k-icon k-i-upload",text:"Xuất báo cáo",click:ExportBillDetail}], title: "&nbsp;", width: 300 }],
                 editable: "inline",
                 filterable: true
             });
@@ -294,6 +294,15 @@
             console.log(dataItem);
             console.log(this);
             window.location.href = window.location.protocol + "//" + window.location.host + "/Admin/Bill/BillDetails?billId=" + dataItem.billId;
+        }
+
+        function ExportBillDetail(e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            console.log(dataItem);
+            url = "/Exports/ExportBillDetails?billId=" + dataItem.billId;
+            var win = window.open(url, "_blank");
+            win.focus();
         }
 
         function Filter() {

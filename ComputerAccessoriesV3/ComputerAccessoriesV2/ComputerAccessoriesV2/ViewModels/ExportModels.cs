@@ -39,4 +39,23 @@ namespace ComputerAccessoriesV2.ViewModels
         public string Status { get; set; }
         public Decimal UnitPrice { get; set; }
     }
+
+    public class BillDetailExports
+    {
+        public string ProductName { get; set; }
+        public string ProductCode { get; set; }
+        public int Quantity { get; set; }
+        public Decimal SellPrice { get; set; }
+        public Decimal OriginPrice { get; set; }
+    }
+    public class ExportBillDetailModel
+    {
+        public string BillCode { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerEmail { get; set; }
+        public string ShippingAddress { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string CustomerPhone { get; set; }
+        public List<BillDetailExports> ListProducts { get; set; }
+    }
 }
