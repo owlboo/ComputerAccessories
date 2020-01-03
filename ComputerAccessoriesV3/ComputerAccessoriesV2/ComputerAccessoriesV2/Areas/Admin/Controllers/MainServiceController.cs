@@ -9,9 +9,11 @@ using ComputerAccessoriesV2.Helpers;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using LinqKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace ComputerAccessoriesV2.Areas.Admin.Controllers
@@ -20,6 +22,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
     public class MainServiceController : Controller
     {
         private readonly ComputerAccessoriesV2Context _db;
+        private readonly ApplicationDbContext _ctx;
         [BindProperty]
         public CategoryViewModel CategoryVM { get; set; }
         [BindProperty]
@@ -29,13 +32,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         private readonly UserManager<MyUsers> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         public AccountViewModel AccountVM { get; set; }
-        public MainServiceController(ComputerAccessoriesV2Context db, UserManager<MyUsers> userManager, RoleManager<IdentityRole<int>> roleManager)
+        public MainServiceController(ComputerAccessoriesV2Context db, ApplicationDbContext ctx, UserManager<MyUsers> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _db = db;
             AttributeVM = new AttributeViewModel();
             _userManager = userManager;
             _roleManager = roleManager;
             CategoryVM = new CategoryViewModel();
+            _ctx = ctx;
         }
 
         [Authorize(Policy = Policy.AdminAccess)]
@@ -435,42 +439,93 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return _db.AspNetRoles.Where(x => x.Id == roleid).Select(x => x.Name).FirstOrDefault();
         }
 
+        public class AccountFilter
+        {
+            public string accountEmail { get; set; }
+            public string accountPhone { get; set; }
+            public int? accountRole { get; set; }
+            public int? accountProvince { get; set; }
+            public int? accountDistrict { get; set; }
+            public int? accountWard { get; set; }
+            public string fromTime { get; set; }
+            public string toTime { get; set; }
+        }
+
         [Authorize(Policy = Policy.AdminAccess)]
         [Route("/MainService/GetAccount")]
-        public JsonResult GetAccount (int? typeAccount = null)
+        public JsonResult GetAccount (AccountFilter model)
         {
-            if(typeAccount == null)
+            var query = _db.AspNetUsers.Include("AspNetUserRoles").Include("UserAddress").AsNoTracking().AsQueryable();
+            var predicate = PredicateBuilder.New<AspNetUsers>();
+            var from = new DateTime();
+            var to = new DateTime();
+            if (!String.IsNullOrEmpty(model.accountEmail)){
+                predicate = predicate.And(x => x.Email.Equals(model.accountEmail));
+            }
+            if (!String.IsNullOrEmpty(model.accountPhone))
             {
-                var listUser = _db.AspNetUsers.Select(x => new AccountGridModel
-                {
-                    Id = x.Id,
-                    Email = x.Email,
-                    DisplayName = x.DisplayName,
-                    CreatedDate = x.CreatedDate ?? x.CreatedDate.Value,
-                    RoleId = _db.AspNetUserRoles.Where(z => z.UserId == x.Id).Select(z => z.RoleId).FirstOrDefault(),
-                    RoleName = _db.AspNetUserRoles.Where(z => z.UserId == x.Id).Join(_db.AspNetRoles, ur=>ur.RoleId, r=>r.Id,(ur,r)=>new { ur, r }).Select(z=>z.r.Name).FirstOrDefault(),
-                    IsActivated = x.IsActivated ?? x.IsActivated.Value,
-                    PhoneNumber = x.PhoneNumber,
-                    Address = x.Address
-                }).ToList();
-                return Json(listUser);
+                predicate = predicate.And(x => x.PhoneNumber.Equals(model.accountPhone));
+            }
+            if (model.accountRole.HasValue)
+            {
+                predicate = predicate.And(x => x.AspNetUserRoles.FirstOrDefault().RoleId == model.accountRole.Value);
+            }
+
+            if (model.accountProvince.HasValue)
+            {
+                predicate = predicate.And(x => x.UserAddress.Where(y=>y.ProvinceId ==model.accountProvince.Value).FirstOrDefault()!=null);
+            }
+
+            if (model.accountDistrict.HasValue)
+            {
+                predicate = predicate.And(x => x.UserAddress.Where(y=>y.DistrictId == model.accountDistrict.Value)!=null);
+            }
+
+            if (model.accountWard.HasValue)
+            {
+                predicate = predicate.And(x => x.UserAddress.Where(y=>y.WardId == model.accountWard.Value).FirstOrDefault()!=null);
+            }
+
+            if (!String.IsNullOrEmpty(model.fromTime))
+            {
+                from = DateTime.Parse(model.fromTime);
+                predicate = predicate.And(x => x.CreatedDate >= from);
+            }
+
+            if (!String.IsNullOrEmpty(model.toTime))
+            {
+                to = DateTime.Parse(model.toTime);
+                predicate = predicate.And(x => x.CreatedDate <= to);
             }
             else
             {
-                return Json(_db.AspNetUsers.Join(_db.AspNetUserRoles,u=>u.Id,y=>y.UserId,(u,y)=>new { u, y }).Select(x => new AccountGridModel
-                {
-                    Id = x.u.Id,
-                    Email = x.u.Email,
-                    DisplayName = x.u.DisplayName,
-                    CreatedDate = x.u.CreatedDate ?? x.u.CreatedDate.Value,
-                    RoleId = x.y.RoleId,
-                    RoleName = _db.AspNetRoles.Where(r=>r.Id == x.y.RoleId).Select(r=>r.Name).FirstOrDefault(),
-                    IsActivated = x.u.IsActivated ?? x.u.IsActivated.Value,
-                    PhoneNumber = x.u.PhoneNumber,
-                    Address = x.u.Address
-
-                }).ToList());
+                predicate = predicate.And(x => x.CreatedDate <= DateTime.Now);
             }
+
+            var listUser = query.Where(predicate).Select(x => new AccountGridModel
+            {
+                Id = x.Id,
+                Email = x.Email,
+                DisplayName = x.DisplayName,
+                CreatedDate = x.CreatedDate ?? x.CreatedDate.Value,
+                RoleId = _db.AspNetUserRoles.Where(z => z.UserId == x.Id).Select(z => z.RoleId).FirstOrDefault(),
+                RoleName = _db.AspNetUserRoles.Where(z => z.UserId == x.Id).Join(_db.AspNetRoles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur, r }).Select(z => z.r.Name).FirstOrDefault(),
+                IsActivated = x.IsActivated ?? x.IsActivated.Value,
+                PhoneNumber = x.PhoneNumber,
+                Address = x.Address
+            }).OrderByDescending(x=>x.CreatedDate).ToList();
+
+
+            return Json(listUser);
+        }
+
+        private string GetFullAddress(int provinceId, int districtId, int wardId)
+        {
+            var provinceName = _db.Provinces.Where(x => x.ProvinceId == provinceId).Select(x => x.ProvinceName).FirstOrDefault();
+            var districtName = _db.Districts.Where(x => x.DistrictId == districtId).Select(x => x.DistrictName).FirstOrDefault();
+            var wardName = _db.Ward.Where(x => x.WardId == wardId).Select(x => x.WardName).FirstOrDefault();
+
+            return wardName + ", " + districtName + ", " + provinceName;
         }
 
         [Authorize(Policy = Policy.AdminModify)]
@@ -486,7 +541,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 {
                     return new JsonResult(new { code = 0, Err = "" });
                 }
-                
+                string fullAddress = model.PlaceDetail+" "+ GetFullAddress(model.ProvinceId, model.DistrictId, model.WardId);
                 var user = new MyUsers
                 {
                     UserName = model.Email,
@@ -496,7 +551,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     IsActivated = true,
                     LockoutEnabled = false,
                     CreatedDate = DateTime.Now,
-                    DisplayName = model.FullName
+                    DisplayName = model.FullName,
+                    Address = fullAddress
                 };
                 var roleInDb = _db.AspNetRoles.Where(x => x.Name == model.RoleName).FirstOrDefault();
                 
@@ -509,7 +565,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         WardId = model.WardId,
                         ProvinceId = model.ProvinceId,
                         DistrictId = model.DistrictId,
-                        PlaceDetails = model.PlaceDetail + _db.Ward.Find(model.WardId).WardName + "," + _db.Districts.Find(model.DistrictId).DistrictName + "," + _db.Provinces.Find(model.ProvinceId).ProvinceName
+                        PlaceDetails = model.PlaceDetail
                     };
                     _db.UserAddress.Add(useraddress);
                     await _db.SaveChangesAsync();
@@ -541,6 +597,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                         resultRole = await _userManager.AddToRoleAsync(user, roleInDb.Name);
                         if (resultRole.Succeeded)
                         {
+                            
+
                             Response.StatusCode = (int)HttpStatusCode.OK;
                             return Json(new { code = 1 });
                         }
@@ -591,6 +649,106 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View();
         }
         #endregion
+        [Route("/[controller]/GetUsers")]
+        public JsonResult GetUsers()
+        {
+            return Json(_db.AspNetUsers.ToList());
+
+        }
+
+        private string GetRoleByUserId(int? UserId)
+        {
+            if (UserId.HasValue)
+            {
+                var role = _db.AspNetUserRoles.Where(x=>x.UserId == UserId.Value).Select(x=>x.Role.Name).FirstOrDefault();
+                return role;
+            }
+            return String.Empty;
+        }
+        public IActionResult EditAccount(int accountId)
+        {
+            var userInfo = _db.AspNetUsers.Where(x => x.Id == accountId).Select(x => new AccountDetails
+            {
+                Id = x.Id,
+                DisplayName = x.DisplayName,
+                Email = x.Email,
+                PhoneNumber = x.PhoneNumber,
+                CreatedDate = x.CreatedDate,
+                RoleId = x.AspNetUserRoles.Where(z => z.UserId == accountId).Select(z => z.RoleId).FirstOrDefault(),
+                RoleName = GetRoleByUserId(accountId),
+                ProvinceId = x.UserAddress.Where(z => z.UserId == accountId).Select(z => z.ProvinceId).FirstOrDefault(),
+                DistrictId = x.UserAddress.Where(z => z.UserId == accountId).Select(z => z.DistrictId).FirstOrDefault(),
+                WarddId = x.UserAddress.Where(z => z.UserId == accountId).Select(z => z.WardId).FirstOrDefault(),
+                PlaceDetail = x.UserAddress.Where(z => z.UserId == accountId).Select(z => z.PlaceDetails).FirstOrDefault(),
+                Status = (x.IsActivated.HasValue && x.IsActivated.Value) ? "Đã kích hoạt" : "Khóa/Chưa kích hoạt"
+            }).FirstOrDefault();
+
+            ViewBag.userInfo = userInfo;
+            return View();
+        }
+
+
+
+        [HttpPost]
+        [Route("/[controller]/UpdateAccount")]
+        public async Task<IActionResult> UpdateAccount(AccountDetails model)
+        {
+            var userFromDb = _db.AspNetUsers.Where(x => x.Id == model.Id).FirstOrDefault();
+            if(userFromDb == null)
+            {
+                return Json(new { code = 0, message = "Tài khoản không tồn tại" });
+            }
+            Regex regex = new Regex(@"0|84[0-9]{9}");
+            if (!regex.IsMatch(model.PhoneNumber))
+            {
+                return Json(new { code = 0, message = "Sai format số điện thoại" });
+            }
+            var userAddress = _db.UserAddress.Where(x => x.UserId == model.Id).FirstOrDefault();
+            userFromDb.DisplayName = model.DisplayName;
+            userFromDb.PhoneNumber = model.PhoneNumber;
+            userAddress.DistrictId = model.DistrictId;
+            userAddress.ProvinceId = model.ProvinceId;
+            userAddress.WardId = model.WarddId;
+            userAddress.PlaceDetails = model.PlaceDetail;
+
+            await _db.SaveChangesAsync();
+            return Json(new { code = 1 });
+        }
+
+        [Route("/[controller]/ResetPassword")]
+        public async Task<IActionResult> ResetPassword(int UserId)
+        {
+            try
+            {
+                //var userFromDb = JsonConvert.SerializeObject(_db.AspNetUsers.Where(x => x.Id == UserId).AsNoTracking().FirstOrDefault());
+
+                //var user = JsonConvert.DeserializeObject<MyUsers>(userFromDb);
+
+                var user = await _userManager.FindByIdAsync(UserId.ToString());
+
+                var tokenResetPwd = await _userManager.GeneratePasswordResetTokenAsync(user);
+                if (user == null)
+                {
+                    return Json(new { code = 0, message = "Tài khoản không tồn tại" });
+                }
+                var newPwd = AccountHelpers.Guild(6);
+                var result = await _userManager.ResetPasswordAsync(user, tokenResetPwd, newPwd);
+                if (result.Succeeded)
+                {
+                    return Json(new { code = 1, pwd = newPwd });
+                }
+                else
+                {
+                    return Json(new { code = 0, message = "Có lỗi xảy ra" });
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { code = 0, message = e.ToString() });
+
+            }
+            
+        }
 
     }
 }

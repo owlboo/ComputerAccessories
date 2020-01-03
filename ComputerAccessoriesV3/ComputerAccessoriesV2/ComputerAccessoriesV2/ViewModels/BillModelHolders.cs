@@ -21,6 +21,8 @@ namespace ComputerAccessoriesV2.ViewModels
         public int status { get; set; }
         public string statusCode { get; set; }
         public ShipperModel shipper { get; set; }
+        public DateTime? DeliveredDate { get; set; }
+
 
     }
     public class BillDetailModel

@@ -7,9 +7,109 @@
 
   
 
+    <section class="content">
+        <div class="row">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Lọc</h3>
 
-    <div class="row" style="margin-top:50px">
-        <div class="col-xs-12">
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body" style="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label style="font-size:16px; text-decoration:underline">Khách hàng</label>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Email khách hàng</label>
+                                <input id="email" class="form-control" />
+                            </div>
+                            <!-- /.form-group -->
+                            <!-- /.form-group -->
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Số điện thoại khách hàng</label>
+                                <input id="phoneNumber" class="form-control" />
+                            </div>
+                        </div>
+
+
+                        <!-- /.col -->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label style="font-size:16px; text-decoration:underline">Hóa đơn</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Mã hóa đơn</label>
+                                <input id="billCode" type="text" placeholder="Nhập mã hóa đơn tại đây" class="form-control" />
+                            </div>
+                            <!-- /.form-group -->
+                            <!-- /.form-group -->
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Trạng thái</label>
+                                <input id="statusDrop" class="form-control" />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <!-- /.col -->
+                        <div class="col-md-12">
+                            <label style="font-size:16px; text-decoration:underline">Ngày tạo</label>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Từ ngày</label>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" @*asp-for="CreatedDate"*@ class="form-control" id="datepicker1">
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                            <!-- /.form-group -->
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Đến ngày</label>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" @*asp-for="CreatedDate"*@ class="form-control" id="datepicker2">
+                                </div>
+                            </div>
+                            <!-- /.form-group -->
+                            <!-- /.form-group -->
+                        </div>
+
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <a class="btn btn-success" onclick="Filter()">Lọc</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
             <div class="box">
 
                 <div class="box-header">
@@ -25,9 +125,10 @@
                 </div>
                 <!-- /.box-body -->
             </div>
-        </div>
 
-    </div>
+        </div>
+    </section>
+
 
 
 
@@ -37,185 +138,71 @@
         
         $(document).ready(function () {
             var notification = $('#kendoNoti').data('kendoNotification');
-            //$('#datepicker1').datepicker();
-            //$('#datepicker2').datepicker(); 
+            $('#datepicker1').datepicker();
+            $('#datepicker2').datepicker();
 
-            //$('#dropStatus').kendoDropDownList({
-            //                autoBind: false,
-            //                dataTextField: "codeName",
-            //                dataValueField: "id",
-            //                optionLabel:"--Chọn trạng thái--",
-            //                dataSource: {
-            //                    type: "json",
-            //                    transport: {
-            //                        read: {
-            //                            url:window.location.protocol + "//" + window.location.host + "/Bill/GetBillStatus"
-            //                        } 
-            //                    }
-            //                }
-            //})
+            $("#email").kendoAutoComplete({
+                dataTextField: "email",
+                placeholder:"Nhập email khách hàng",
+                        filter: "contains",
+                        minLength: 3,
+                        dataSource: {
+                            type: "json",
+                            //serverFiltering: true,
+                            transport: {
+                                read: {
+                                    url: window.location.protocol + "//" + window.location.host + "/MainService/GetUsers"
+                                }
+                            }
+                        }
+                    });
 
-            //var crudServiceBaseUrl = window.location.protocol +"//"+ window.location.host,
-            //    dataSource = new kendo.data.DataSource({
-            //        transport: {
-            //            read: {
-            //                url: crudServiceBaseUrl + "/Bill/GetBills",
-            //                dataType: "json",                            
-            //            },
-            //            update: {
-            //                confirmation: function (e) {
-            //                    cosole.log(e);
-            //                },
-            //                url: crudServiceBaseUrl + "/Bill/UpdateBillInformation",
-            //                dataType: "json",
-            //                complete: function (e) {
-            //                    console.log(e);
-            //                    debugger;
-            //                    var noti = $('#kendoNoti').data('kendoNotification');
-            //                    noti.show({ title: "Thông báo", message: e.responseJSON.res}, "success");
-            //                    $('#grid').data('kendoGrid').dataSource.read();
-            //                }
-            //            },
-            //            destroy: {
-            //                url: crudServiceBaseUrl + "/Products/Destroy",
-            //                dataType: "jsonp"
-            //            },
-            //            create: {
-            //                url: crudServiceBaseUrl + "/Products/Create",
-            //                dataType: "jsonp"
-            //            },
-                        
-            //            parameterMap: function (options, operation) {
-            //                if (operation !== "read" && options.models) {
-            //                    return { models: kendo.stringify(options.models) };
-            //                }
-            //            }
-            //        },
-            //        batch: true,
-            //        pageSize: 20,
-            //        sortable: true,
-            //        schema: {
-            //            model: {
-            //                id: "billId",
-            //                fields: {
-            //                    billId: { editable: false, nullable: true },
-            //                    customerName: { editable: false },
-            //                    customerEmail: { editable: false },
-            //                    totalPrice: { editable: false },
-            //                    createdDate: { editable: false },
-            //                    //note: { editable: false },
-            //                    phoneNumber: { type: "text", editable: false },
-            //                    status: { editable: false },
-            //                    billName: { editable: false, validation: { required: true } },
-            //                    shippingAddress: { type: "text", editable: false },
-            //                    note: { type: "text" },
-            //                    shipper: { defaultValue: { shipperId: 0, shipperName: "None" } },
-            //                    statusCode: { editable: false }
-            //                    //shipperName: { editable: true }
+            $('#statusDrop').kendoDropDownList({
+                autoBind:true,
+                optionLabel: '--Chọn trạng thái--',
+                dataTextField: "codeName",
+                dataValueField: "id",
+                filter:"contains",
+                dataSource: {
+                    type: 'json',
+                    //serverFiltering: true,
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host + "/Bill/GetBillStatus"
+                            
+                        },
+                        requestEnd: function (e) {
+                            var response = e.response;
+                            var type = e.type;
+                            if (response.length === 0) {
 
-            //                }
-            //            }
-            //        }
-            //    });
-
-            //$("#billGrid").kendoGrid({
-            //    dataSource: {
-            //        type: "json",
-            //        transport: {                        
-            //            read: window.location.protocol + "//" + window.location.host + "/Bill/GetBills",
-            //            update: {
-            //                confirmation: function (e) {
-            //                    cosole.log(e);
-            //                },
-            //                url: window.location.protocol +"//"+ window.location.host + "/Bill/UpdateBillInformation",
-            //                dataType: "json",
-            //                complete: function (e) {
-            //                    console.log(e);
-            //                    debugger;
-            //                    var noti = $('#kendoNoti').data('kendoNotification');
-            //                    noti.show({ title: "Thông báo", message: e.responseJSON.res}, "success");
-            //                    $('#grid').data('kendoGrid').dataSource.read();
-            //                }
-            //            },
-            //            destroy: {
-            //                url: window.location.protocol +"//"+ window.location.host + "/Products/Destroy",
-            //                dataType: "jsonp"
-            //            },
-            //            create: {
-            //                url: window.location.protocol +"//"+ window.location.host + "/Products/Create",
-            //                dataType: "jsonp"
-            //            },
-                        
-            //            parameterMap: function (options, operation) {
-            //                if (operation !== "read" && options.models) {
-            //                    return { models: kendo.stringify(options.models) };
-            //                }
-            //            }
-            //        },
-            //        batch: true,
-            //        pageSize: 20,
-            //        sortable: true,
-            //        schema: {
-            //            model: {
-            //                id: "billId",
-            //                fields: {
-            //                    billId: { editable: false, nullable: true },
-            //                    customerName: { editable: false },
-            //                    customerEmail: { editable: false },
-            //                    totalPrice: { editable: false },
-            //                    createdDate: { editable: false },
-            //                    //note: { editable: false },
-            //                    phoneNumber: { type: "text", editable: false },
-            //                    status: { editable: false },
-            //                    billName: { editable: false, validation: { required: true } },
-            //                    shippingAddress: { type: "text", editable: false },
-            //                    note: { type: "text" },
-            //                    shipper: { defaultValue: { shipperId: 0, shipperName: "None" } },
-            //                    statusCode: { editable: false }
-            //                    //shipperName: { editable: true }
-
-            //                }
-            //            }
-            //        }
-            //    },
-            //    pageable: {
-            //        refresh: true,
-            //        pageSizes: true,
-            //        buttonCount: 5
-            //    },
-            //    groupable: true,
-            //    sortable: true,
-            //    height: 550,
-            //    columns: [
-            //        { field: "customerName", title: "Tên khách hàng", width: 120, filterable: false },
-            //        { field: "customerEmail", title: "Email", format: "{0:c}", width: 200, filterable: true },
-            //        { field: "phoneNumber", title: "Số điện thoại", width: 120 },
-            //        { field: "billName", title: "Mã hóa đơn", format: "{0:c}" },
-            //        { field: "createdDate", title: "Ngày tạo",filterable: false },
-            //        { field: "shippingAddress", title: "Địa chỉ giao hàng",filterable: false },
-            //        { field: "totalPrice", title: "Tổng tiền",filterable: false },
-            //        { field: "note", title: "Ghi chú",filterable: false },
-            //        { field: "statusCode", title: "Trạng thái" },
-            //        {
-            //            field: "shipper", title: "Nhân viên giao hàng", width: 200, editor:shipperDropDownList,template: "#if(shipper==null){#<text>Chưa có</text>#}else{#<text>#=shipper.shipperName#</text>#}#",filterable: false
-            //        },
-            //        { command: ["edit"], title: "&nbsp;", width: 150 }],
-            //    editable: "inline",
-            //    filterable: true
-            //});
+                            }
+                        },
+                    }
+                },
+            })
 
 
 
             $("#billGrid").kendoGrid({
                 dataSource: {
+                    type:"json",
                     transport: {                        
                         read: {
                             url: window.location.protocol + "//" + window.location.host + "/Bill/GetBills",
+
+                            data: function (e) {                               
+                                return {
+                                    customerEmail: $('#email').val(),
+                                    customerPhone: $('#phoneNumber').val(),
+                                    billCode: $('#billCode').val(),
+                                    billStatus: $('#statusDrop').data('kendoDropDownList').value(),
+                                    fromTime: $('#datepicker1').val(),
+                                    toTime: $('#datepicker2').val()
+                                }
+                            }
                         },
                         update: {
-                            confirmation: function (e) {
-                                cosole.log(e);
-                            },
                             url: window.location.protocol +"//"+ window.location.host + "/Bill/UpdateBillInformation",
                             dataType: "json",
                             complete: function (e) {
@@ -244,6 +231,7 @@
                     batch: true,
                     pageSize: 20,
                     sortable: true,
+                    serverFiltering: true,
                     schema: {
                         model: {
                             id: "billId",
@@ -265,7 +253,8 @@
 
                             }
                         }
-                    }
+                    },
+                    
                 },
                 pageable: {
                     refresh: true,
@@ -281,7 +270,8 @@
                     { field: "customerEmail", title: "Email", format: "{0:c}", width: 200, filterable: true },
                     { field: "phoneNumber", title: "Số điện thoại", width: 120 },
                     
-                    { field: "createdDate", title: "Ngày tạo",filterable: false },
+                    { field: "createdDate", title: "Ngày tạo", filterable: false },
+                    { field: "deliveredDate", title: "Ngày giao", filterable: false },
                     { field: "shippingAddress", title: "Địa chỉ giao hàng",filterable: false },
                     { field: "totalPrice", title: "Tổng tiền",filterable: false },
                     { field: "note", title: "Ghi chú",filterable: false },
@@ -306,7 +296,9 @@
             window.location.href = window.location.protocol + "//" + window.location.host + "/Admin/Bill/BillDetails?billId=" + dataItem.billId;
         }
 
-        
+        function Filter() {
+            $('#billGrid').data('kendoGrid').dataSource.read();
+        }
 
 
         function shipperDropDownList(container, options) {

@@ -32,7 +32,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         [Route("/[controller]/GetBills")]
         [HttpGet]
-        public JsonResult GetBills()
+        public JsonResult GetBills(string customerEmail, string customerPhone, string billCode, int?billStatus, string fromTime, string toTime)
         {
             return Json(_db.Bills.Select(x => new BillModelHolders
             {
@@ -47,6 +47,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 note = x.Note,
                 status = x.Status.HasValue ? x.Status.Value : 0,
                 statusCode = x.Status.HasValue ? x.StatusNavigation.CodeName : "",
+                DeliveredDate = x.DeliveredDate,
                 shipper = new ViewModels.DbQueryModels.ShipperModel()
                 {
                     shipperId = x.ShipperId.Value,
