@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -651,10 +652,91 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         #endregion
 
         [HttpGet]
-        public JsonResult GetBillReport(DateTime startDate, DateTime endDate)
+        public JsonResult GetAccountReport(String startDate, string endDate)
         {
-            var bills = _db.Bills.Where(x => x.CreateDate > startDate && x.CreateDate < endDate).ToList();
-            return Json(bills);
+            if (startDate == null || endDate == null)
+            {
+                return Json(null);
+            }
+
+            var filterStartDate = DateTime.Parse(startDate);
+            var filterEndDate = DateTime.Parse(endDate);
+            var timeFilterType = filterEndDate.Subtract(filterStartDate).Days < 90 ? 1 : 2;
+
+            var accountList = _db.AspNetUsers
+                .Where(x => x.CreatedDate.Value >= filterStartDate && x.CreatedDate.Value <= filterEndDate)
+                .ToList();
+            var result = new ArrayList();
+
+            if(timeFilterType == 1)
+            {
+                for (DateTime day = filterStartDate; filterEndDate.CompareTo(day) > 0; day = day.AddDays(1.0))
+                {
+                    result.Add(new LineChartItem
+                    {
+                        Value = accountList.Where(x => x.CreatedDate.Value.Date == day.Date).Count(),
+                        Date = day.ToString("dd/MM")
+                    }); ;
+                }
+            } 
+            else if (timeFilterType == 2)
+            {
+                for (DateTime month = filterStartDate.Date; filterEndDate.CompareTo(month) >= 0; month = month.AddMonths(1))
+                {
+                    result.Add(new LineChartItem
+                    {
+                        Value = accountList.Where(x => x.CreatedDate.Value.Month == month.Month).Count(),
+                        Date = month.ToString("MM/yy")
+                    }); ;
+                }
+            }
+            
+            return Json(result);
+        }
+
+        [HttpGet]
+        public JsonResult GetSalesReport(String startDate, string endDate)
+        {
+            if (startDate == null || endDate == null)
+            {
+                return Json(null);
+            }
+
+            var filterStartDate = DateTime.Parse(startDate);
+            var filterEndDate = DateTime.Parse(endDate);
+            var timeFilterType = filterEndDate.Subtract(filterStartDate).Days < 30 ? 1 : 2;
+
+            var billList = _db.Bills
+                .Where(x => x.CreateDate.Value >= filterStartDate && x.CreateDate.Value <= filterEndDate)
+                .ToList();
+            var result = new ArrayList();
+
+            if (timeFilterType == 1)
+            {
+                for (DateTime day = filterStartDate; filterEndDate.CompareTo(day) > 0; day = day.AddDays(1.0))
+                {
+                    result.Add(new LineChartItem
+                    {
+                        Value = billList.Where(x => x.CreateDate.Value.Date == day.Date).Count(),
+                        TotalRevenue = (int)Math.Round(billList.Where(x => x.CreateDate.Value.Date == day.Date).Sum(x => x.TotalPrice).Value),
+                        Date = day.ToString("dd/MM")
+                    }); ;
+                }
+            }
+            else if (timeFilterType == 2)
+            {
+                for (DateTime month = filterStartDate.Date; filterEndDate.CompareTo(month) >= 0; month = month.AddMonths(1))
+                {
+                    result.Add(new LineChartItem
+                    {
+                        Value = billList.Where(x => x.CreateDate.Value.Month == month.Month).Count(),
+                        Date = month.ToString("MM/yy"),
+                        TotalRevenue = (int)Math.Round(billList.Where(x => x.CreateDate.Value.Month == month.Month).Sum(x => x.TotalPrice).Value)
+                    }); ;
+                }
+            }
+
+            return Json(result);
         }
 
         [Route("/[controller]/GetUsers")]
