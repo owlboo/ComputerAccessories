@@ -1,0 +1,332 @@
+﻿@using ComputerAccessoriesV2.ViewModels;
+@{
+    ViewData["Title"] = "EditAccount";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+    var userInfo = ViewBag.userInfo as AccountDetails;
+}
+
+@if (userInfo != null)
+{
+    <section class="content">      
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header">
+                        <h2 class="page-header">Thông tin tài khoản</h2>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="box box-default">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-user"></i>
+                                    <h3 class="box-title">Thông tin chung</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Họ và tên: </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" id="fullName" value="@userInfo.DisplayName" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Email: </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" value="@userInfo.Email" id="email" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Số điện thoại: </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" id="phoneNumber" value="@userInfo.PhoneNumber" type="tel" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Ngày tạo: </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p style="font-size:16px">@userInfo.CreatedDate</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Trạng thái: </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p style="font-size:16px">@userInfo.Status</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box box-default">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-building-o"></i>
+                                    <h3 class="box-title">Địa chỉ liên lạc</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Tỉnh, thành phố</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" id="accountProvince" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Quận, huyện</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" id="accountDistrict" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Xã, phường</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" id="accountWard" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label>Số nhà, tên đường</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control" id="accountPlaceDetail" value="@userInfo.PlaceDetail" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
+                        </div>
+                    </div>
+                    <div class="box-footer float-right">
+                        <button class="btn btn-success" id="updateAccount">Cập nhật thông tin</button>
+                        <a class="btn btn-warning" asp-action="AccountManager" asp-controller="MainService">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+}
+else
+{
+    <div class="content">
+        <h3 class="text-danger">Thông tin tài khoản không hợp lệ</h3>
+    </div>
+}
+
+
+
+@section Scripts{ 
+
+<script>
+    $(document).ready(function () {
+
+        $('#accountProvince').kendoDropDownList({
+            optionLabel: '-Chọn tỉnh-',
+            dataTextField: "provinceName",
+            dataValueField: "provinceId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetProvinces"
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: @userInfo.ProvinceId,
+            change: onProvinceChange
+        });
+
+        $('#accountDistrict').kendoDropDownList({
+            optionLabel: '-Chọn Quận, huyện-',
+            dataTextField: "districtName",
+            dataValueField: "districtId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetDistricts?provinceId=@userInfo.ProvinceId"
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: @userInfo.DistrictId,
+            change: onDistrictChange
+
+        });
+
+        $('#accountWard').kendoDropDownList({
+            optionLabel: '-Chọn xã, phường-',
+            dataTextField: "wardName",
+            dataValueField: "wardId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetWards?districtId=@userInfo.DistrictId"
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    }
+                }
+            },
+            value: @userInfo.WarddId,
+        });
+    });
+    function onDistrictChange() {
+        var newDistrictId = $('#accountDistrict').data('kendoDropDownList').value();
+
+        $('#accountWard').kendoDropDownList({
+            optionLabel: '-Chọn xã, phường-',
+            dataTextField: "wardName",
+            dataValueField: "wardId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetWards?districtId=" + newDistrictId
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: 0
+        });
+    }
+
+    function onProvinceChange() {
+        var newProvinceId = $('#accountProvince').data('kendoDropDownList').value();
+
+        $('#accountDistrict').kendoDropDownList({
+            optionLabel: '-Chọn Quận, huyện-',
+            dataTextField: "districtName",
+            dataValueField: "districtId",
+            dataSource: {
+                type: 'json',
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: window.location.protocol + '//' + window.location.host + "/Region/GetDistricts?provinceId=" + newProvinceId
+                    },
+                    requestEnd: function (e) {
+                        console.log(e.response);
+                    },
+                }
+            },
+            value: 0,
+            change: onDistrictChange
+
+        });
+    }
+
+
+    $('#updateAccount').click(function () {
+        debugger;
+        //var notify = $('noitifyHolder').data('kendoNotification');
+        var fullName = $("#fullName");
+        var phoneNumber = $('#phoneNumber');
+        var districtId = $('#accountDistrict').data('kendoDropDownList');
+        var provinceId = $('#accountProvince').data('kendoDropDownList');
+        var wardId = $('#accountWard').data('kendoDropDownList');
+
+        if (fullName.val()=="") {
+             $('#noitifyHolder').data('kendoNotification').show("Vui lòng nhập đầy đủ họ tên", "error");
+            return;
+        }
+        if (phoneNumber.val()=="") {
+             $('#noitifyHolder').data('kendoNotification').show("Vui lòng nhập số điện thoại", "error");
+            return;
+        }
+        if (districtId.value()=="") {
+             $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn Quận, huyện", "error");
+            return;
+        }
+        if (provinceId.value()=="") {
+             $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn Tỉnh, thành phố", "error");
+            return;
+        }
+        if (wardId.value()=="") {
+             $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn Xã, phường", "error");
+            return;
+        }
+
+        var data = {
+            Id:@userInfo.Id,
+            DisplayName: fullName.val(),
+            PhoneNumber: phoneNumber.val(),
+            DistrictId: districtId.value(),
+            ProvinceId: provinceId.value(),
+            WarddId: wardId.value(),
+            PlaceDetail: $("#accountPlaceDetail").val()
+        }
+
+        $.ajax({
+            url: "/MainService/UpdateAccount",
+            type: "post",
+            dataType: "json",
+            data: data,
+            async: true,
+            success: function (result) {
+                if (result.code === 1) {
+                    $('#noitifyHolder').data('kendoNotification').show({ title: "", message: "Cập nhật tài khoản thành công" }, "success");
+                } else {
+                    $('#noitifyHolder').data('kendoNotification').show(result.message, "error");
+                    ResetData();
+                }
+            },
+            error: function (err) {
+                $('#noitifyHolder').data('kendoNotification').show("Có lỗi xảy ra vui lòng thử lại", "error");
+                ResetData();
+            }
+        });
+
+    });
+
+    function ResetData() {
+        var fullName = $("#fullName");
+        var phoneNumber = $('#phoneNumber');
+        var districtId = $('#accountDistrict').data('kendoDropDownList');
+        var provinceId = $('#accountProvince').data('kendoDropDownList');
+        var wardId = $('#accountWard').data('kendoDropDownList');
+
+        fullName.attr('value', '@userInfo.DisplayName');
+        phoneNumber.attr('value', '@userInfo.PhoneNumber');
+        provinceId.value(@userInfo.ProvinceId);
+        districtId.value(@userInfo.DistrictId);
+        wardId.value(@userInfo.WarddId);
+        
+        $("#accountPlaceDetail").attr("value",@userInfo.PlaceDetail);
+    }
+
+    
+</script>
+}
+
+
