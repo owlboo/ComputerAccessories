@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.DI;
+using ComputerAccessoriesV2.SchedulerTask;
+using Coravel;
 
 namespace ComputerAccessoriesV2
 {
@@ -31,6 +33,8 @@ namespace ComputerAccessoriesV2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScheduler();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("IdentityConnection")));
@@ -46,6 +50,8 @@ namespace ComputerAccessoriesV2
                 options.IdleTimeout = new TimeSpan(0, 15, 0);
                 options.Cookie.IsEssential = true;
             });
+
+            services.AddTransient<UpdateProductVisitorCount>();
 
             services.AddIdentity<MyUsers, IdentityRole<int>>(options =>
             {
@@ -111,6 +117,14 @@ namespace ComputerAccessoriesV2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var provider = app.ApplicationServices;
+
+            provider.UseScheduler(scheduler =>
+            {
+                scheduler.Schedule<UpdateProductVisitorCount>()
+                        .EveryThirtyMinutes();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
