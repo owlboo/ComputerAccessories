@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Data;
+using ComputerAccessoriesV2.DI;
 using ComputerAccessoriesV2.Models;
+using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 {
@@ -17,16 +20,21 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         private readonly ComputerAccessoriesV2Context _db;
         private readonly UserManager<MyUsers> _userManager;
         private readonly QueryDbContext context;
+        private readonly IRedis _redis;
         
-        public ProductHomeController(ComputerAccessoriesV2Context db,QueryDbContext _context, UserManager<MyUsers> userManager)
+        public ProductHomeController(ComputerAccessoriesV2Context db,QueryDbContext _context, UserManager<MyUsers> userManager, IRedis redis)
         {
             context = _context;
             _db = db;
             _userManager = userManager;
+            _redis = redis;
         }
         public IActionResult ProductDetails(int productId)
         {
-            ProductGridModel products = _db.Products.Join(_db.ProductImages, x => x.Id, y => y.ProductId, (x, y) => new { x, y }).Where(c => c.x.Id == productId).Select(c => new ProductGridModel
+            ProductGridModel products = _db.Products
+                .Join(_db.ProductImages, x => x.Id, y => y.ProductId, (x, y) => new { x, y })
+                .Where(c => c.x.Id == productId)
+                .Select(c => new ProductGridModel
             {
                 Id = c.x.Id,
                 ProductName = c.x.ProductName,
@@ -41,12 +49,15 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 Color = c.x.Color,
                 ShorDescription = c.x.ShorDescription,
                 Status = c.x.Status,
-                ViewCounts = c.x.ViewCounts,
-                ProductImages = _db.ProductImages.Where(z => z.ProductId == productId).ToList(),
+                ViewCounts = int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId, "0")),
+                ReviewStarPoint = c.x.Reviews.Average(x => x.Star).Value,
+                ReviewCount = c.x.Reviews.Count(),
+                ProductImages =  c.x.ProductImages.ToList(),
                 ProductAttributes = _db.ProductAttribute.Where(z => z.ProductId == productId).Include(z => z.Attribute).ToList(),
                 FullDescription = c.x.FullDescription
 
             }).FirstOrDefault();
+
 
             List<ProductGridModel> deals = _db.Products.Where(x => x.PromotionPrice.HasValue).Select(x => new ProductGridModel
             {
@@ -80,6 +91,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             ViewBag.productName = products.ProductName;
             ViewBag.relatedProduct = relatedProducts;
             ViewBag.ListTags = listCategory;
+
+            _redis.Publish(Constants.REDIS_PS_USER_COUNT_PRODUCT_PREFIX_CHANNEL + productId, "1");
+            _redis.GetRedisBD().StringIncrement(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId);
             return View(products);
         }
 

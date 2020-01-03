@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ComputerAccessoriesV2.DI;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
@@ -18,11 +19,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
     {
         private readonly ComputerAccessoriesV2Context _db;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IRedis _cache;
+
         [BindProperty]
         public ProductViewModel ProductVM { get; set; }
-        public ProductController(ComputerAccessoriesV2Context db, IWebHostEnvironment hostEnvironment)
+        public ProductController(ComputerAccessoriesV2Context db, IWebHostEnvironment hostEnvironment, IRedis cache)
         {
             _db = db;
+            _cache = cache;
             ProductVM = new ProductViewModel
             {
                 Product = new Products(),
@@ -492,6 +496,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     await _db.SaveChangesAsync();
                     await scope.CommitAsync();
 
+
+
                     Response.StatusCode = (int)HttpStatusCode.OK;
                     return Json(new { notify = "Gửi đánh giá thành công, cảm ơn bạn đã nhận xét về sản phẩm!" });
                 } catch(Exception e)
@@ -502,6 +508,21 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     return Json(new { notify = "Gửi đánh giá thất bại, vui lòng thử lại sau!", message = e.Message });
                 }
             }
+        }
+
+        [HttpGet]
+        [Route("/[controller]/SearchProduct")]
+        public JsonResult SearchProduct(string productName)
+        {
+            return Json(_db.Products
+                .Where(x => x.ProductName.Contains(productName))
+                .Select(x => new {
+                    Id = x.Id,
+                    ProductName = x.ProductName,
+                    Price = x.PromotionPrice == null ? x.OriginalPrice : x.PromotionPrice,
+                    PromotionPrice = x.PromotionPrice,
+                    Thumbnail = x.Thumnail,
+                }));
         }
     }
 }
