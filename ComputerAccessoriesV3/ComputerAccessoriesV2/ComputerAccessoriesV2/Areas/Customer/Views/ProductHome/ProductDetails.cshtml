@@ -70,7 +70,9 @@
                                         <div class="pro-qty"><input type="text" value="1"></div>
                                     </div>
                                     <div class="action_link">
-                                        <a class="buy-btn" href="#" onclick="return AddToCart(@Model.Id,1)">Thêm giỏ hàng<i class="fa fa-shopping-cart"></i></a>
+                                        <a id="btnAddToCart" class="buy-btn" href="#" onclick="AddToCart(@Model.Id,1,'btnAddToCart','loadingAddToCart')">
+                                            <span id="loadingAddToCart"></span><span>Thêm giỏ hàng</span><i id="iconAddToCart" class="fa fa-shopping-cart"></i>
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="useful-links mt-20">
@@ -237,7 +239,7 @@
             <!-- sidebar end -->
         </div>
     </div>
-    </div>
+</div>
 </div>
 
 <div class="modal" id="quick_view">
@@ -301,6 +303,38 @@
     </div>
 </div>
 
+@section Styles{
+    <style>
+        .lds-dual-ring {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+
+            .lds-dual-ring:after {
+                content: " ";
+                display: block;
+                width: 20px;
+                height: 20px;
+                margin: 1px;
+                border-radius: 50%;
+                border: 5px solid #fff;
+                border-color: #fff transparent #fff transparent;
+                animation: lds-dual-ring 1.2s linear infinite;
+            }
+
+        @@keyframes lds-dual-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+}
+
 @section Scripts{
 
     <script>
@@ -314,7 +348,7 @@
             var slider_imgs = $('#slider_imgs');
             var slider_thumnails = $('#slider_thumnails');
 
-            
+
             RemoveAllSlick(slider_imgs);
             RemoveAllSlick(slider_thumnails)
 
@@ -331,7 +365,7 @@
                         //slider_large += "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>";
 
                         slider_imgs.slick('slickAdd', "<div class='pro-large-img'><img src='" + data.productImages[i].imageUrl + "' alt='' /></div>");
-                        slider_thumnails.slick('slickAdd',"<div class='pro-nav-thumb'><img src='" + data.productImages[i].imageUrl + "'alt='' /></div>");
+                        slider_thumnails.slick('slickAdd', "<div class='pro-nav-thumb'><img src='" + data.productImages[i].imageUrl + "'alt='' /></div>");
 
                     }
 
@@ -363,12 +397,12 @@
             return true;
         }
 
-        $('#showMore').click(function() {
+        $('#showMore').click(function () {
             $('#more').slideToggle();
             $('#showMore').hide();
             $('#showLess').show();
         });
-        $('#showLess').click(function() {
+        $('#showLess').click(function () {
             $('#more').slideToggle();
             $('#showMore').show();
             $('#showLess').hide();
