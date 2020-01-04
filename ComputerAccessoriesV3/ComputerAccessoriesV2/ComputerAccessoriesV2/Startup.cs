@@ -18,7 +18,6 @@ using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.DI;
 using ComputerAccessoriesV2.SchedulerTask;
 using Coravel;
-using ReflectionIT.Mvc.Paging;
 
 namespace ComputerAccessoriesV2
 {
