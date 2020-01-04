@@ -28,6 +28,9 @@
                     },
                     "success");
                 $('#sumProduct').text(result.sum);
+                $.get("/Home/GetTotalPrice", function (data) {
+                    $('#sumPrice').text(data.totalPrice);
+                });
             } else {
                 window.HelperSDK.Helpers.Redirect(result.returnUrl);
             }

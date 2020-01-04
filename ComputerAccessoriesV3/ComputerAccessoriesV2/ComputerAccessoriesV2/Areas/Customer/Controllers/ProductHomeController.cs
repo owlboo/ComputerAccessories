@@ -71,7 +71,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
                 Code = x.Code,
                 IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
-                SaleValue = 100 - (int)(x.OriginalPrice / x.PromotionPrice)
+                SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###")
             }).Take(20).ToList();
 
             List<Products> relatedProducts = _db.Products

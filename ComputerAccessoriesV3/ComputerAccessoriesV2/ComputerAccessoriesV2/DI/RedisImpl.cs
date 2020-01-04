@@ -56,7 +56,6 @@ namespace ComputerAccessoriesV2.DI
             {
                 return 0;
             }
-
         }
 
         public void SetValue(string key, string value)
@@ -67,7 +66,7 @@ namespace ComputerAccessoriesV2.DI
             }
             catch (Exception e)
             {
-
+            
             }
         }
 

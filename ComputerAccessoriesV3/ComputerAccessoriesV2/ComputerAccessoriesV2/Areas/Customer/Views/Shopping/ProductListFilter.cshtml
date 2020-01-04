@@ -85,14 +85,10 @@
                     <div class="top-bar-right">
                         <div class="product-short">
                             <p>Sort By : </p>
-                            <select class="nice-select" name="sortby">
-                                <option value="trending">Relevance</option>
-                                <option value="sales">Name (A - Z)</option>
-                                <option value="sales">Name (Z - A)</option>
-                                <option value="rating">Price (Low &gt; High)</option>
-                                <option value="date">Rating (Lowest)</option>
-                                <option value="price-asc">Model (A - Z)</option>
-                                <option value="price-asc">Model (Z - A)</option>
+                            <select class="nice-select" name="sortby" id="sort" onchange="orderChange()">
+                                <option value="1">Price (Low &gt; High)</option>
+                                <option value="2">Price (High &gt; Low)</option>
+                                <option value="3">ViewCount (Z - A)</option>
                             </select>
                         </div>
                     </div>
@@ -125,9 +121,15 @@
                             </div>
                         </div>
                         <div class="product-content">
-                            <h4><a href="product-details.html">@item.ProductName</a></h4>
+                            <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-area="Customer" asp-route-productId="@item.Id">@item.ProductName</a></h4>
                             <div class="pricebox">
-                                <span class="regular-price">@item.OriginalPrice</span>
+                                @if (item.PromotionPrice != "0")
+                                {
+                                    <span class="regular-price">@item.PromotionPrice</span>
+                                    <span class="old-price"><del>@item.OriginalPrice</del></span>
+                                }
+                                else {<span class="regular-price">@item.OriginalPrice</span> }
+                                
                                 <div class="ratings">
                                     <span class="good"><i class="fa fa-star"></i></span>
                                     <span class="good"><i class="fa fa-star"></i></span>
@@ -143,7 +145,7 @@
                     </div>
                     <div class="product-list-item mb-30">
                         <div class="product-thumb">
-                            <a href="product-details.html">
+                            <a asp-action="ProductDetails" asp-controller="ProductHome" asp-route-productId="@item.Id">
                                 <img src="@item.Thumnail" class="img-pri" alt="">
                                 <img src="@item.Thumnail2" class="img-sec" alt="">
                             </a>
@@ -198,7 +200,7 @@
         </div>
     </div>
     <!-- end pagination area -->
-
+    <input hidden id="categoryId" value=""
 </div>
 <!-- product main wrap end -->
 </div>
@@ -343,5 +345,12 @@
             AddToCart(productId, quantity);
 
         });
+
+        function orderChange() {
+            debugger;
+            var key = $('#sort').val();
+            console.log(key);
+            window.location.href = window.location.protocol + "//" + window.location.host + "/Customer/Shopping/ProductListFilter?sortKey=" + key+"&categoryId="+@ViewBag.categoryId+"&brandId="+@ViewBag.brandId;
+        }
     </script>
 }
