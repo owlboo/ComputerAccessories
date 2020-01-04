@@ -1,16 +1,14 @@
 ﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ComputerAccessoriesV2.DI
 {
     public class RedisImpl : IRedis
     {
-        private const string RedisConnectionString = "35.194.1.21:6379,password=!@#)(*_-*&Ah1~";
+        private const string RedisConnectionString = "35.194.1.21:6379,password=!@#)(*_-*&Ah1~,connectTimeout=15000";
         private ConnectionMultiplexer connection;
-        
+        private bool ConnectStatus = false;
+
         public RedisImpl()
         {
             Init();
@@ -41,10 +39,10 @@ namespace ComputerAccessoriesV2.DI
             try
             {
                 connection = ConnectionMultiplexer.Connect(RedisConnectionString);
-            }
-            catch(Exception)
+                ConnectStatus = true;
+            } catch (Exception e)
             {
-                //eats
+                ConnectStatus = false;
             }
         }
 
@@ -53,7 +51,8 @@ namespace ComputerAccessoriesV2.DI
             try
             {
                 return connection.GetSubscriber().Publish(_channel, _message);
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return 0;
             }
@@ -64,29 +63,51 @@ namespace ComputerAccessoriesV2.DI
             try
             {
                 connection.GetDatabase().StringSet(key, value);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                //eat for now
+            
             }
         }
 
         public void Subscribe(string _channel, Action<RedisChannel, RedisValue> _handler)
         {
-            connection.GetSubscriber().Subscribe(_channel, _handler);
+            try
+            {
+                connection.GetSubscriber().Subscribe(_channel, _handler);
+            } catch (Exception e)
+            {
+                //
+            }
         }
 
         public void Unsubscribe(string _channel)
         {
-            connection.GetSubscriber().Unsubscribe(_channel);
+            try
+            {
+                connection.GetSubscriber().Unsubscribe(_channel);
+            }
+            catch (Exception e)
+            {
+                //
+            }
         }
 
-        public IDatabase GetRedisBD()
+        public long IncreaseValue(string key)
         {
-            if (connection == null) return null;
-            else
+            try
             {
-                return connection.GetDatabase();
+                return connection.GetDatabase().StringIncrement(key);
             }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+        public bool Status()
+        {
+            return ConnectStatus;
         }
     }
 }

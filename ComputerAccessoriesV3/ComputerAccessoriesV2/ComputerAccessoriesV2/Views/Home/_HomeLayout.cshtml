@@ -16,13 +16,16 @@
     var ListShoppingCart = new List<ShoppingCartViewModel>();
     String Name = null;
     int isActive = 0;
+    var isAdmin = false;
 
     if (SignInManager.IsSignedIn(User))
     {
 
         var user = await UserManager.GetUserAsync(User);
+        var role = await UserManager.GetRolesAsync(user);
 
         isActive = user.IsActivated.Value ? 1 : 0;
+        isAdmin = role.Contains(SD.Admin) || role.Contains(SD.SupperAdmin);
 
         Name = user.DisplayName;
 
@@ -111,6 +114,9 @@
             width: 500px;
         }
     </style>
+
+    @RenderSection("Styles", required: false)
+
 </head>
 
 <body>
@@ -217,20 +223,24 @@
                                                     </a>
                                                 }
 
-                                                <div class="dropdown-menu" aria-labelledby="myaccount">
-                                                    @if (Name != null)
-                                                    {
-                                                        <a class="dropdown-item" href="Customer/Profile">Thông tin tài khoản</a>
-                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
-                                                    }
-                                                    else
-                                                    {
-                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn">Đăng nhập</a>
-                                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">Đăng kí</a>
-                                                    }
+                                            <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                @if (isAdmin)
+                                                {
+                                                    <a class="dropdown-item" href="Admin/MainService/Index">Trang quản trị</a>
+                                                }
+                                                @if (Name != null)
+                                                {
+                                                    <a class="dropdown-item" href="Customer/Profile">Thông tin tài khoản</a>
+                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignIn">Đăng nhập</a>
+                                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Account" asp-action="SignUp">Đăng kí</a>
+                                                }
 
 
-                                                </div>
+                                            </div>
                                             </div>
                                         </li>
                                         <li>

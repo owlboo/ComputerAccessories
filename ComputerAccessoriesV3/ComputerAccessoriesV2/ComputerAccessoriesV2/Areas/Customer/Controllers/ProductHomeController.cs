@@ -29,7 +29,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             _userManager = userManager;
             _redis = redis;
         }
-        public IActionResult ProductDetails(int productId)
+        public async Task<IActionResult> ProductDetails(int productId)
         {
             ProductGridModel products = _db.Products
                 .Join(_db.ProductImages, x => x.Id, y => y.ProductId, (x, y) => new { x, y })
@@ -49,15 +49,13 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 Color = c.x.Color,
                 ShorDescription = c.x.ShorDescription,
                 Status = c.x.Status,
-                ViewCounts = int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId, "0")),
+                ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId, "0")) : c.x.ViewCounts,
                 ReviewStarPoint = c.x.Reviews.Average(x => x.Star).Value,
                 ReviewCount = c.x.Reviews.Count(),
                 ProductImages =  c.x.ProductImages.ToList(),
                 ProductAttributes = _db.ProductAttribute.Where(z => z.ProductId == productId).Include(z => z.Attribute).ToList(),
                 FullDescription = c.x.FullDescription
-
             }).FirstOrDefault();
-
 
             List<ProductGridModel> deals = _db.Products.Where(x => x.PromotionPrice.HasValue).Select(x => new ProductGridModel
             {
@@ -92,8 +90,16 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             ViewBag.relatedProduct = relatedProducts;
             ViewBag.ListTags = listCategory;
 
-            _redis.Publish(Constants.REDIS_PS_USER_COUNT_PRODUCT_PREFIX_CHANNEL + productId, "1");
-            _redis.GetRedisBD().StringIncrement(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId);
+            if(_redis.Status())
+            {
+                _redis.IncreaseValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId);
+            }
+            else
+            {
+                var currentProduct = _db.Products.Where(x => x.Id == productId).FirstOrDefault();
+                currentProduct.ViewCounts += 1;
+                await _db.SaveChangesAsync();
+            }
             return View(products);
         }
 

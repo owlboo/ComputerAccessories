@@ -100,12 +100,6 @@ namespace ComputerAccessoriesV2
                 });
             });
 
-            services.AddDistributedRedisCache(option =>
-            {
-                option.Configuration = "35.194.1.21:6379,password=!@#)(*_-*&Ah1~";
-                option.InstanceName = "ComputerAccessories";
-            });
-
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Customer/Account/SignIn";
