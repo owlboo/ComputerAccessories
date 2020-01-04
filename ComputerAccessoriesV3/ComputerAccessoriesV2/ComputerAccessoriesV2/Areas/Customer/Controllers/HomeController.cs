@@ -90,7 +90,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
                     Code = x.Code,
                     IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
-                    SaleValue = 100-(int)(x.OriginalPrice/x.PromotionPrice)
+                    SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###")
                 }).Take(20).ToList();
 
 
@@ -109,7 +109,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
                     Code = x.Code,
                     IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
-                    SaleValue = 100 - (int)(x.OriginalPrice / x.PromotionPrice)
+                    SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###")
                 }).OrderByDescending(x=>x.Id).Take(20).ToList();
 
                 var listNewArrivals = new List<ProductGridModel>();
@@ -396,6 +396,59 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             
         }
 
+        [Route("/[controller]/GetTotalPrice")]
+        public IActionResult GetCurrentTotalPrice()
+        {
+            List<ShoppingCartViewModel> listProducts = new List<ShoppingCartViewModel>();
+            ShoppingCartPreview previewCart = new ShoppingCartPreview();
+            Decimal totalPrice = 0;
+            var user = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (user == null)
+            {
+                string cookieKey = "CookieShopping";
+                var cookie = Request.Cookies[cookieKey];
+
+                if (cookie == null)
+                {
+                    return Json(new { totalPrice = 0});
+                }
+                else
+                {
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
+                    previewCart.ListProducts = listProducts;
+                    foreach (var item in previewCart.ListProducts)
+                    {
+                        var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).Select(x => x.OriginalPrice).FirstOrDefault();
+                        totalPrice += item.Quantity * (productPrice.HasValue ? productPrice.Value : 0);
+                    }
+                    return Json(new { totalPrice = totalPrice.ToString("###,###")});
+                }
+            }
+            else
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                string key = "SessionSP_" + userId;
+
+                if (_session.GetString(key) == null)
+                {
+                    return Json(new { totalPrice = 0 });
+                }
+                else
+                {
+                    listProducts = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(_session.GetString(key));
+                    previewCart.ListProducts = listProducts;
+                    foreach (var item in previewCart.ListProducts)
+                    {
+                        var product = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                        totalPrice += item.Quantity * (product.PromotionPrice.HasValue ? product.PromotionPrice.Value : product.OriginalPrice.Value);
+                    }
+                    previewCart.TotalPrice = totalPrice;
+                    return Json(new { totalPrice = totalPrice.ToString("###,###")});
+                }
+            }
+        }
+
         [Route("/[controller]/UpdateQuantity")]
         [HttpPost]
         public JsonResult UpdateQuantity(int productId, int quantity,int currentTotalPrice, bool IsSub)
@@ -467,7 +520,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     }
 
                     _session.SetString(key, JsonConvert.SerializeObject(listProducts));
-                    return Json(new { code = 1, totalPrice = totalPrice });
+                    return Json(new { code = 1, totalPrice = totalPrice});
                 }
             }
             

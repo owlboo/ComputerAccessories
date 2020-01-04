@@ -10,12 +10,6 @@ function AddToCart(productId, quantity) {
         type: "post",
         dataType: "json",
         data: data,
-        beforeSend: function () {
-            $('#spinnerModal').modal('show');
-        },
-        complete: function () {
-            $('#spinnerModal').modal('hide');
-        },
         success: function (result) {
             if (result.code == 1) {
                 $('#kendoNoti').data('kendoNotification').show({
@@ -27,6 +21,9 @@ function AddToCart(productId, quantity) {
                     },
                     "success");
                 $('#sumProduct').text(result.sum);
+                $.get("/Home/GetTotalPrice", function (data) {
+                    $('#sumPrice').text(data.totalPrice);
+                });
             } else {
                 window.HelperSDK.Helpers.Redirect(result.returnUrl);
             }

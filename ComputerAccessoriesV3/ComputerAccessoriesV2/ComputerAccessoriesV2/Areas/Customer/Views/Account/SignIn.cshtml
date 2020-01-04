@@ -38,59 +38,62 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
 <body class="hold-transition login-page">
-    <div class="login-box">
-        <div class="login-logo">
-            <a href="../../index2.html"><b>Đăng nhập hệ thống</b></a>
-        </div>
-        <!-- /.login-logo -->
-        <div class="login-box-body">
-            <p class="text-danger">@ViewBag.error</p>
-            <br />
-            <form asp-action="SignIn" method="post">
-                <div class="form-group has-feedback">
-                    <input type="email" class="form-control" asp-for="Email" placeholder="Email">
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                </div>
-                <div class="form-group has-feedback">
-                    <input type="password" class="form-control" asp-for="Password" placeholder="Password">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
-                <div class="row">
-                    <div class="col-xs-8">
-                        <div class="checkbox icheck">
-                            <label>
-                                <input type="checkbox" asp-for="isRemember"> Ghi nhớ
-                            </label>
-                        </div>
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-xs-4">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Đăng nhập</button>
-                    </div>
-                    <!-- /.col -->
-                </div>
-            </form>
-
-            <div class="social-auth-links text-center">
-                <p>- OR -</p>
-                <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
-                    <i class="fa fa-facebook"></i> Đăng nhập bằng
-                    Facebook
-                </a>
-                <a href="#" class="btn btn-block btn-social btn-google btn-flat">
-                    <i class="fa fa-google-plus"></i> Đăng nhập bằng
-                    Google+
-                </a>
+    <div class="container justify-content-center" style="width:50%">
+        <div class="login-box">
+            <div class="login-logo">
+                <a href="../../index2.html"><b>Đăng nhập hệ thống</b></a>
             </div>
-            <!-- /.social-auth-links -->
+            <!-- /.login-logo -->
+            <div class="login-box-body">
+                <p class="text-danger">@ViewBag.error</p>
+                <br />
+                <form asp-action="SignIn" method="post">
+                    <div class="form-group has-feedback">
+                        <input type="email" class="form-control" asp-for="Email" placeholder="Email">
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" asp-for="Password" placeholder="Password">
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <div class="checkbox icheck">
+                                <label>
+                                    <input type="checkbox" asp-for="isRemember"> Ghi nhớ
+                                </label>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">Đăng nhập</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
 
-            <a asp-area="Customer" asp-controller="Account" asp-action="ForgetPassword">Quên mật khẩu</a><br>
-            <br />
-            <a asp-area="Customer" asp-controller="Account" asp-action="SignUp" class="text-center">Đăng kí tài khoản mới</a>
+                <div class="social-auth-links text-center">
+                    <p>- OR -</p>
+                    <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
+                        <i class="fa fa-facebook"></i> Đăng nhập bằng
+                        Facebook
+                    </a>
+                    <a href="#" class="btn btn-block btn-social btn-google btn-flat">
+                        <i class="fa fa-google-plus"></i> Đăng nhập bằng
+                        Google+
+                    </a>
+                </div>
+                <!-- /.social-auth-links -->
 
+                <a asp-area="Customer" asp-controller="Account" asp-action="ForgetPassword">Quên mật khẩu</a><br>
+                <br />
+                <a asp-area="Customer" asp-controller="Account" asp-action="SignUp" class="text-center">Đăng kí tài khoản mới</a>
+
+            </div>
+            <!-- /.login-box-body -->
         </div>
-        <!-- /.login-box-body -->
     </div>
+    
     <!-- /.login-box -->
     <!-- jQuery 3 -->
     <script src="../../bower_components/jquery/dist/jquery.min.js"></script>

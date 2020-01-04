@@ -17,7 +17,7 @@
             <div class="cart-info" style="width:200px">
                 <div class="row">
                     <div class="col-lg-4">
-                        <h4><a href="product-details.html">@item.Products.ProductName</a></h4>
+                        <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-route-productId="@item.Products.Id">@item.Products.ProductName</a></h4>
                     </div>
                     <div class="col-lg-4">
                         <span>@item.Products.OriginalPrice.Value.ToString("###,###")</span>
@@ -96,6 +96,9 @@ else
                 success: function (result) {
                     if (result != 0) {
                         $('#totalPrice').text(result.totalPrice);
+                        $.get("/Home/GetTotalPrice", function (data) {
+                    $('#sumPrice').text(data.totalPrice);
+                });
                     }
                     console.log(result);
                 }
@@ -120,6 +123,9 @@ else
                         if (result.counter === 0) {
                             $('.cart-list').slideToggle();
                         }
+                        $.get("/Home/GetTotalPrice", function (data) {
+                    $('#sumPrice').text(data.totalPrice);
+                });
                         $('#kendoNoti').data('kendoNotification').show({ title: "", message: "Đã xóa sản phẩm : " + result.name+" ra khỏi giỏ hàng" }, "success");
                     }
                 },

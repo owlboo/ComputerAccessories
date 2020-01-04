@@ -30,7 +30,7 @@ namespace ComputerAccessoriesV2.ViewModels
         public int ViewCounts { get; set; }
 
         public int Status { get; set; }
-        public int SaleValue { get; set; }
+        public string SaleValue { get; set; }
 
         public double ReviewStarPoint { get; set; }
         public int ReviewCount { get; set; }
