@@ -189,18 +189,7 @@
                     type:"json",
                     transport: {                        
                         read: {
-                            url: window.location.protocol + "//" + window.location.host + "/Bill/GetBills",
-
-                            data: function (e) {                               
-                                return {
-                                    customerEmail: $('#email').val(),
-                                    customerPhone: $('#phoneNumber').val(),
-                                    billCode: $('#billCode').val(),
-                                    billStatus: $('#statusDrop').data('kendoDropDownList').value(),
-                                    fromTime: $('#datepicker1').val(),
-                                    toTime: $('#datepicker2').val()
-                                }
-                            }
+                            url: window.location.protocol + "//" + window.location.host + "/Bill/GetBills"
                         },
                         update: {
                             url: window.location.protocol +"//"+ window.location.host + "/Bill/UpdateBillInformation",
@@ -231,7 +220,7 @@
                     batch: true,
                     pageSize: 20,
                     sortable: true,
-                    serverFiltering: true,
+                    //serverFiltering: true,
                     schema: {
                         model: {
                             id: "billId",
@@ -304,9 +293,17 @@
             var win = window.open(url, "_blank");
             win.focus();
         }
-
         function Filter() {
-            $('#billGrid').data('kendoGrid').dataSource.read();
+            debugger;
+            var data = {
+                customerEmail: $('#email').val(),
+                customerPhone: $('#phoneNumber').val(),
+                billCode: $('#billCode').val(),
+                billStatus: $('#statusDrop').data('kendoDropDownList').value(),
+                fromTime: $('#datepicker1').val(),
+                toTime: $('#datepicker2').val()
+            };
+            $('#billGrid').data('kendoGrid').dataSource.read(data);
         }
 
 

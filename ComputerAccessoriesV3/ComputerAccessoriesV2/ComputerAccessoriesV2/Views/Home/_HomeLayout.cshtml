@@ -115,19 +115,21 @@
     #cardList {
         width: 500px;
     }
-
+    .not-active:hover{
+        cursor:not-allowed;
+    }
 
     .lds-dual-ring {
         display: inline-block;
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
     }
 
     .lds-dual-ring:after {
         content: " ";
         display: block;
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
         margin: 1px;
         border-radius: 50%;
         border: 5px solid #fff;
@@ -258,7 +260,7 @@
                                             <div class="dropdown-menu" aria-labelledby="myaccount">
                                                 @if (isAdmin)
                                                 {
-                                                    <a class="dropdown-item" href="Admin/MainService/Index">Trang quản trị</a>
+                                                    <a class="dropdown-item" asp-action="Index" asp-controller="MainService" asp-area="Admin">Trang quản trị</a>
                                                 }
                                                 @if (Name != null)
                                                 {
@@ -379,10 +381,22 @@
                                         }
 
 
-                                        <div class="cart-total-price">
-                                            <span>Tổng cộng</span>
-                                            <p style="color:white;font-size:14px" id="sumPrice">đ @tt.ToString("###,###")</p>
-                                        </div>
+                                        @if (ListShoppingCart.Count != 0)
+                                        {
+                                            <div class="cart-total-price">
+                                                <span>Tổng cộng</span>
+                                                <p style="color:white;font-size:12px" >đ<text id="sumPrice">@tt.ToString("###,###")</text></p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="cart-total-price">
+                                                <span>Tổng cộng</span>
+                                                <p style="color:white;font-size:14px" id="sumPrice">đ 0</p>
+                                            </div>
+                                        }
+
+
 
                                         <ul class="cart-list" id="cardList">
                                         </ul>
@@ -430,7 +444,7 @@
                                             <li>
                                                 <a href="#">Giới thiệu</a>
                                             </li>
-                                            <li><a href="contact-us.html">Liên hệ</a></li>
+                                            <li><a href="/Customer/Home/ContactUs">Liên hệ</a></li>
                                         </ul>
                                     </nav>
                                 </div>

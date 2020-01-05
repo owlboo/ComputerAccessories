@@ -32,12 +32,12 @@
                                     <span>-@item.SaleValue%</span>
                                 </div>
                                 <div class="product-action-link">
-                                    <a href="#" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
+                                    <a href="javascript:void(0)" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
                                         <span data-toggle="tooltip"
                                               data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                                     </a>
 
-                                    <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
                                 </div>
                             </div>
                             <div class="product-content">
@@ -56,16 +56,15 @@
                                             <span class="old-price"><del style="font-size:12px; color:red">@item.OriginalPrice</del></span>
                                         </div>
                                     }
-                                    <div class="ratings">
+                                <div class="ratings">
+                                    @for (int i = 0; i < item.ReviewStarPoint; i++)
+                                    {
                                         <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span><i class="fa fa-star"></i></span>
-                                        <div class="pro-review">
-                                            <span>1 review(s)</span>
-                                        </div>
+                                    }
+                                    <div class="pro-review">
+                                        <span>@item.ReviewCount lượt đánh giá</span>
                                     </div>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -253,7 +252,7 @@
                 <!-- Most viewed area start -->
                 <div class="banner-statistic pt-28 pb-36">
                     <div class="img-container fix img-full">
-                        <a href="#">
+                        <a href="javascript:void(0)">
                             <img src="~/assets/img/banner/banner_static1.jpg" alt="">
                         </a>
                     </div>
@@ -288,11 +287,11 @@
                     <span data-toggle="tooltip"
                           data-placement="left" title="Quick view"><i class="fa fa-search"></i></span>
                 </a>*@
-                                <a href="#" data-toggle="modal" data-target="#quick_view" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
+                                <a href="javascript:void(0)" data-toggle="modal" data-target="#quick_view" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
                                     <span data-toggle="tooltip"
                                           data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                                 </a>
-                                <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
                             </div>
                         </div>
                         <div class="product-content">
@@ -368,12 +367,12 @@
                                     <span data-toggle="tooltip"
                                           data-placement="left" title="Quick view"><i class="fa fa-search"></i></span>
                                 </a>*@
-                            <a href="#" data-toggle="modal" data-target="#quick_view" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#quick_view" onclick="return QuickView(@item.Id)" title="Xem chi tiết">
                                 <span data-toggle="tooltip"
                                       data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                             </a>
 
-                            <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
+                            <a href="javascript:void(0)" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
                         </div>
                     </div>
                     <div class="product-content">
@@ -386,14 +385,14 @@
                             @if (String.IsNullOrEmpty(item.PromotionPrice))
                             {
                                 <div class="regular-price">
-                                    @item.OriginalPrice
+                                   đ @item.OriginalPrice
                                 </div>
                             }
                             else
                             {
                                 <div>
-                                    <span class="regular-price">@item.PromotionPrice</span>
-                                    <span class="old-price"><del style="font-size:12px">@item.OriginalPrice</del></span>
+                                    <span class="regular-price">đ @item.PromotionPrice</span>
+                                    <span class="old-price"><del style="font-size:12px">đ @item.OriginalPrice</del></span>
                                 </div>
                             }
                         <div class="ratings">
@@ -403,7 +402,7 @@
  
                             }
                             <div class="pro-review">
-                                <span>@item.ReviewStarPoint lượt đánh giá</span>
+                                <span>@item.ReviewCount lượt đánh giá</span>
                             </div>
                         </div>
                         </div>
@@ -436,16 +435,9 @@
                             </div>
                             <div class="col-lg-7">
                                 <div class="product-details-des mt-md-34 mt-sm-34">
-                                    <h3><a href="#" id="product_name" title="Xem chi tiết"></a></h3>
-                                    <div class="ratings">
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span><i class="fa fa-star"></i></span>
-                                        <div class="pro-review">
-                                            <span>1 review(s)</span>
-                                        </div>
+                                    <h3><a href="javascript:void(0)" id="product_name" title="Xem chi tiết"></a></h3>
+                                    <div class="ratings" id="rate">
+                                        
                                     </div>
                                     <div class="availability mt-10">
                                         <h5>Còn lại:</h5>
@@ -464,7 +456,7 @@
                                         </div>
                                         <div class="action_link">
                                             <input hidden id="productId" type="text" />
-                                            <a class="buy-btn" href="#" id="btnAddToCart">
+                                            <a class="buy-btn" href="javascript:void(0)" id="btnAddToCart">
                                                 add to cart<i class="fa fa-shopping-cart"></i>
                                             </a>
                                         </div>
@@ -509,15 +501,21 @@
                         slider_thumnails.slick('slickAdd', "<div class='pro-nav-thumb'><img src='" + data.productImages[i].imageUrl + "'alt='' /></div>");
 
                     }
+                    console.log(data);
+                    var rate = $('#rate');
+                    for (var i = 1; i <= data.reviewStarPoint; i++) {
+                        rate.append("<span class='good'><i class='fa fa-star'></i></span>");
 
+                    }
+                    rate.append("<div class='pro-review'><span>" + data.reviewCount + " lượt đánh giá</span></div>");
                     $('#quantity').text(data.quantity);
                     $('#short_description').text(data.shorDescription);
                     if (data.promotionPrice != "") {
-                        var html = "<del style='color:red'>" + data.originalPrice + "</del>";
-                        $('#price').text(data.promotionPrice);
+                        var html = "<del style='color:red'>đ " + data.originalPrice + "</del>";
+                        $('#price').text('đ '+data.promotionPrice);
                         $('#priceholder').html(html);
                     } else {
-                        $('#price').text(data.originalPrice);
+                        $('#price').text('đ '+data.originalPrice);
                     }                   
                     $('#product_name').text(data.productName);
                     $('#product_name').attr('href', "/Customer/ProductHome/ProductDetails?productId=" + data.id);

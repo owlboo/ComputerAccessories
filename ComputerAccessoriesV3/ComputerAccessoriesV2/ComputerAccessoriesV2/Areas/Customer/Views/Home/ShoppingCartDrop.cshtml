@@ -20,7 +20,7 @@
                         <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-route-productId="@item.Products.Id">@item.Products.ProductName</a></h4>
                     </div>
                     <div class="col-lg-4">
-                        <span>đ @item.Products.OriginalPrice.Value.ToString("###,###")</span>
+                        <span>đ @item.UniPrice.ToString("###,###")</span>
                     </div>
                     <div class="col-lg-3">
                          <div class="pro-qty">
@@ -78,14 +78,17 @@ else
             updateQuantity(productId, false);
         }
 
-
+         function RemoveAllChar(str, char) {
+            debugger;
+            return str.indexOf(char) != -1 ? RemoveAllChar(str.replace(char,''),char) : str;
+        }
         function updateQuantity(productId, isSub) {
             debugger;
             var currentQuantity = $('#productQuantity_'+productId).val();
             var data = {
                 productId: productId,
                 quantity: currentQuantity,
-                currentTotalPrice: $('#totalPrice').text(),
+                currentTotalPrice: RemoveAllChar($('#totalPrice').text()),
                 IsSub: isSub
             }
             $.ajax({
@@ -95,9 +98,10 @@ else
                 data: data,
                 success: function (result) {
                     if (result != 0) {
-                        $('#totalPrice').text(result.totalPrice);
+                        //$('#totalPrice').text(result.totalPrice);
                         $.get("/Home/GetTotalPrice", function (data) {
-                    $('#sumPrice').text(data.totalPrice);
+                            $('#sumPrice').text(data.totalPrice);
+                            $('#totalPrice').text(data.totalPrice);
                 });
                     }
                     console.log(result);

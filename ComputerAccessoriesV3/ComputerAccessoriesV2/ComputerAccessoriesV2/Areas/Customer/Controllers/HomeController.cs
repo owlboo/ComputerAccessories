@@ -154,6 +154,11 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
            
         }
 
+        public IActionResult ContactUs()
+        {
+            return View();
+        }
+
         [Route("/[controller]/Categories")]
         public IActionResult Categories()
         {
@@ -199,10 +204,13 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 Color = c.x.Color,
                 ShorDescription = c.x.ShorDescription,
                 Status = c.x.Status,
-                ViewCounts = c.x.ViewCounts,
                 ProductImages = _db.ProductImages.Where(z => z.ProductId == id).ToList(),
-                PromotionPrice = c.x.PromotionPrice.HasValue ? c.x.PromotionPrice.Value.ToString("###,###"):""
-                
+                PromotionPrice = c.x.PromotionPrice.HasValue ? c.x.PromotionPrice.Value.ToString("###,###"):"",
+                ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + c.x.Id, "0")) : c.x.ViewCounts,
+                ReviewStarPoint = c.x.Reviews.Average(x => x.Star).Value,
+                ReviewCount = c.x.Reviews.Count(),
+                Quantity =c.x.Quantity.Value
+
             }).FirstOrDefault();
             //ViewBag.products = products;
             return Json(products);
@@ -382,8 +390,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     previewCart.ListProducts = listProducts;
                     foreach (var item in previewCart.ListProducts)
                     {
-                        var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).Select(x => x.OriginalPrice).FirstOrDefault();
-                        totalPrice += item.Quantity * (productPrice.HasValue ? productPrice.Value : 0);
+                        var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                        totalPrice += item.Quantity * (productPrice.PromotionPrice.HasValue ? productPrice.PromotionPrice.Value : productPrice.OriginalPrice.Value);
                     }
                     previewCart.TotalPrice = totalPrice;
                     return View(previewCart);
@@ -437,8 +445,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     previewCart.ListProducts = listProducts;
                     foreach (var item in previewCart.ListProducts)
                     {
-                        var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).Select(x => x.OriginalPrice).FirstOrDefault();
-                        totalPrice += item.Quantity * (productPrice.HasValue ? productPrice.Value : 0);
+                        var productPrice = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
+                        totalPrice += item.Quantity * (productPrice.PromotionPrice.HasValue ? productPrice.PromotionPrice.Value : productPrice.OriginalPrice.Value);
                     }
                     return Json(new { totalPrice = totalPrice.ToString("###,###")});
                 }
@@ -546,11 +554,11 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
         [Route("/[controller]/RemoveProductFromCart")]
         [HttpPost]
-        public JsonResult RemoveProductFromCart(int productId, int currentTotalPrice)
+        public JsonResult RemoveProductFromCart(int productId, string currentTotalPrice)
         {
             List<ShoppingCartViewModel> listProducts = new List<ShoppingCartViewModel>();
             ShoppingCartPreview previewCart = new ShoppingCartPreview();
-            Decimal totalPrice = currentTotalPrice;
+            Decimal totalPrice = 0;
             //var userId = String.IsNullOrEmpty(User.FindFirst(ClaimTypes.NameIdentifier).Value) ? 0 : int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var user = User.FindFirst(ClaimTypes.NameIdentifier);
             if (user == null)

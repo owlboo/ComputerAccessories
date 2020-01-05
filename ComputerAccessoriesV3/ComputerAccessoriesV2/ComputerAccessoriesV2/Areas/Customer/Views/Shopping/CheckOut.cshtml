@@ -369,15 +369,29 @@
         }
 
         function AddToBill() {
-           
+            var btn = $('#placeOrder');
+            debugger;
+
+            var html = "<span id='spinner' class='lds-dual-ring'></span>  Đang xử lý"
+            btn.html(html);
             var check = "@isLogin";
             if (check == 1) {
                  
                 var cbOtherAddress = $('#ship_to_different').is(":checked");
                 if (cbOtherAddress) {
                     if (!formValidation()) {
+                        btn.text("Tiến hành đặt hàng");
                 return;
-            }
+                    };
+                    var p = $('#phone').val();
+            var vnf_regex = /((0|84)+([0-9]{9})\b)/g;
+
+                    if (!vnf_regex.test(p)) {
+                        notification.show({ title: "Thông báo", message: "Số điện thoại không đúng định dạng" }, "error");
+                        btn.text("Tiến hành đặt hàng");
+                        return;
+                    }
+
                     var userid = $('#userId');
                     var firstName = $('#f_name');
                     var lname = $("#l_name");
@@ -402,7 +416,8 @@
                         Note: ordernote.val(),
                         voucher: voucher.val()
                     }
-
+                    btn.attr("disabled", true);
+                    btn.addClass("not-active");
                     $.ajax({
                         url: "/Shopping/AddToBillWithNoLogin",
                         type: "post",
@@ -415,14 +430,21 @@
                                 //document.cookie.
                                 setTimeout(heplers.Redirect(result.returnUrl), 10 * 1000);
                             } else {
-                                notification.show({ title: "Thông báo", message: "Có lỗi xảy ra, vui lòng thử lại sau" },"error");
+                                notification.show({ title: "Thông báo", message: "Có lỗi xảy ra, vui lòng thử lại sau" }, "error");
+                                btn.text("Tiến hành đặt hàng");
+                                btn.attr("disabled", false);
+                                btn.removeClass("not-active");
                             }
                         },
                         error: function (error) {
-
+                            btn.text("Tiến hành đặt hàng");
+                            btn.attr("disabled", false);
+                            btn.removeClass("not-active");
                         }
                     });
                 } else {
+                    btn.attr("disabled", true);
+                    btn.addClass("not-active");
                     $.ajax({
                         url: "/Shopping/AddToBillWithLogin",
                         type: "post",
@@ -435,17 +457,30 @@
                             success: function (result) {
                             notification.show({ title: "Thông báo", message: "Đơn hàng :" + result.billCode + " đã được ghi nhận thành công!" }, "success");
                             //document.cookie.
+                                
                             setTimeout(heplers.Redirect(result.returnUrl), 10 * 1000);
                         },
                         error: function (err) {
-
+                            btn.text("Tiến hành đặt hàng");
+                            btn.attr("disabled", false);
+                            btn.removeClass("not-active");
                         }
                     });
                 }
             } else {
                 if (!formValidation()) {
-                return;
-            }
+                    btn.text("Tiến hành đặt hàng");
+                    return;
+                    
+                }
+                var p = $('#phone').val();
+                    var vnf_regex = /((0|84)+([0-9]{9})\b)/g;
+
+                    if (!vnf_regex.test(p)) {
+                        notification.show({ title: "Thông báo", message: "Số điện thoại không đúng định dạng" }, "error");
+                        btn.text("Tiến hành đặt hàng");
+                        return;
+                 }
                 var firstName = $('#f_name');
                 var lname = $("#l_name");
                 var email = $('#email');
@@ -468,6 +503,8 @@
                     Note: ordernote.val(),
                     voucher: voucher.val()
                 };
+                btn.attr("disabled", true);
+                btn.addClass("not-active");
                 $.ajax({
                     url: "/Shopping/AddToBillWithNoLogin",
                     type: "post",
@@ -480,11 +517,16 @@
                             //document.cookie.
                             setTimeout(heplers.Redirect(result.returnUrl), 10 * 1000);
                         } else {
-                                notification.show({ title: "Thông báo", message: "Có lỗi xảy ra, vui lòng thử lại sau" },"error");
+                            notification.show({ title: "Thông báo", message: "Có lỗi xảy ra, vui lòng thử lại sau" }, "error");
+                            btn.text("Tiến hành đặt hàng");
+                            btn.attr("disabled", false);
+                            btn.removeClass("not-active");
                         }
                     },
                      error: function (error) {
-
+                         btn.text("Tiến hành đặt hàng");
+                         btn.attr("disabled", false);
+                         btn.removeClass("not-active");
                         }
                     });
 
@@ -492,7 +534,6 @@
         }
 
         function formValidation() {
-            debugger;
             var result = true;
             var allInputs = new Array();
             allInputs = $(".billing-form-wrap :input").toArray();
@@ -531,10 +572,14 @@
                         $('#voucher').attr('disabled',true);
                         $('#submitVoucher').attr("disabled", true);
                         $('#lastPrice').text(format);
+                        var css = 'submitVoucher:hover{cursor:not-allowed}';
+                        $('#submitVoucher').attr("style", "background-color:gray; ");
+                        $('#submitVoucher').addClass("not-active");
+                        notification.show({ title: "Thông báo", message: "Đã sử dụng mã giảm giá thành công" }, "success");
 
                     } else {
-                        $('#voucher').attr('disabled',true);
-                        $('#submitVoucher').attr("disabled", false);
+                        $('#voucher').attr('disabled', false);
+                        $('#submitVoucher').attr("disabled", false);                       
                         notification.show({ title: "Thông báo", message: "Voucher không khả dụng" }, "error");
                     }
 
