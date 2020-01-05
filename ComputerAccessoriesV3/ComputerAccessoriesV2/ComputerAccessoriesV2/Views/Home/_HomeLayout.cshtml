@@ -51,10 +51,12 @@
             ListShoppingCart = JsonConvert.DeserializeObject<List<ShoppingCartViewModel>>(cookie);
         }
     }
+    Decimal tt = 0;
 
-
-
-
+    foreach (var item in ListShoppingCart)
+    {
+        tt += item.UniPrice * item.Quantity;
+    }
 
     var _db = new ComputerAccessoriesV2Context();
     List<Brand> brands = _db.Brand.ToList();
@@ -109,11 +111,41 @@
     <link rel="stylesheet" href="~/kendo/styles/kendo.bootstrap-v4.min.css" />
 
     @*<link rel="stylesheet" href="~/slick-1.8.1/slick-1.8.1/slick/slick-theme.css" />*@
-    <style>
-        #cardList {
-            width: 500px;
+<style>
+    #cardList {
+        width: 500px;
+    }
+
+
+    .lds-dual-ring {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+    }
+
+    .lds-dual-ring:after {
+        content: " ";
+        display: block;
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+        border-radius: 50%;
+        border: 5px solid #fff;
+        border-color: #fff transparent #fff transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+    }
+
+    @@keyframes lds-dual-ring {
+        0% {
+            transform: rotate(0deg);
         }
-    </style>
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+</style>
 
     @RenderSection("Styles", required: false)
 
@@ -348,8 +380,8 @@
 
 
                                         <div class="cart-total-price">
-                                            <span>TC</span>
-                                            <p style="color:white;font-size:16px" id="sumPrice">0</p>
+                                            <span>Tổng cộng</span>
+                                            <p style="color:white;font-size:14px" id="sumPrice">đ @tt.ToString("###,###")</p>
                                         </div>
 
                                         <ul class="cart-list" id="cardList">
@@ -489,6 +521,46 @@
             //    //$('.category-menu').slideToggle();
             //});
             //debugger;
+
+
+            console.log(@tt);
+
+            $("#searchView").kendoAutoComplete({
+                dataTextValue: "id",
+                dataTextField: "productName",
+                headerTemplate:
+                    '<div class="row">' +
+                    '<div class="col-3">' +
+                    '<p class="text-center">Ảnh</p>' +
+                    '</div>' +
+                    '<div class="col-8">' +
+                    '<p class="text-center"></p>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>',
+                template:
+                    '<div class="row">' +
+                    '<div class="col-3">' +
+                    '<img class="img-responsive center-block" src="#:data.thumbnail#"></img>' +
+                    '</div>' +
+                    '<div class="col-8 text-center">' +
+                    '<p>#: data.productName #</p>' +
+                    '<p>Giá hiện tại: #: data.price # VNĐ</p>' +
+                    '</div>' +
+                    '</div>',
+                footerTemplate: ' Tìm thấy #: instance.dataSource.total() # sản phẩm',
+                select: goToProduct,
+                dataSource: productData,
+                ignoreCase: true,
+                filtering: function (e) {
+                    if (!e.filter.value) {
+                        e.preventDefault();
+                    }
+                },
+                height: 400
+            }).data("kendoAutoComplete");
+
+
             if (@ViewBag.Index !== 1) {
                 $('.category-menu').hide();
             }
@@ -530,43 +602,10 @@
                 }
             },
         });
-        $(document).ready(() => {
-            $("#searchView").kendoAutoComplete({
-                dataTextValue: "id",
-                dataTextField: "productName",
-                headerTemplate:
-                    '<div class="row">' +
-                    '<div class="col-3">' +
-                    '<p class="text-center">Ảnh</p>' +
-                    '</div>' +
-                    '<div class="col-8">' +
-                    '<p class="text-center"></p>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>',
-                template:
-                    '<div class="row">' +
-                    '<div class="col-3">' +
-                    '<img class="img-responsive center-block" src="#:data.thumbnail#"></img>' +
-                    '</div>' +
-                    '<div class="col-8 text-center">' +
-                    '<p>#: data.productName #</p>' +
-                    '<p>Giá hiện tại: #: data.price # VNĐ</p>' +
-                    '</div>' +
-                    '</div>',
-                footerTemplate: ' Tìm thấy #: instance.dataSource.total() # sản phẩm',
-                select: goToProduct,
-                dataSource: productData,
-                ignoreCase: true,
-                filtering: function (e) {
-                    if (!e.filter.value) {
-                        e.preventDefault();
-                    }
-                },
-                height: 400
-            }).data("kendoAutoComplete");
-        });
-
+        //$(document).ready(() => {
+            
+        //});
+        
         function goToProduct(data) {
             window.location.href = window.location.protocol + '//' + window.location.host + "/Customer/ProductHome/ProductDetails?productId=" + data.dataItem.id;
         }

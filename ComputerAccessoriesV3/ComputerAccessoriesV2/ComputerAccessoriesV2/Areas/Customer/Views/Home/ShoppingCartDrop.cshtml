@@ -20,7 +20,7 @@
                         <h4><a asp-action="ProductDetails" asp-controller="ProductHome" asp-route-productId="@item.Products.Id">@item.Products.ProductName</a></h4>
                     </div>
                     <div class="col-lg-4">
-                        <span>@item.Products.OriginalPrice.Value.ToString("###,###")</span>
+                        <span>đ @item.Products.OriginalPrice.Value.ToString("###,###")</span>
                     </div>
                     <div class="col-lg-3">
                          <div class="pro-qty">
@@ -46,7 +46,7 @@
 
     <li class="mini-cart-price">
         <span class="subtotal">subtotal : </span>
-        <text class="subtotal-price" >VND <span id="totalPrice">@Model.TotalPrice.ToString("##")</span></text>
+        <text class="subtotal-price" >đ <span id="totalPrice">@Model.TotalPrice.ToString("###,###")</span></text>
     </li>
     <li class="checkout-btn">
         <a asp-action="CheckOut" asp-controller="Shopping">checkout</a>

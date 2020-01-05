@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using ComputerAccessoriesV2.Data;
 using Microsoft.Extensions.Caching.Distributed;
 using ComputerAccessoriesV2.DI;
+using ComputerAccessoriesV2.Ultilities;
 
 namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 {
@@ -55,6 +56,9 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                             PromotionPrice=c.z.x.PromotionPrice.HasValue? c.z.x.PromotionPrice.Value.ToString("###,###") :"", 
                                                             Code = c.z.x.Code,
                                                             IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
+                                                            ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + c.z.x.Id, "0")) : c.z.x.ViewCounts,
+                                                            ReviewStarPoint = c.z.x.Reviews.Average(v => v.Star).Value,
+                                                            ReviewCount = c.z.x.Reviews.Count()
                                                         }).Take(20).ToList();
 
                 products.ListMostViewsProducts = _db.Products.Join(_db.Category, x => x.CategoryId, y => y.Id, (x, y) => new { x, y })
@@ -72,7 +76,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                                 OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###,###"),
                                                                 PromotionPrice=c.z.x.PromotionPrice.HasValue? c.z.x.PromotionPrice.Value.ToString("###,###"):"",
                                                                 Code = c.z.x.Code,
-                                                                IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false
+                                                                IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
+                                                                ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + c.z.x.Id, "0")) : c.z.x.ViewCounts,
+                                                                ReviewStarPoint = c.z.x.Reviews.Average(v => v.Star).Value,
+                                                                ReviewCount = c.z.x.Reviews.Count()
                                                             }).Take(20).ToList();
 
                 //footer brand slider
@@ -90,7 +97,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
                     Code = x.Code,
                     IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
-                    SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###")
+                    SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###"),
+                    ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + x.Id, "0")) : x.ViewCounts,
+                    ReviewStarPoint = x.Reviews.Average(x => x.Star).Value,
+                    ReviewCount = x.Reviews.Count()
                 }).Take(20).ToList();
 
 
@@ -109,7 +119,10 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
                     Code = x.Code,
                     IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
-                    SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###")
+                    SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###"),
+                    ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + x.Id, "0")) : x.ViewCounts,
+                    ReviewStarPoint = x.Reviews.Average(x => x.Star).Value,
+                    ReviewCount = x.Reviews.Count()
                 }).OrderByDescending(x=>x.Id).Take(20).ToList();
 
                 var listNewArrivals = new List<ProductGridModel>();
@@ -217,6 +230,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     //write cookie for customer who do not log on to system
                     string cookieKey = "CookieShopping";
                     var cookie = Request.Cookies[cookieKey];
+
                     if (cookie == null)
                     {
                         var obj = new ShoppingCartViewModel
@@ -230,7 +244,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 Thumnail = x.Thumnail,
                                 ProductName = x.ProductName
                             }).FirstOrDefault(),
-                            Quantity = quantity
+                            Quantity = quantity,
+                            UniPrice = productFromDb.PromotionPrice.HasValue? productFromDb.PromotionPrice.Value:productFromDb.OriginalPrice.Value
                         };
                         ListShoppingCart.Add(obj);
                         sum = ListShoppingCart.Count;
@@ -262,7 +277,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                     ProductName = x.ProductName,
                                     PromotionPrice=x.PromotionPrice
                                 }).FirstOrDefault(),
-                                Quantity = quantity
+                                Quantity = quantity,
+                                UniPrice = productFromDb.PromotionPrice.HasValue ? productFromDb.PromotionPrice.Value : productFromDb.OriginalPrice.Value
                             };
                             ListShoppingCart.Add(obj);
                             
@@ -295,7 +311,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                         var obj = new ShoppingCartViewModel
                         {
                             Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
-                            Quantity = quantity
+                            Quantity = quantity,
+                            UniPrice = productFromDb.PromotionPrice.HasValue ? productFromDb.PromotionPrice.Value : productFromDb.OriginalPrice.Value
                         };
                         ListShoppingCart.Add(obj);
                         sum = ListShoppingCart.Count;
@@ -309,7 +326,8 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             ListShoppingCart.Add(new ShoppingCartViewModel
                             {
                                 Products = _db.Products.Where(x => x.Id == productId).FirstOrDefault(),
-                                Quantity = quantity
+                                Quantity = quantity,
+                                UniPrice = productFromDb.PromotionPrice.HasValue ? productFromDb.PromotionPrice.Value : productFromDb.OriginalPrice.Value
                             });
                         }
                         else

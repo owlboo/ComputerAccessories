@@ -1,4 +1,4 @@
-﻿function AddToCart(productId, quantity, idButtonView, idSpantextInside) {
+﻿function AddToCart(productId, quantity) {
     var data = {
         productId: productId,
         quantity: quantity
@@ -9,14 +9,6 @@
         type: "post",
         dataType: "json",
         data: data,
-        beforeSend: function () {
-            document.getElementById(idButtonView).disable = true;
-            document.getElementById(idSpantextInside).classList.add("lds-dual-ring");
-        },
-        complete: function () {
-            document.getElementById(idButtonView).disable = false;
-            document.getElementById(idSpantextInside).classList.remove("lds-dual-ring");
-        },
         success: function (result) {
             if (result.code == 1) {
                 $('#kendoNoti').data('kendoNotification').show({
@@ -37,3 +29,4 @@
         }
     });
 }
+

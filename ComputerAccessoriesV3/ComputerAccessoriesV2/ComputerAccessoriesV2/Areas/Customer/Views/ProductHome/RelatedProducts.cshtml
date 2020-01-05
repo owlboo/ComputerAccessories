@@ -1,4 +1,4 @@
-﻿@model List<ComputerAccessoriesV2.Models.Products>
+﻿@model List<ComputerAccessoriesV2.ViewModels.ProductGridModel>
 
 
 
@@ -15,7 +15,7 @@
         {
             <div class="product-item fix">
                 <div class="product-thumb">
-                    <a href="product-details.html">
+                    <a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">
                         <img src="@item.Thumnail" class="img-pri" alt="">
                         <img src="@item.Thumnail2" class="img-sec" alt="">
                     </a>
@@ -24,25 +24,31 @@
                     </div>
                     <div class="product-action-link">
                         <a href="#" onclick="return QuickView(@item.Id)" title="Xem chi tiết"> <span data-toggle="tooltip" data-placement="left" title="Xem nhanh"><i class="fa fa-search"></i></span> </a>
-                        <a href="#" data-toggle="tooltip" data-placement="left" title="Wishlist"><i class="fa fa-heart-o"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="left" title="Compare"><i class="fa fa-refresh"></i></a>
-                        <a href="#" data-toggle="tooltip" onclick="return AddToCart(@item.Id,1)" data-placement="left" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
+                        <a href="#" data-toggle="tooltip" onclick="return AddToCart(@item.Id,1)" data-placement="left" title="Thêm vào giỏ"><i class="fa fa-shopping-cart"></i></a>
                     </div>
                 </div>
                 <div class="product-content">
                     <h4><a asp-controller="ProductHome" asp-action="ProductDetails" asp-route-productId="@item.Id">@item.ProductName</a></h4>
                     <div class="pricebox">
-                        <span class="regular-price">$90.00</span>
-                        <div class="ratings">
+                        @if (!String.IsNullOrEmpty(item.PromotionPrice))
+                        {
+                            <span class="regular-price">đ @item.PromotionPrice </span>
+                            <span class="old-price" style="color:red"><del>@item.OriginalPrice</del></span>
+                        }
+                        else
+                        {
+                            <span class="regular-price">đ @item.OriginalPrice</span>
+                        }
+                    <div class="ratings">
+                        @for (int i = 1; i <= item.ReviewStarPoint; i++)
+                        {
                             <span class="good"><i class="fa fa-star"></i></span>
-                            <span class="good"><i class="fa fa-star"></i></span>
-                            <span class="good"><i class="fa fa-star"></i></span>
-                            <span class="good"><i class="fa fa-star"></i></span>
-                            <span><i class="fa fa-star"></i></span>
-                            <div class="pro-review">
-                                <span>1 review(s)</span>
-                            </div>
+                            
+                        }
+                        <div class="pro-review">
+                            <span>@item.ReviewCount đánh giá</span>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

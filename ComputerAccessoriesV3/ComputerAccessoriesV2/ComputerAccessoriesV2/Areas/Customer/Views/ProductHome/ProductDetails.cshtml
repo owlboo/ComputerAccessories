@@ -4,7 +4,7 @@
     ViewData["Title"] = "Chi tiết sản phẩm " + ViewBag.productName;
     Layout = "~/Views/Home/_HomeLayout.cshtml";
 
-    var relatedProduct = ViewBag.relatedProduct as List<Products>;
+    var relatedProduct = ViewBag.relatedProduct as List<ProductGridModel>;
     List<ProductGridModel> listDeals = ViewBag.ListDeal as List<ProductGridModel>;
     var listTags = ViewBag.ListTags as List<CategoryShoppingModel>;
 }
@@ -44,7 +44,7 @@
                             <div class="product-details-des mt-md-34 mt-sm-34">
                                 <h3><a asp-action="ProductDetails" asp-route-productId="@Model.Id">@Model.ProductName</a></h3>
                                 <div class="ratings">
-                                    @for (int i = 1; i < Model.ReviewStarPoint; i++)
+                                    @for (int i = 1; i <= Model.ReviewStarPoint; i++)
                                     {
                                         <span class="good"><i class="fa fa-star"></i></span>
                                     }
@@ -60,18 +60,19 @@
                                     <span>@Model.Quantity sản phẩm</span>
                                 </div>
                                 <div class="pricebox">
-                                    <span class="regular-price">@Model.OriginalPrice</span>
+                                    <span class="regular-price">đ @Model.OriginalPrice</span>
                                 </div>
                                 <p>
                                     @Model.ShorDescription
                                 </p>
                                 <div class="quantity-cart-box d-flex align-items-center">
                                     <div class="quantity">
-                                        <div class="pro-qty"><input type="text" value="1"></div>
+                                        <div class="pro-qty"><input type="text" value="1" id="prodQuantity"></div>
                                     </div>
+                                    <input hidden id="prodId" value="@Model.Id" />
                                     <div class="action_link">
-                                        <a id="btnAddToCart" class="buy-btn" href="#" onclick="AddToCart(@Model.Id,1,'btnAddToCart','loadingAddToCart')">
-                                            <span id="loadingAddToCart"></span><span>Thêm giỏ hàng</span><i id="iconAddToCart" class="fa fa-shopping-cart"></i>
+                                        <a id="btnAddToCart" class="buy-btn" href="#">
+                                            <span id="loadingAddToCart"></span><span>Thêm vào giỏ</span><i id="iconAddToCart" class="fa fa-shopping-cart"></i>
                                         </a>
                                     </div>
                                 </div>
@@ -169,13 +170,13 @@
                                                     @if (String.IsNullOrEmpty(item.PromotionPrice))
                                                     {
                                                         <div class="regular-price">
-                                                            @item.OriginalPrice
+                                                            đ @item.OriginalPrice
                                                         </div>
                                                     }
                                                     else
                                                     {
                                                         <div class="regular-price">
-                                                            @item.PromotionPrice
+                                                            đ @item.PromotionPrice
                                                         </div>
                                                         <div class="old-price">
                                                             <del style="font-size:12px">@item.OriginalPrice</del>
@@ -183,13 +184,13 @@
                                                     }
                                                 </div>
                                                 <div class="ratings">
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span><i class="fa fa-star"></i></span>
+                                                    @for (int i = 1; i <= item.ReviewStarPoint; i++)
+                                                    {
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+
+                                                    }
                                                     <div class="pro-review">
-                                                        <span>1 review(s)</span>
+                                                        <span>@item.ReviewCount đánh giá</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,7 +238,6 @@
         </div>
     </div>
 </div>
-</div>
 
 <div class="modal" id="quick_view">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -282,10 +282,11 @@
                                 </p>
                                 <div class="quantity-cart-box d-flex align-items-center mt-20">
                                     <div class="quantity">
-                                        <div class="pro-qty"><input type="text" value="1"></div>
+                                        <div class="pro-qty" ><input type="text" value="1" id="productQuantity"></div>
                                     </div>
+                                    <input hidden id="productId" />
                                     <div class="action_link">
-                                        <a class="buy-btn" href="#">
+                                        <a class="buy-btn" href="#" id="btnAddToCartModal">
                                             Thêm vào giỏ<i class="fa fa-shopping-cart"></i>
                                         </a>
                                     </div>
@@ -300,37 +301,7 @@
     </div>
 </div>
 
-@section Styles{
-    <style>
-        .lds-dual-ring {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-        }
 
-            .lds-dual-ring:after {
-                content: " ";
-                display: block;
-                width: 20px;
-                height: 20px;
-                margin: 1px;
-                border-radius: 50%;
-                border: 5px solid #fff;
-                border-color: #fff transparent #fff transparent;
-                animation: lds-dual-ring 1.2s linear infinite;
-            }
-
-        @@keyframes lds-dual-ring {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-}
 
 @section Scripts{
 
@@ -365,7 +336,7 @@
                         slider_thumnails.slick('slickAdd', "<div class='pro-nav-thumb'><img src='" + data.productImages[i].imageUrl + "'alt='' /></div>");
 
                     }
-
+                    $("#productId").attr("value", id);
                     $('#quantity').text(data.quantity);
                     $('#short_description').text(data.shorDescription);
                     $('#price').text(data.originalPrice);
@@ -411,6 +382,16 @@
                 $("#tab_three").html(view);
             })
         }
+        $('#btnAddToCart').click(function () {
+            var productId = $('#prodId').val();
+            var quantity = $('#prodQuantity').val();
+            AddToCart(productId, quantity);
+        })
+        $('#btnAddToCartModal').click(function () {
+            var productId = $('#productId').val();
+            var quantity = $('#productQuantity').val();
+            AddToCart(productId, quantity);
+        })
     </script>
 
 }

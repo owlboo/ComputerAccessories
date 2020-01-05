@@ -49,12 +49,13 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 Color = c.x.Color,
                 ShorDescription = c.x.ShorDescription,
                 Status = c.x.Status,
-                ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + productId, "0")) : c.x.ViewCounts,
+                ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + c.x.Id, "0")) : c.x.ViewCounts,
                 ReviewStarPoint = c.x.Reviews.Average(x => x.Star).Value,
                 ReviewCount = c.x.Reviews.Count(),
                 ProductImages =  c.x.ProductImages.ToList(),
                 ProductAttributes = _db.ProductAttribute.Where(z => z.ProductId == productId).Include(z => z.Attribute).ToList(),
-                FullDescription = c.x.FullDescription
+                FullDescription = c.x.FullDescription,
+                Quantity = c.x.Quantity.Value
             }).FirstOrDefault();
 
             List<ProductGridModel> deals = _db.Products.Where(x => x.PromotionPrice.HasValue).Select(x => new ProductGridModel
@@ -71,11 +72,38 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
                 Code = x.Code,
                 IsNew = x.IsNew.HasValue ? x.IsNew.Value : false,
-                SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###")
+                SaleValue = (100 - (Decimal)(x.PromotionPrice / x.OriginalPrice) * 100).ToString("###"),
+                ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + x.Id, "0")) : x.ViewCounts,
+                ReviewStarPoint = x.Reviews.Average(x => x.Star).Value,
+                ReviewCount = x.Reviews.Count(),
+                Quantity = x.Quantity.Value
             }).Take(20).ToList();
 
-            List<Products> relatedProducts = _db.Products
-                .Where(x => x.CategoryId == products.CategoryId || x.BrandId == products.BrandId).ToList();
+            List<ProductGridModel> relatedProducts = _db.Products
+                .Where(x => x.CategoryId == products.CategoryId || x.BrandId == products.BrandId).Select(x => new ProductGridModel
+                {
+                    Id = x.Id,
+                    ProductName = x.ProductName,
+                    BrandId = x.BrandId.Value,
+                    BrandName = x.Brand.BrandName,
+                    CategoryId = x.CategoryId.Value,
+                    CategoryName = x.Category.CategoryName,
+                    OriginalPrice = x.OriginalPrice.Value.ToString("###,###"),
+                    PromotionPrice = x.PromotionPrice.HasValue ? x.PromotionPrice.Value.ToString("###,###") : "",
+                    Thumnail = x.Thumnail,
+                    Thumnail2 = x.Thumnail2,
+                    Code = x.Code,
+                    Color = x.Color,
+                    ShorDescription = x.ShorDescription,
+                    Status = x.Status,
+                    ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + x.Id, "0")) : x.ViewCounts,
+                    ReviewStarPoint = x.Reviews.Average(x => x.Star).Value,
+                    ReviewCount = x.Reviews.Count(),
+                    ProductImages = x.ProductImages.ToList(),
+                    ProductAttributes = _db.ProductAttribute.Where(z => z.ProductId == productId).Include(z => z.Attribute).ToList(),
+                    FullDescription = x.FullDescription,
+                    Quantity = x.Quantity.Value
+                }).ToList();
 
             string brandStr = @"SELECT b.Id,b.BrandName,(SELECT COUNT(Id) FROM dbo.Products WHERE BrandId=b.Id)'ProductCount' FROM dbo.Brand b WHERE 1=1";
             var brandList = context.BrandPartials.FromSqlRaw(brandStr).ToList();

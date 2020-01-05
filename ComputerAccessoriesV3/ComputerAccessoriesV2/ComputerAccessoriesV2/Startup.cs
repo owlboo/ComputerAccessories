@@ -106,7 +106,6 @@ namespace ComputerAccessoriesV2
                 options.Cookie.IsEssential = true;
             });
             services.AddRazorPages();
-            services.AddPaging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

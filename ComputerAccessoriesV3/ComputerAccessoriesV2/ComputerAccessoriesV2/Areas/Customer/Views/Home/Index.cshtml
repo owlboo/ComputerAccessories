@@ -96,28 +96,28 @@
                                         @if (String.IsNullOrEmpty(item.PromotionPrice))
                                         {
                                             <div class="regular-price">
-                                                @item.OriginalPrice
+                                                đ @item.OriginalPrice
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="regular-price">
-                                                @item.PromotionPrice
+                                                đ @item.PromotionPrice
                                             </div>
                                             <div class="old-price">
-                                                <del style="font-size:12px">@item.OriginalPrice</del>
+                                                <del style="font-size:12px">đ @item.OriginalPrice</del>
                                             </div>
                                         }
 
                                     </div>
                                     <div class="ratings">
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span class="good"><i class="fa fa-star"></i></span>
-                                        <span><i class="fa fa-star"></i></span>
+                                        @for (int i = 0; i < item.ReviewStarPoint; i++)
+                                        {
+                                            <span class="good"><i class="fa fa-star"></i></span>
+
+                                        }
                                         <div class="pro-review">
-                                            <span>1 review(s)</span>
+                                            <span>@item.ReviewCount lượt đánh giá</span>
                                         </div>
                                     </div>
                                 </div>
@@ -157,27 +157,27 @@
                                                     @if (String.IsNullOrEmpty(item.PromotionPrice))
                                                     {
                                                         <div class="regular-price">
-                                                            @item.OriginalPrice
+                                                           đ @item.OriginalPrice
                                                         </div>
                                                     }
                                                     else
                                                     {
                                                         <div class="regular-price">
-                                                            @item.PromotionPrice
+                                                           đ @item.PromotionPrice
                                                         </div>
                                                         <div class="old-price">
-                                                            <del style="font-size:12px">@item.OriginalPrice</del>
+                                                            <del style="font-size:12px">đ @item.OriginalPrice</del>
                                                         </div>
                                                     }
                                                 </div>
                                                 <div class="ratings">
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span><i class="fa fa-star"></i></span>
+                                                    @for (int i = 0; i < item.ReviewStarPoint; i++)
+                                                    {
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+
+                                                    }
                                                     <div class="pro-review">
-                                                        <span>1 review(s)</span>
+                                                        <span>@item.ReviewCount lượt đánh giá</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -216,27 +216,27 @@
                                                     @if (String.IsNullOrEmpty(item.PromotionPrice))
                                                     {
                                                         <div class="regular-price">
-                                                            @item.OriginalPrice
+                                                           đ @item.OriginalPrice
                                                         </div>
                                                     }
                                                     else
                                                     {
                                                         <div class="regular-price">
-                                                            @item.PromotionPrice
+                                                            đ @item.PromotionPrice
                                                         </div>
                                                         <div class="old-price">
-                                                            <del style="font-size:12px">@item.OriginalPrice</del>
+                                                            <del style="font-size:12px">đ @item.OriginalPrice</del>
                                                         </div>
                                                     }
                                                 </div>
                                                 <div class="ratings">
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span class="good"><i class="fa fa-star"></i></span>
-                                                    <span><i class="fa fa-star"></i></span>
+                                                    @for (int i = 0; i < item.ReviewStarPoint; i++)
+                                                    {
+                                                        <span class="good"><i class="fa fa-star"></i></span>
+                                                        
+                                                    }
                                                     <div class="pro-review">
-                                                        <span>1 review(s)</span>
+                                                        <span>@item.ReviewCount lượt đánh giá</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -268,7 +268,7 @@
                     <div class="title-icon">
                         <i class="fa fa-flask"></i>
                     </div>
-                    <h3>New Arrivals</h3>
+                    <h3>Mới cập nhật</h3>
                 </div> <!-- section title end -->
                 <!-- featured category start -->
                 <div class="featured-carousel-active slick-padding slick-arrow-style">
@@ -292,8 +292,6 @@
                                     <span data-toggle="tooltip"
                                           data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                                 </a>
-                                <a href="#" data-toggle="tooltip" data-placement="left" title="Wishlist"><i class="fa fa-heart-o"></i></a>
-                                <a href="#" data-toggle="tooltip" data-placement="left" title="Compare"><i class="fa fa-refresh"></i></a>
                                 <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
                             </div>
                         </div>
@@ -307,26 +305,25 @@
                                 @if (String.IsNullOrEmpty(item.PromotionPrice))
                                 {
                                     <div class="regular-price">
-                                        @item.OriginalPrice
+                                       đ @item.OriginalPrice
                                     </div>
                                 }
                                 else
                                 {
                                     <div>
-                                        <span class="regular-price">@item.PromotionPrice</span>
-                                        <span class="old-price"><del style="font-size:12px">@item.OriginalPrice</del></span>
+                                        <span class="regular-price">đ @item.PromotionPrice</span>
+                                        <span class="old-price"><del style="font-size:12px">đ @item.OriginalPrice</del></span>
                                     </div>
                                 }
-                                <div class="ratings">
+                            <div class="ratings">
+                                @for (int i = 1; i <= item.ReviewStarPoint; i++)
+                                {
                                     <span class="good"><i class="fa fa-star"></i></span>
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span class="good"><i class="fa fa-star"></i></span>
-                                    <span><i class="fa fa-star"></i></span>
-                                    <div class="pro-review">
-                                        <span>1 review(s)</span>
-                                    </div>
+                                }
+                                <div class="pro-review">
+                                    <span>@item.ReviewCount lượt đánh giá</span>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -375,8 +372,7 @@
                                 <span data-toggle="tooltip"
                                       data-placement="left" title="Xem chi tiết"><i class="fa fa-search"></i></span>
                             </a>
-                            <a href="#" data-toggle="tooltip" data-placement="left" title="Wishlist"><i class="fa fa-heart-o"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="left" title="Compare"><i class="fa fa-refresh"></i></a>
+
                             <a href="#" data-toggle="tooltip" data-placement="left" onclick="AddToCart(@item.Id,1)" title="Add to cart"><i class="fa fa-shopping-cart"></i></a>
                         </div>
                     </div>
@@ -400,16 +396,16 @@
                                     <span class="old-price"><del style="font-size:12px">@item.OriginalPrice</del></span>
                                 </div>
                             }
-                            <div class="ratings">
+                        <div class="ratings">
+                            @for (int i = 1; i <= item.ReviewStarPoint; i++)
+                            {
                                 <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span class="good"><i class="fa fa-star"></i></span>
-                                <span><i class="fa fa-star"></i></span>
-                                <div class="pro-review">
-                                    <span>1 review(s)</span>
-                                </div>
+ 
+                            }
+                            <div class="pro-review">
+                                <span>@item.ReviewStarPoint lượt đánh giá</span>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
