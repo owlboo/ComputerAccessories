@@ -45,7 +45,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 totalPrice = x.LastPrice.Value,
                 shippingAddress = x.ShippingAddress,
                 note = x.Note,
-                status = x.Status.HasValue ? x.Status.Value : 0,
+                status = x.OrderStatusLog.OrderBy(log => log.ModifyDate).Last().NewStatus,
                 statusCode = x.Status.HasValue ? x.StatusNavigation.CodeName : "",
                 DeliveredDate = x.DeliveredDate,
                 shipper = new ViewModels.DbQueryModels.ShipperModel()
