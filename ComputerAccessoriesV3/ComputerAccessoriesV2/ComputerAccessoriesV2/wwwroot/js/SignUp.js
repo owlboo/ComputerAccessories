@@ -66,6 +66,12 @@ $('#submit').click(function (e) {
         type: "post",
         dataType: "json",
         data: data,
+        beforeSend: function () {
+            $('#submit').attr("disabled", true);
+        },
+        complete: function () {
+            $('#submit').attr("disabled", false);
+        },
         success: function (result) {
             if (result.code == 1) {
                 popupNotification.show({ title: "Thông báo", message: "Một email đã được gửi đến tài khoản: " + result.email + " để kích hoạt tài khoản của bạn" }, "success");
@@ -75,7 +81,7 @@ $('#submit').click(function (e) {
             }
         },
         error: function (err) {
-            console.log(err);
+            popupNotification.show({ title: "Thông báo", message: err.err }, "error");
         }
     });
 

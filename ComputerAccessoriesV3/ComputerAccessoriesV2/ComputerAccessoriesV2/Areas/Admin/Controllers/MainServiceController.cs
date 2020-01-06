@@ -338,10 +338,30 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             var categories = _db.Category.ToList();
             ViewBag.lstCategory = categories;
             AttributeVM.Id = attributeFromDb.Id;
+            AttributeVM.AttributeName = attributeFromDb.AttributeName;
             AttributeVM.CategoryId = attributeFromDb.CategoryId;
             AttributeVM.CreatedDate = attributeFromDb.CreatedDate;
             AttributeVM.ModifiedDate = attributeFromDb.ModifiedDate;
             return View(AttributeVM);
+        }
+
+        [Authorize(Policy = Policy.AdminAccess)]
+        [HttpPost]
+        public async Task<IActionResult> EditAttributes(AttributeViewModel _params)
+        {
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+
+            var currentAttr = _db.Attributes.Where(x => x.Id == _params.Id).FirstOrDefault();
+
+            currentAttr.AttributeName = _params.AttributeName;
+            currentAttr.CategoryId = _params.CategoryId;
+            currentAttr.ModifiedDate = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Attributes));
         }
         #endregion
         #region AccountManger

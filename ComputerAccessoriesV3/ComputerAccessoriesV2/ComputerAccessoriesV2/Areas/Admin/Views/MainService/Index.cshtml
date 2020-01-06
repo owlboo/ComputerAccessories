@@ -246,11 +246,11 @@
             var toDate = $('#toTime');
 
             if (fromDate.val() == "") {
-                $('#noitifyHolder').data('kendoNoitification').show("Vui lòng chọn ngày bắt đầu", "error");
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày bắt đầu", "error");
                 return;
             }
             if (toDate.val() == "") {
-                $('#noitifyHolder').data('kendoNoitification').show("Vui lòng chọn ngày kết thúc", "error");
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày kết thúc", "error");
                 return;
             }
             var url = "/Exports/ExportsBill?fromDate=" + fromDate.val() + "&toDate=" + toDate.val();
@@ -262,11 +262,11 @@
             var fromDate = $('#productFromTime');
             var toDate = $("#productToTime");
             if (fromDate.val() == "") {
-                $('#noitifyHolder').data('kendoNoitification').show("Vui lòng chọn ngày bắt đầu", "error");
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày bắt đầu", "error");
                 return;
             }
             if (toDate.val() == "") {
-                $('#noitifyHolder').data('kendoNoitification').show("Vui lòng chọn ngày kết thúc", "error");
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày kết thúc", "error");
                 return;
             }
 
@@ -281,11 +281,11 @@
             var fromDate = $('#accountFromTime');
             var toDate = $("#accountToTime");
             if (fromDate.val() == "") {
-                $('#noitifyHolder').data('kendoNoitification').show("Vui lòng chọn ngày bắt đầu", "error");
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày bắt đầu", "error");
                 return;
             }
             if (toDate.val() == "") {
-                $('#noitifyHolder').data('kendoNoitification').show("Vui lòng chọn ngày kết thúc", "error");
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày kết thúc", "error");
                 return;
             }
 
@@ -310,6 +310,18 @@
 
         function onFilterAccountChart() {
             console.log("onFilterAccountChart");
+
+            var fromDate = $('#accountReportStartDatePicker').val();
+            var toDate = $("#accountReportEndDatePicker").val();
+            if (fromDate == "") {
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày bắt đầu", "error");
+                return;
+            }
+            if (toDate == "") {
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày kết thúc", "error");
+                return;
+            }
+
             var dataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -317,8 +329,8 @@
                         dataType: "json",
                         data: function () {
                             return {
-                                startDate: $("#accountReportStartDatePicker").val(),
-                                endDate: $("#accountReportEndDatePicker").val()
+                                startDate: fromDate,
+                                endDate: toDate
                             }
                         }
                     }
@@ -350,6 +362,17 @@
         }
 
         function onFilterSalesChart() {
+            var fromDate = $('#salesReportStartDatePicker').val();
+            var toDate = $("#salesReportEndDatePicker").val();
+            if (fromDate == "") {
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày bắt đầu", "error");
+                return;
+            }
+            if (toDate == "") {
+                $('#noitifyHolder').data('kendoNotification').show("Vui lòng chọn ngày kết thúc", "error");
+                return;
+            }
+
             var dataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -357,8 +380,8 @@
                         dataType: "json",
                         data: function () {
                             return {
-                                startDate: $("#salesReportStartDatePicker").val(),
-                                endDate: $("#salesReportEndDatePicker").val()
+                                startDate: fromDate,
+                                endDate: toDate
                             }
                         }
                     }

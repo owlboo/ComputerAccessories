@@ -54,7 +54,7 @@
                 <div class="col-md-6 col-sm-12">
                     <div class="form-group has-feedback">
                         <label>Email</label>
-                        <input type="email" id="email" asp-for="Email" class="form-control" required placeholder="Email">
+                        <input oninput="validateEmail()" type="email" id="email" asp-for="Email" class="form-control" required placeholder="Email">
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                 <div class="col-md-6 col-sm-12">
                     <div class="form-group has-feedback">
                         <label>Số điện thoại</label>
-                        <input type="tel" class="form-control" id="phonenumber" required placeholder="Nhập số điện thoại tại đây">
+                        <input oninput="validatePhone()" type="tel" class="form-control" id="phonenumber" required placeholder="Nhập số điện thoại tại đây">
                         <span class="glyphicon glyphicon-phone form-control-feedback"></span>
                     </div>
                 </div>
@@ -120,31 +120,15 @@
                 <div class="col-xs-7 col-md-7">
                     <div class="checkbox icheck">
                         <label>
-                            <input type="checkbox"> I agree to the <a href="#">terms</a>
+                            <input type="checkbox"> Tôi đồng ý với <a href="#">các điều khoản</a>
                         </label>
                     </div>
                 </div>
                 <!-- /.col -->
                 <div class="col-xs-5 col-md-5">
-                    <button class="btn btn-primary btn-block btn-flat" style="width: 50%" id="submit">Đăng ký</button>
+                    <button class="btn btn-primary btn-block btn-flat" style="width: 50%" disabled="disabled" id="submit">Đăng ký</button>
                 </div>
                 <!-- /.col -->
-            </div>
-
-            <div class="social-auth-links text-center">
-                <p>- OR -</p>
-                <div style="display: inline-grid;">
-                    <a href="#" class="btn btn-block btn-social btn-facebook btn-flat" style="margin-bottom: 1rem">
-                        <i class="fa fa-facebook"></i> Sign up using
-                        Facebook
-                    </a>
-                    <a href="#" class="btn btn-block btn-social btn-google btn-flat mb-2" style="margin-bottom: 1rem">
-                        <i class="fa fa-google-plus"></i> Sign up using
-                        Google+
-                    </a>
-                    <a asp-controller="Account" asp-action="SignIn" asp-area="Customer" class="text-center" style="font-size: 2rem">Tôi đã có tài khoản</a>
-                </div>
-
             </div>
             <!-- /.form-box -->
         </div>
@@ -186,6 +170,28 @@
 
     <script>
 
+        function validateEmail() {
+            var email = $('#email').val();
+            var regex = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,6})?$/;
+
+            if (!regex.test(email)) {
+                $('#submit').attr("disabled", true);
+            } else {
+                $('#submit').attr("disabled", false);
+            }
+        }
+
+        function validatePhone() {
+            var phone = $('#phonenumber').val();
+            var vnf_regex = /((0|84)+([0-9]{9})\b)/g;
+
+            if (!vnf_regex.test(phone)) {
+                $('#submit').attr("disabled", true);
+            } else {
+                $('#submit').attr("disabled", false);
+            }
+        }
+
         $(window).on('load', () => {
             $("#notify").kendoNotification({
                 position: {
@@ -201,8 +207,8 @@
                 }, {
                     type: "error",
                     template: $("#errorTemplate").html()
-                    },
-                    {
+                },
+                {
                     type: "warning",
                     template: $("#warningTemplate").html()
                 }
