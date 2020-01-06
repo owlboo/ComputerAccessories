@@ -27,6 +27,13 @@
                         </div>
                         <input class="form-group row" id="billStatus" />
                     </div>
+
+                    <div>
+                        <div class="form-group row">
+                            <label>Ghi chú</label>
+                        </div>
+                        <input class="form-group row" id="currentChangeNote" />
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -43,6 +50,7 @@
 <script>
 
     var currentBillId = null;
+    var notification = $('#kendoNoti').data('kendoNotification');
 
     $(document).ready(() => {
         $("#listShipperOrders").kendoGrid({
@@ -85,22 +93,24 @@
         });
     });
 
-    function GoShipperOrderDetail(billId) {
+    function GoShipperOrderDetail(billId, statusCode) {
         $('#shipperBillDetail').modal('show');
 
         $("#listBillProduct").empty();
         $('#billStatus').empty();
 
-        loadBillDetailData(billId);
+        loadBillDetailData(billId, statusCode);
     }
 
     function changeShipperBillStatus() {
         var billStatus = $('#billStatus').data('kendoDropDownList').value();
+        var note = $('#currentChangeNote').val();
 
         var data = {
             status: billStatus,
-            billId: currentBillId
-        }
+            billId: currentBillId,
+            currentChangeNote: note
+        };
 
         $.ajax({
             url: "/Customer/Profile/ChangeShipperBillStatus",
@@ -109,16 +119,20 @@
             dataType: "json",
             data: data,
             success: function (success) {
-                alert(success.notify);
+                notification.show({ title: "Thông báo", message: success.notify }, "success");
+                $('#shipperBillDetail').modal('hide');
+                $("#listShipperOrders").data("kendoGrid").dataSource.read();
             },
             error: function (err) {
-                alert(err.notify);
+                notification.show({ title: "Thông báo", message: err.notify }, "error");
                 console.log(err);
             }
-        })
+        });
     }
 
     function loadBillDetailData(billId, status) {
+
+        console.log("loadBillDetailData: " + billId + " - " + status);
         currentBillId = billId;
 
         $(document).ready(() => {
@@ -159,16 +173,11 @@
                             url: window.location.protocol + '//' + window.location.host + "/Customer/Profile/GetBillStatus"
                         },
                         requestEnd: function (e) {
-                            var response = e.response;
-                            var type = e.type;
-                            //console.log(type); // displays "read"
-                            if (response.length === 0) {
-                                //console.log(response); // displays "read"
-                            }
+                           
                         },
-                    },
-                    value: status
-                }
+                    }
+                },
+                value: status
             });
         });
     }

@@ -346,9 +346,19 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                             var productFromDb = _db.Products.Where(x => x.Id == item.Products.Id).FirstOrDefault();
                             productFromDb.Quantity -= item.Quantity;
                             await _db.SaveChangesAsync();
+
+                            _db.OrderStatusLog.Add(new OrderStatusLog
+                            {
+                                BillId = billObj.BillId,
+                                NewStatus = 1,
+                                ModifyDate = DateTime.Now,
+                                ModifyUserId = guest.Id,
+                                Note = "Khơi tạo lần đầu"
+                            });
+                            await _db.SaveChangesAsync();
                         }
                         Response.Cookies.Delete(key);
-                        return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Home/Index" });
+                        return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Shopping/OrderInfo?id=" + billObj.BillId });
                     }
 
                 }
@@ -433,8 +443,19 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 productFromDb.Quantity -= item.Quantity;
                                 await _db.SaveChangesAsync();
                             }
+
+                            _db.OrderStatusLog.Add(new OrderStatusLog
+                            {
+                                BillId = billObj.BillId,
+                                NewStatus = 1,
+                                ModifyDate = DateTime.Now,
+                                ModifyUserId = guest.Id,
+                                Note = "Khơi tạo lần đầu"
+                            });
+                            await _db.SaveChangesAsync();
+
                             _session.Remove(key);
-                            return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Home/Index" });
+                            return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Shopping/OrderInfo?id=" + billObj.BillId });
 
                         }
                         else
@@ -515,8 +536,19 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                 _db.BillDetails.Add(billDetail);
                                 await _db.SaveChangesAsync();
                             }
+
+                            _db.OrderStatusLog.Add(new OrderStatusLog
+                            {
+                                BillId = billObj.BillId,
+                                NewStatus = 1,
+                                ModifyDate = DateTime.Now,
+                                ModifyUserId = guest.Id,
+                                Note = "Khơi tạo lần đầu"
+                            });
+                            await _db.SaveChangesAsync();
+
                             _session.Remove(key);
-                            return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Home/Index" });
+                            return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Shopping/OrderInfo?id="+billObj.BillId });
                         }
                     }
 
@@ -593,8 +625,20 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     };
                     _db.TransactionHistory.Add(trans);
                     await _db.SaveChangesAsync();
+
+                    var orderLog =  new OrderStatusLog
+                    {
+                        BillId = billObj.BillId,
+                        NewStatus = 1,
+                        ModifyDate = DateTime.Now,
+                        ModifyUserId = UserId,
+                        Note = "Khơi tạo lần đầu"
+                    };
+                    _db.OrderStatusLog.Add(orderLog);
+                    await _db.SaveChangesAsync();
+
                     _session.Remove(key);
-                    return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Home/Index" });
+                    return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Shopping/OrderInfo?id=" + billObj.BillId });
                 }
                 else
                 {
@@ -663,8 +707,19 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     };
                     _db.TransactionHistory.Add(trans);
                     await _db.SaveChangesAsync();
+
+                    var orderLog = new OrderStatusLog
+                    {
+                        BillId = billObj.BillId,
+                        NewStatus = 1,
+                        ModifyDate = DateTime.Now,
+                        ModifyUserId = UserId,
+                        Note = "Khơi tạo lần đầu"
+                    };
+                    _db.OrderStatusLog.Add(orderLog);
+
                     _session.Remove(key);
-                    return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Home/Index" });
+                    return Json(new { code = 1, billCode = billObj.BillName, returnUrl = "/Customer/Shopping/OrderInfo?id=" + billObj.BillId });
                 }
             }
             catch (Exception e)
@@ -682,6 +737,26 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             var wardName = _db.Ward.Where(x => x.WardId == wardId).Select(x => x.WardName).FirstOrDefault();
 
             return wardName + ", " + districtName + ", " + provinceName;
+        }
+
+        [HttpGet]
+        public IActionResult OrderInfo(int id)
+        {
+            var orderDb = _db.Bills.Where(b => b.BillId == id)
+                .Include(b => b.Customer)
+                .Include(b => b.GuestAnony)
+                .Include(b => b.OrderStatusLog).ThenInclude(os => os.NewStatusNavigation)
+                .Include(b => b.BillDetails).ThenInclude(bd => bd.Product)
+                .FirstOrDefault();
+            if(orderDb == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                ViewBag.Order = orderDb;
+                return View();
+            }
         }
     }
 }

@@ -92,6 +92,17 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     billFromDb.ShipperId = billModel.shipper.shipperId;
                     billFromDb.Status = 2;
                     await _db.SaveChangesAsync();
+
+                    _db.OrderStatusLog.Add(new OrderStatusLog
+                    {
+                        BillId = billFromDb.BillId,
+                        NewStatus = 2,
+                        ModifyDate = DateTime.Now,
+                        ModifyUserId = 0,
+                        Note = "Gán đơn hàng cho shipper: " + billModel.shipper.shipperName
+                    });
+                    await _db.SaveChangesAsync();
+
                     return Json(new { res = $"Đơn hàng: {billFromDb.BillName } đã được thay đổi từ {curShipper} sang {billModel.shipper.shipperName}" });
                 }
                 else
@@ -100,6 +111,17 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     billFromDb.ShipperId = billModel.shipper.shipperId;
                     billFromDb.Status = 2;
                     await _db.SaveChangesAsync();
+
+                    _db.OrderStatusLog.Add(new OrderStatusLog
+                    {
+                        BillId = billFromDb.BillId,
+                        NewStatus = 2,
+                        ModifyDate = DateTime.Now,
+                        ModifyUserId = 0,
+                        Note = "Gán đơn hàng cho shipper: " + billModel.shipper.shipperName
+                    });
+                    await _db.SaveChangesAsync();
+
                     return Json(new { res = "Shipper : " + billModel.shipper.shipperName + " đã được gán vào đơn hàng : " + billFromDb.BillName });
                 }
             }

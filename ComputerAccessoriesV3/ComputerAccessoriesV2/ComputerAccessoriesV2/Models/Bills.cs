@@ -8,6 +8,7 @@ namespace ComputerAccessoriesV2.Models
         public Bills()
         {
             BillDetails = new HashSet<BillDetails>();
+            OrderStatusLog = new HashSet<OrderStatusLog>();
             TransactionHistory = new HashSet<TransactionHistory>();
         }
 
@@ -31,6 +32,7 @@ namespace ComputerAccessoriesV2.Models
         public virtual NoStroredGuest GuestAnony { get; set; }
         public virtual BillStatus StatusNavigation { get; set; }
         public virtual ICollection<BillDetails> BillDetails { get; set; }
+        public virtual ICollection<OrderStatusLog> OrderStatusLog { get; set; }
         public virtual ICollection<TransactionHistory> TransactionHistory { get; set; }
     }
 }

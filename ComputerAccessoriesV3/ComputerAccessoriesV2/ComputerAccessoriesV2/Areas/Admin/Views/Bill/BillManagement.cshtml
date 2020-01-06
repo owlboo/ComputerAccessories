@@ -220,6 +220,7 @@
                     batch: true,
                     pageSize: 20,
                     sortable: true,
+                    resizable: true,
                     //serverFiltering: true,
                     schema: {
                         model: {
@@ -255,9 +256,9 @@
                 height: 550,
                 columns: [
                     { field: "billName", title: "Mã hóa đơn", format: "{0:c}"},
-                    { field: "customerName", title: "Tên khách hàng", width: 120, filterable: false },
-                    { field: "customerEmail", title: "Email", format: "{0:c}", width: 200, filterable: true },
-                    { field: "phoneNumber", title: "Số điện thoại", width: 120 },
+                    { field: "customerName", title: "Tên khách hàng", filterable: false },
+                    { field: "customerEmail", title: "Email", format: "{0:c}", filterable: true },
+                    { field: "phoneNumber", title: "Số điện thoại"},
                     
                     { field: "createdDate", title: "Ngày tạo", filterable: false },
                     { field: "deliveredDate", title: "Ngày giao", filterable: false },
@@ -266,9 +267,9 @@
                     { field: "note", title: "Ghi chú",filterable: false },
                     { field: "statusCode", title: "Trạng thái" },
                     {
-                        field: "shipper", title: "Nhân viên giao hàng", width: 200, editor:shipperDropDownList,template: "#if(shipper==null){#<text>Chưa có</text>#}else{#<text>#=shipper.shipperName#</text>#}#",filterable: false
+                        field: "shipper", title: "Nhân viên giao hàng", editor:shipperDropDownList,template: "#if(shipper==null){#<text>Chưa có</text>#}else{#<text>#=shipper.shipperName#</text>#}#",filterable: false
                     },
-                    { command: ["edit", { name: "details", iconClass: "k-icon k-i-eye", text: "Xem chi tiết", click: showDetails }, {name:"export",iconClass:"k-icon k-i-upload",text:"Xuất báo cáo",click:ExportBillDetail}], title: "&nbsp;", width: 300 }],
+                    { command: ["edit", { name: "details", iconClass: "k-icon k-i-eye", text: "Xem chi tiết", click: showDetails }, {name:"export",iconClass:"k-icon k-i-upload",text:"Xuất báo cáo",click:ExportBillDetail}], title: "&nbsp;" }],
                 editable: "inline",
                 filterable: true
             });

@@ -10,10 +10,5 @@ namespace ComputerAccessoriesV2.Models
         public string ImageUrl { get; set; }
 
         public virtual Products Product { get; set; }
-
-        public static implicit operator List<object>(ProductImages v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

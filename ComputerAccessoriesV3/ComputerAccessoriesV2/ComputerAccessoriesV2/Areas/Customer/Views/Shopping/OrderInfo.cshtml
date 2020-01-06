@@ -1,0 +1,118 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ComputerAccessoriesV2.Data
+@{
+    ViewData["Title"] = "CheckOut";
+    Layout = "~/Views/Home/_HomeLayout.cshtml";
+}
+
+@inject SignInManager<ComputerAccessoriesV2.Data.MyUsers> SignInManager
+@inject UserManager<ComputerAccessoriesV2.Data.MyUsers> UserManager
+@{
+    MyUsers myUsers = null;
+    if (SignInManager.IsSignedIn(User))
+    {
+        myUsers = await UserManager.GetUserAsync(User);
+    }
+    var isLogin = myUsers == null ? 0 : 1;
+
+    Bills order = ViewBag.Order;
+    List<OrderStatusLog> orderStatus = order.OrderStatusLog.ToList();
+    var userName = order.Customer != null ? order.Customer.DisplayName : order.GuestAnony.CustomerName;
+    var mobileNumber = order.Customer != null ? order.Customer.PhoneNumber : order.GuestAnony.PhoneNumber;
+}
+
+<title>Chi tiết đơn hàng</title>
+
+<div class="row">
+    <div class="col-6">
+        <div class="tab-pane " id="address-edit" role="tabpanel">
+            <div class="myaccount-content">
+                <h3>Địa chỉ giao hàng</h3>
+                <address>
+                    <p><strong>@userName</strong></p>
+                    <p>
+                        @order.ShippingAddress
+                    </p>
+                    <p>Mobile: @mobileNumber</p>
+                </address>
+            </div>
+        </div>
+
+        <div class="tab-pane " role="tabpanel">
+            <div class="myaccount-content">
+                <h3>Trạng thái đơn hàng @order.BillName</h3>
+                <div class="table-responsive text-center">
+                    <table class="table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Trạng thái</th>
+                                <th>Mã người thay đổi</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in order.OrderStatusLog)
+                            {
+                            <tr>
+                                <td>@item.ModifyDate</td>
+                                <td>@item.NewStatusNavigation.CodeName</td>
+                                <td>@item.ModifyUserId</td>
+                                <td>@item.Note</td>
+                            </tr>
+                            }
+
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="order-summary-details mt-md-26 mt-sm-26">
+            <div class="order-summary-content mb-sm-4">
+                <!-- Order Summary Table -->
+                <div class="order-summary-table table-responsive text-center">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in order.BillDetails)
+                            {
+                                <tr>
+                                    <td><a href="single-product.html">@item.Product.ProductName <strong> × @item.Quantity</strong></a></td>
+                                    @{
+                                        var total = item.Product.PromotionPrice.HasValue ? item.Product.PromotionPrice.Value * item.Quantity : item.Product.OriginalPrice.Value * item.Quantity;
+                                    }
+                                    <td>@total.Value.ToString("###,###")</td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Tổng cộng</td>
+                                <td><text id="fPrice"><strong>@order.TotalPrice.Value.ToString("###,###")</strong></text></td>
+                            </tr>
+                            <tr>
+                                <td>Mã giảm giá</td>
+                                <td><text><strong>@order.Voucher</strong></text></td>
+                            </tr>
+                            <tr>
+                                <td>Tổng tiền</td>
+                                <td><text id="lastPrice"><strong>@order.LastPrice.Value.ToString("###,###")</strong></text></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
