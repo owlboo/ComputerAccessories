@@ -35,6 +35,7 @@ namespace ComputerAccessoriesV2.Models
         public virtual DbSet<Districts> Districts { get; set; }
         public virtual DbSet<ErrLogs> ErrLogs { get; set; }
         public virtual DbSet<NoStroredGuest> NoStroredGuest { get; set; }
+        public virtual DbSet<OrderStatusLog> OrderStatusLog { get; set; }
         public virtual DbSet<PaymentType> PaymentType { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
         public virtual DbSet<ProductImages> ProductImages { get; set; }
@@ -337,6 +338,23 @@ namespace ComputerAccessoriesV2.Models
                 entity.Property(e => e.PhoneNumber).HasMaxLength(20);
 
                 entity.Property(e => e.PlaceDetail).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<OrderStatusLog>(entity =>
+            {
+                entity.Property(e => e.ModifyDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Bill)
+                    .WithMany(p => p.OrderStatusLog)
+                    .HasForeignKey(d => d.BillId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderStatusLog_Bills");
+
+                entity.HasOne(d => d.NewStatusNavigation)
+                    .WithMany(p => p.OrderStatusLog)
+                    .HasForeignKey(d => d.NewStatus)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderStatusLog_BillStatus");
             });
 
             modelBuilder.Entity<PaymentType>(entity =>

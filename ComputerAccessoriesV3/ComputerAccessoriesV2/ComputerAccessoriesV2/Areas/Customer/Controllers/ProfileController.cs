@@ -164,7 +164,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        public JsonResult ChangeShipperBillStatus(int billId, int status)
+        public async Task<JsonResult> ChangeShipperBillStatus(int billId, int status, string currentChangeNote)
         {
             var billDb = _db.Bills.Where(x => x.BillId == billId).FirstOrDefault();
             if(billDb == null)
@@ -174,7 +174,18 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
             } 
             else
             {
+                var user = await _userManager.GetUserAsync(User);
                 billDb.Status = status;
+                _db.SaveChanges();
+
+                _db.OrderStatusLog.Add(new OrderStatusLog
+                {
+                    BillId = billDb.BillId,
+                    ModifyUserId = user.Id,
+                    NewStatus = status,
+                    ModifyDate = DateTime.Now,
+                    Note = (currentChangeNote == null) ? "Shipper Thay đổi trạng thái đơn hàng" : currentChangeNote
+                });
                 _db.SaveChanges();
 
                 Response.StatusCode = (int)HttpStatusCode.OK;
@@ -211,6 +222,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 on b.Status equals bs.Id
                 select new {
                     b.BillId,
+                    b.BillName,
                     b.LastPrice,
                     bs.CodeName,
                     b.ShippingAddress,
