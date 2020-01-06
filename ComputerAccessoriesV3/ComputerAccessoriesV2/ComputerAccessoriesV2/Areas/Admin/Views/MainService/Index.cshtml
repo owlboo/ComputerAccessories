@@ -306,6 +306,13 @@
             console.log("loadAccountChart");
             $("#accountReportStartDatePicker").datepicker();
             $("#accountReportEndDatePicker").datepicker();
+
+            var currentDate = new Date();
+            $('#accountReportEndDatePicker').datepicker('setDate', currentDate);
+            currentDate.setDate(currentDate.getDate() - 7);
+            $('#accountReportStartDatePicker').datepicker('setDate', currentDate);
+
+            onFilterAccountChart();
         }
 
         function onFilterAccountChart() {
@@ -359,6 +366,13 @@
             console.log("loadSalesChart");
             $("#salesReportStartDatePicker").datepicker();
             $("#salesReportEndDatePicker").datepicker();
+
+            var currentDate = new Date();
+            $('#salesReportEndDatePicker').datepicker('setDate', currentDate);
+            currentDate.setDate(currentDate.getDate() - 7);
+            $('#salesReportStartDatePicker').datepicker('setDate', currentDate);
+
+            onFilterSalesChart();
         }
 
         function onFilterSalesChart() {
