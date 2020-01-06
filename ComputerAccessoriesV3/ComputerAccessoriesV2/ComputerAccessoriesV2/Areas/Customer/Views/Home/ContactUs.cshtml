@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "ContactUs";
+    Layout = "~/Views/Home/_HomeLayout.cshtml";
+}
+
+
+
+    <div class="wrapper box-layout" style="margin-top:50px">
+        <div class="contact-area pb-34 pb-md-18 pb-sm-0">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="contact-message">
+                            <h2>Gửi phản hồi của bạn nếu bạn đang có vấn đề muốn giải quyết</h2>
+                            <form id="contact-form" action="http://demo.hasthemes.com/galio-v6/galio/assets/php/mail.php" method="post" class="contact-form">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <input name="first_name" placeholder="Họ và tên *" type="text" required>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <input name="phone" placeholder="Số điện thoại *" type="text" required>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <input name="email_address" placeholder="Địa chỉ Email *" type="text" required>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <input name="contact_subject" placeholder="Tiêu đề *" type="text">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="contact2-textarea text-center">
+                                            <textarea placeholder="Nội dung *" name="message" class="form-control2" required=""></textarea>
+                                        </div>
+                                        <div class="contact-btn">
+                                            <button class="sqr-btn" type="submit"><span class="fa fa-send"></span> Gửi</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <p class="form-messege"></p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="contact-info mt-md-28 mt-sm-28">
+                            <h2>Liên hệ</h2>
+                            <p>ShopGear Daxua xin hân hạnh được phục vụ quý khách, mọi thông tin liên hệ đều được đặt phía dưới. Vui lòng liên hệ với chúng tôi nếu bạn gặp bất cứ khó khăn gì.</p>
+                            <ul>
+                                <li><i class="fa fa-fax"></i> Địa chỉ : Trường ĐH Công Nghệ Thông Tin, Khu phố 6, Linh Trung, Thủ Đức, TP HCM</li>
+                                <li><i class="fa fa-phone"></i> shopyasuogear@gmail.com</li>
+                                <li><i class="fa fa-envelope-o"></i> +84968501615 | +84388325599</li>
+                            </ul>
+                            <div class="working-time">
+                                <h3>Thời gian làm việc</h3>
+                                <p><span>Thứ 2 – Thứ bảy:</span>08AM – 20PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- contact area end -->
+        <!-- map area start -->
+        <div class="map-area-wrapper">
+            <div class="container">
+                <div id="map_content" data-lat="10.8699237" data-lng="106.8016194" data-zoom="8" data-maptitle="ĐH Công Nghệ Thông Tin" data-mapaddress="Khu phố 6, Linh Trung <br/> Thủ Đức, TP HCM">
+                </div>
+            </div>
+        </div>
+    </div>
+    
