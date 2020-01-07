@@ -6,6 +6,7 @@ using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using LinqKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,43 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         [HttpGet]
         public JsonResult GetBills(string customerEmail, string customerPhone, string billCode, int?billStatus, string fromTime, string toTime)
         {
-            return Json(_db.Bills.Select(x => new BillModelHolders
+
+
+            var predicate = PredicateBuilder.True<Bills>();
+
+            var query = _db.Bills.Include(x => x.Customer).Include(x => x.GuestAnony).AsNoTracking().AsQueryable();
+            if (!String.IsNullOrEmpty(customerEmail))
+            {
+                var user = _db.AspNetUsers.Where(x => x.Email.Equals(customerEmail)).FirstOrDefault();
+                if (user != null)
+                {
+                    predicate= predicate.And(x => x.CustomerId == user.Id);
+                }
+            }
+
+            if (!String.IsNullOrEmpty(customerPhone))
+            {
+                predicate= predicate.And(x => x.Customer.PhoneNumber.Equals(customerPhone) || x.GuestAnony.PhoneNumber.Equals(customerPhone));
+            }
+
+            if (!String.IsNullOrEmpty(billCode))
+            {
+                predicate= predicate.And(x => x.BillName.Equals(billCode.ToLower()));
+            }
+
+            if (billStatus.HasValue)
+            {
+                predicate= predicate.And(x => x.Status == billStatus.Value);
+            }
+
+            if (!String.IsNullOrEmpty(fromTime)&&!String.IsNullOrEmpty(toTime))
+            {
+                var from = DateTime.Parse(fromTime);
+                var to = DateTime.Parse(toTime + " 23:59:59");
+                predicate.And(x => x.CreateDate >= from && x.CreateDate <= to);
+            }
+
+            return Json(query.Where(predicate).Select(x => new BillModelHolders
             {
                 billId = x.BillId,
                 billName = x.BillName,

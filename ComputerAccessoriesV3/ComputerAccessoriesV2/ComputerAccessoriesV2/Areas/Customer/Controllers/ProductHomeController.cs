@@ -44,6 +44,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                 CategoryId = c.x.CategoryId.Value,
                 CategoryName = c.x.Category.CategoryName,
                 OriginalPrice = c.x.OriginalPrice.Value.ToString("###,###"),
+                PromotionPrice=c.x.PromotionPrice.HasValue?c.x.PromotionPrice.Value.ToString("###,###"):String.Empty,
                 Thumnail = c.x.Thumnail,
                 Thumnail2 = c.x.Thumnail2,
                 Code = c.x.Code,

@@ -478,7 +478,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         public JsonResult GetAccount (AccountFilter model)
         {
             var query = _db.AspNetUsers.Include("AspNetUserRoles").Include("UserAddress").AsNoTracking().AsQueryable();
-            var predicate = PredicateBuilder.New<AspNetUsers>();
+            var predicate = PredicateBuilder.True<AspNetUsers>();
             var from = new DateTime();
             var to = new DateTime();
             if (!String.IsNullOrEmpty(model.accountEmail)){
@@ -519,10 +519,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 to = DateTime.Parse(model.toTime);
                 predicate = predicate.And(x => x.CreatedDate <= to);
             }
-            else
-            {
-                predicate = predicate.And(x => x.CreatedDate <= DateTime.Now);
-            }
+            
 
             var listUser = query.Where(predicate).Select(x => new AccountGridModel
             {
@@ -769,6 +766,123 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             return Json(_db.AspNetUsers.ToList());
 
+        }
+
+        [Route("/[controller]/GetBillExport")]
+        public IActionResult GetBillExport(string fromTime, string toTime)
+        {
+            var from = new DateTime();
+            var to = new DateTime();
+            if (String.IsNullOrEmpty(fromTime) && String.IsNullOrEmpty(toTime))
+            {
+                from = DateTime.Now.AddMonths(-1);
+                to = DateTime.Now;
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(fromTime))
+                    from = DateTime.Parse(fromTime);
+
+                if (!String.IsNullOrEmpty(toTime))
+                    to = DateTime.Parse(toTime);
+
+                if (from.Year < 2019)
+                    from = DateTime.Now.AddMonths(-1);
+
+                if (to.Year < 2019 || to.Year > DateTime.Now.Year)
+                    to = DateTime.Now;
+            }                      
+
+            var listBill = _db.Bills.Include(x => x.Customer).Include(x => x.StatusNavigation).Include(x => x.GuestAnony).Where(x => x.CreateDate >= from && x.CreateDate <= to).ToList();
+            List<ExportBillModel> dataExports = new List<ExportBillModel>();
+            foreach (var item in listBill)
+            {
+                dataExports.Add(new ExportBillModel
+                {
+                    CustomerEmail = item.GuestAnonyId.HasValue ? item.GuestAnony.Email : item.Customer.Email,
+                    CustomerName = item.GuestAnonyId.HasValue ? item.GuestAnony.CustomerName : item.Customer.DisplayName,
+                    BillCode = item.BillName,
+                    //BillStatus = item.Status.Value,
+                    ShippingStatus = item.Status.HasValue ? item.StatusNavigation.CodeName : "Mới tạo",
+                    ShippingAddress = item.ShippingAddress,
+                    FirstPrice = item.TotalPrice.Value,
+                    LastPrice = item.LastPrice.Value,
+                    ProductQuantity = _db.BillDetails.Where(x => x.BillId == item.BillId).Sum(x => x.Quantity).Value,
+                    Voucher = item.Voucher,
+                    VoucherValue = String.IsNullOrEmpty(item.Voucher) ? 0 : _db.Vouchers.Where(x => x.VoucherName == item.Voucher).FirstOrDefault().Value.Value
+                });
+            }
+            return Json(dataExports);
+        }
+
+        [Route("/[controller]/GetProductExport")]
+        public IActionResult GetProductExport(string fromTime,string toTime)
+        {
+            //var predicate = PredicateBuilder.True<Products>();
+
+            var from = new DateTime();
+            var to = new DateTime();
+
+            if (!String.IsNullOrEmpty(fromTime))
+                from = DateTime.Parse(fromTime);
+            else
+                from = DateTime.Now.AddMonths(-1);
+
+            if (!String.IsNullOrEmpty(toTime))
+                to = DateTime.Parse(toTime);
+            else
+                to = DateTime.Now;
+
+                var listProducts = _db.Products.Include(x => x.Brand).Include(x => x.Category).Include(x => x.Reviews).Where(x => x.CreatedDate >= from && x.CreatedDate <= to).Select(x => new ExportProducts
+            {
+                ProductName = x.ProductName,
+                ProductCode = x.Code,
+                CreatedDate = x.CreatedDate.Value,
+                RemainedProducts = x.Quantity.Value,
+                BrandName = x.Brand.BrandName,
+                CategoryName = x.Category.CategoryName,
+                Original = x.Origin,
+                UnitPrice = x.OriginalPrice.Value,
+                Status = x.Status == 0 ? "Mới tạo" : "Đã cập nhật thuộc tính",
+                ViewCounts = x.ViewCounts,
+                ReviewCounts = x.Reviews.Where(c => c.ProductId == x.Id).Count(),
+                BuyCounts = _db.BillDetails.Where(c => c.ProductId == x.Id).Sum(c => c.Quantity).Value
+            }).ToList();
+            return Json(listProducts);
+        }
+
+
+        [Route("/[controller]/GetAccountReports")]
+        public IActionResult GetAccountReports(string fromTime,string toTime)
+        {
+
+            var from = new DateTime();
+            var to = new DateTime();
+
+            if (String.IsNullOrEmpty(fromTime))
+                from = DateTime.Now.AddMonths(-1);
+            else
+                from = DateTime.Parse(fromTime);
+
+            if (String.IsNullOrEmpty(toTime))
+                to = DateTime.Now;
+            else
+                to = DateTime.Parse(toTime);
+
+            var listUsers = _db.AspNetUsers.Include(x => x.AspNetUserRoles).Where(x => x.CreatedDate >= from && x.CreatedDate <= to).Select(x => new AccountGridModel
+            {
+                Id = x.Id,
+                PhoneNumber = x.PhoneNumber,
+                DisplayName = x.DisplayName,
+                IsActivated = x.IsActivated.Value,
+                Email = x.Email,
+                Address = x.Address,
+                RoleId = x.AspNetUserRoles.Where(z => z.UserId == x.Id).FirstOrDefault().RoleId,
+                RoleName = _db.AspNetUserRoles.Where(z => z.UserId == x.Id).Join(_db.AspNetRoles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur, r }).Select(z => z.r.Name).FirstOrDefault(),
+                CreatedDate = x.CreatedDate.Value
+
+            }).ToList();
+            return Json(listUsers);
         }
 
         private string GetRoleByUserId(int? UserId)

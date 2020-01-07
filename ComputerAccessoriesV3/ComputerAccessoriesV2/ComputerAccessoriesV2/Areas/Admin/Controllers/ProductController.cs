@@ -84,12 +84,12 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 if (to < from)
                 {
                     //query.Where(x => x.CreatedDate >= to && x.CreatedDate <= from);
-                    predicate.And(x => x.CreatedDate >= to && x.CreatedDate <= from);
+                    predicate= predicate.And(x => x.CreatedDate >= to && x.CreatedDate <= from);
                 }
                 else
                 {
                     //query.Where(x => x.CreatedDate >= from && x.CreatedDate <= to);
-                    predicate.And(x => x.CreatedDate >= from && x.CreatedDate <= to);
+                    predicate= predicate.And(x => x.CreatedDate >= from && x.CreatedDate <= to);
                 }
             }
             return Json(query.Where(predicate).Select(x => new ProductGridModel

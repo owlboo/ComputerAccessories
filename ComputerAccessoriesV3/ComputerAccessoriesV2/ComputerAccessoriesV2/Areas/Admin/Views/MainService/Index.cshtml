@@ -115,7 +115,7 @@
                                     <div class="box-body">
                                         <div class="col-md-12">
                                             <div class="form-group row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="col-md-2">
                                                         <label>Từ ngày: </label>
                                                     </div>
@@ -123,7 +123,7 @@
                                                         <input id="fromTime" class="form-control" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="col-md-2">
                                                         <label>Đến ngày: </label>
                                                     </div>
@@ -136,11 +136,19 @@
                                         </div>
                                     </div>
                                     <div class="box-footer">
-                                        <button class="btn btn-primary" id="exportBill">Xuất báo cáo</button>
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" onclick="FilterBill()" style="margin-left:20px;">Lọc</button>
+                                            <button class="btn btn-primary" id="exportBill">Xuất báo cáo</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                        </div>
+                        <div class="row">
+                            <div id="billGrid">
+
+                            </div>
                         </div>
                     </div>
                     <!-- /.tab-pane -->
@@ -154,7 +162,7 @@
                                     <div class="box-body">
                                         <div class="col-md-12">
                                             <div class="form-group row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="col-md-2">
                                                         <label>Từ ngày: </label>
                                                     </div>
@@ -162,7 +170,7 @@
                                                         <input id="productFromTime" class="form-control" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="col-md-2">
                                                         <label>Đến ngày: </label>
                                                     </div>
@@ -175,11 +183,19 @@
                                         </div>
                                     </div>
                                     <div class="box-footer">
-                                        <button class="btn btn-primary" id="exportProducts">Xuất báo cáo</button>
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" id="filter" style="margin-left:20px">Lọc</button>
+                                            <button class="btn btn-primary" id="exportProducts">Xuất báo cáo</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                        </div>
+                        <div class="row">
+                            <div id="productGrid">
+
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane" id="tab_4">
@@ -219,6 +235,11 @@
                             </div>
 
                         </div>
+                        <div class="row">
+                            <div id="accountGrid">
+
+                            </div>
+                        </div>
                     </div>
                     <!-- /.tab-pane -->
                 </div>
@@ -242,6 +263,191 @@
 
             $("#dashboardChartTab").click();
             $("#saleTab").click();
+
+            $("#billGrid").kendoGrid({
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host + "/MainService/GetBillExport",
+                            data: function () {
+                                return {
+                                    fromTime: $('#fromTime').val(),
+                                    toTime: $("#toTime").val()
+                                }
+                            }
+                        }
+
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                groupable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [{                    
+                    field: "customerName",
+                    title: "Tên khách hàng",
+                    width: 240
+                },{                    
+                    field: "customerEmail",
+                    title: "Email",
+                    width: 240
+                }, {
+                    field: "billCode",
+                    title: "Mã hóa đơn"
+                }, {
+                    field: "shippingStatus",
+                    title: "Trạng thái đơn hàng"
+                },{
+                    field: "shippingAddress",
+                    title: "Địa chỉ giao hàng"
+                },{
+                    field: "productQuantity",
+                    title: "Số lượng sản phẩm"
+                },{
+                    field: "firstPrice",
+                    title: "Giá"
+                },{
+                    field: "voucher",
+                    title: "Mã giảm giá"
+                },{
+                    field: "voucherValue",
+                    title: "Giá trị mã giảm giá(%)"
+                },{
+                    field: "lastPrice",
+                    title: "Giá sau khi giảm"
+                    }],
+                filterable: true
+            });
+
+
+            $("#productGrid").kendoGrid({
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: window.location.protocol + '//' + window.location.host + "/MainService/GetProductExport",
+                            data: function () {
+                                return {
+                                    FromTime: $('#productFromTime').val(),
+                                    ToTime: $("#productToTime").val()                                  
+                                }
+                            }
+                        }
+
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                groupable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [{                    
+                    field: "productName",
+                    title: "Tên sản phẩm",
+                    width: 240
+                },{                    
+                    field: "productCode",
+                    title: "Mã sản phẩm",
+                        width: 240
+                }, {
+                    field: "createdDate",
+                    title: "Ngày tạo"
+                }, {
+                    field: "remainedProducts",
+                    title: "Số lượng còn lại"
+                },{
+                    field: "brandName",
+                    title: "Thương hiệu"
+                },{
+                    field: "categoryName",
+                    title: "Danh mục"
+                },{
+                    field: "original",
+                    title: "Xuất xứ"
+                },{
+                    field: "unitPrice",
+                    title: "Đơn giá"
+                },{
+                    field: "status",
+                    title: "Trạng thái"
+                },{
+                    field: "viewCounts",
+                    title: "Số lượt xem"
+                    
+                },{
+                    field: "reviewCounts",
+                    title: "Số lượt đánh giá",
+                    width: 150
+                    }, {
+                    field:"buyCounts",
+                    title: "Lượt mua",
+                   
+                    }],
+                filterable: true
+            });
+
+            //$("#accountGrid").kendoGrid({
+            //    dataSource: {
+            //        type: "json",
+            //        transport: {
+            //            read: {
+            //                url: window.location.protocol + '//' + window.location.host + "/MainService/GetAccountReports",
+            //                data: function () {
+            //                    return {
+            //                        fromTime: $('#accountFromTime').val(),
+            //                        toTime: $('#accountToTime').val()
+            //                    }
+            //                }
+            //            }
+
+            //        },
+            //        pageSize: 20
+            //    },
+            //    height: 550,
+            //    groupable: true,
+            //    sortable: true,
+            //    pageable: {
+            //        refresh: true,
+            //        pageSizes: true,
+            //        buttonCount: 5
+            //    },
+            //    columns: [{                    
+            //        field: "displayName",
+            //        title: "Khách hàng",
+            //        width: 240
+            //    }, {
+            //        field: "email",
+            //        title: "Email"
+            //    },{
+            //        field: "phoneNumber",
+            //        title: "Số điện thoại"
+            //    },{
+            //        field: "roleName",
+            //        title: "Vai trò"
+            //    },{
+            //        field: "createdDate",
+            //        title: "Ngày tạo tài khoản"
+            //    },{
+            //        field: "isActivated",
+            //            title: "Trạng thái",
+            //            template: "#if(isActivated==true){#<text>Đã kích hoạt</text>#}else{#<text>Khóa/Chưa kích hoạt</text>#}#"
+            //    },{
+            //        field: "address",
+            //        title: "Địa chỉ"
+            //        }],
+            //    filterable: true
+            //});
+
         });
 
         $('#exportBill').click(function () {
@@ -405,6 +611,9 @@
                 },
             });
 
+            $('#filter').click(function () {
+                $('#productGrid').data('kendoGrid').dataSource.read();
+            });
 
             $("#salesReport").kendoChart({
                 title: {
@@ -449,6 +658,10 @@
                     template: "#= date #: #= value # : #= totalRevenue #"
                 }
             });
+        }
+
+        function FilterBill() {
+            $('#billGrid').data('kendoGrid').dataSource.read();
         }
     </script>
 

@@ -60,7 +60,15 @@
                                     <span>@Model.Quantity sản phẩm</span>
                                 </div>
                                 <div class="pricebox">
-                                    <span class="regular-price">đ @Model.OriginalPrice</span>
+                                    @if (String.IsNullOrEmpty(Model.PromotionPrice))
+                                    {
+                                        <span class="regular-price">đ @Model.OriginalPrice</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="regular-price">đ @Model.PromotionPrice</span>
+                                        <span class="old-price"><del>@Model.OriginalPrice</del></span>
+                                    }
                                 </div>
                                 <p>
                                     @Model.ShorDescription

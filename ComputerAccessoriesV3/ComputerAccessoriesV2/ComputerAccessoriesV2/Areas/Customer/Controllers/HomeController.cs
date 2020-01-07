@@ -42,7 +42,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
 
                 products.ListNewProducts = _db.Products.Join(_db.Category, x => x.CategoryId, y => y.Id, (x, y) => new { x, y })
                                                         .Join(_db.Brand, z => z.x.BrandId, b => b.Id, (z, b) => new { z, b })
-                                                        .Where(c => c.z.x.IsNew.HasValue && c.z.x.IsNew == true).Select(c => new ProductGridModel
+                                                        .Where(c => c.z.x.IsNew.HasValue && c.z.x.IsNew == true&&c.z.x.Status==1).Select(c => new ProductGridModel
                                                         {
                                                             Id = c.z.x.Id,
                                                             ProductName = c.z.x.ProductName,
@@ -52,17 +52,17 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                             BrandName = c.b.BrandName,
                                                             CategoryId = c.z.y.Id,
                                                             CategoryName = c.z.y.CategoryName,
-                                                            OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###.###"),
+                                                            OriginalPrice = c.z.x.OriginalPrice.Value.ToString("###,###"),
                                                             PromotionPrice=c.z.x.PromotionPrice.HasValue? c.z.x.PromotionPrice.Value.ToString("###,###") :"", 
                                                             Code = c.z.x.Code,
                                                             IsNew = c.z.x.IsNew.HasValue ? c.z.x.IsNew.Value : false,
                                                             ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + c.z.x.Id, "0")) : c.z.x.ViewCounts,
                                                             ReviewStarPoint = c.z.x.Reviews.Average(v => v.Star).Value,
                                                             ReviewCount = c.z.x.Reviews.Count()
-                                                        }).Take(20).ToList();
+                                                        }).OrderByDescending(c=>c.Id).Take(20).ToList();
 
                 products.ListMostViewsProducts = _db.Products.Join(_db.Category, x => x.CategoryId, y => y.Id, (x, y) => new { x, y })
-                                                            .Join(_db.Brand, z => z.x.BrandId, b => b.Id, (z, b) => new { z, b })
+                                                            .Join(_db.Brand, z => z.x.BrandId, b => b.Id, (z, b) => new { z, b }).Where(c=>c.z.x.Status==1)
                                                             .OrderByDescending(c => c.z.x.ViewCounts).Select(c => new ProductGridModel
                                                             {
                                                                 Id = c.z.x.Id,
@@ -83,7 +83,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                                                             }).Take(20).ToList();
 
                 //footer brand slider
-                products.ListHotDealProducts = _db.Products.Where(x => x.PromotionPrice.HasValue).Select(x => new ProductGridModel
+                products.ListHotDealProducts = _db.Products.Where(x => x.PromotionPrice.HasValue&&x.Status==1).Select(x => new ProductGridModel
                 {
                     Id = x.Id,
                     ProductName = x.ProductName,
@@ -101,11 +101,11 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
                     ViewCounts = _redis.Status() ? int.Parse(_redis.GetValue(Constants.CACHE_PRODUCT_CURRENT_VIEWING_PREFIX + x.Id, "0")) : x.ViewCounts,
                     ReviewStarPoint = x.Reviews.Average(x => x.Star).Value,
                     ReviewCount = x.Reviews.Count()
-                }).Take(20).ToList();
+                }).OrderByDescending(x=>x.Id).Take(20).ToList();
 
 
 
-                List<ProductGridModel> newArrivals = _db.Products.Select(x => new ProductGridModel
+                List<ProductGridModel> newArrivals = _db.Products.Where(x => x.Status == 1).Select(x => new ProductGridModel
                 {
                     Id = x.Id,
                     ProductName = x.ProductName,

@@ -51,6 +51,11 @@ namespace ComputerAccessoriesV2
                 options.Cookie.IsEssential = true;
             });
 
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AutomaticAuthentication = false;
+            });
+
             services.AddTransient<UpdateProductVisitorCount>();
 
             services.AddIdentity<MyUsers, IdentityRole<int>>(options =>

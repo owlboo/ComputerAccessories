@@ -46,14 +46,14 @@
                                     @if (String.IsNullOrEmpty(item.PromotionPrice))
                                     {
                                         <div class="regular-price">
-                                            @item.OriginalPrice
+                                            đ @item.OriginalPrice
                                         </div>
                                     }
                                     else
                                     {
                                         <div>
-                                            <span class="regular-price">@item.PromotionPrice</span>
-                                            <span class="old-price"><del style="font-size:12px; color:red">@item.OriginalPrice</del></span>
+                                            <span class="regular-price">đ @item.PromotionPrice</span>
+                                            <span class="old-price"><del style="font-size:12px; ">@item.OriginalPrice</del></span>
                                         </div>
                                     }
                                 <div class="ratings">
@@ -104,7 +104,7 @@
                                                 đ @item.PromotionPrice
                                             </div>
                                             <div class="old-price">
-                                                <del style="font-size:12px">đ @item.OriginalPrice</del>
+                                                <del style="font-size:12px">@item.OriginalPrice</del>
                                             </div>
                                         }
 
@@ -165,7 +165,7 @@
                                                            đ @item.PromotionPrice
                                                         </div>
                                                         <div class="old-price">
-                                                            <del style="font-size:12px">đ @item.OriginalPrice</del>
+                                                            <del style="font-size:12px;color:black"> @item.OriginalPrice</del>
                                                         </div>
                                                     }
                                                 </div>
@@ -224,7 +224,7 @@
                                                             đ @item.PromotionPrice
                                                         </div>
                                                         <div class="old-price">
-                                                            <del style="font-size:12px">đ @item.OriginalPrice</del>
+                                                            <del style="font-size:12px"> @item.OriginalPrice</del>
                                                         </div>
                                                     }
                                                 </div>
@@ -311,7 +311,7 @@
                                 {
                                     <div>
                                         <span class="regular-price">đ @item.PromotionPrice</span>
-                                        <span class="old-price"><del style="font-size:12px">đ @item.OriginalPrice</del></span>
+                                        <span class="old-price"><del style="font-size:12px"> @item.OriginalPrice</del></span>
                                     </div>
                                 }
                             <div class="ratings">
@@ -392,7 +392,7 @@
                             {
                                 <div>
                                     <span class="regular-price">đ @item.PromotionPrice</span>
-                                    <span class="old-price"><del style="font-size:12px">đ @item.OriginalPrice</del></span>
+                                    <span class="old-price"><del style="font-size:12px"> @item.OriginalPrice</del></span>
                                 </div>
                             }
                         <div class="ratings">
