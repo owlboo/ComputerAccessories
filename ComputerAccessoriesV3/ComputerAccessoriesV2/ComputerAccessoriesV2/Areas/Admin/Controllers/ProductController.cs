@@ -313,7 +313,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             var productFromDb = _db.Products.Where(x => x.Id == prodId).FirstOrDefault();
             var images = _db.ProductImages.Where(x => x.ProductId == prodId).Select(x => x.ImageUrl).ToList();
-            var files = Request.Form.Files;
+            var files = Request.Form.Files; 
 
             if (files.Count > 0)
             {
@@ -436,8 +436,21 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                     foreach (var item in model.ListAttrs)
                     {
                         var productAttribute = _db.ProductAttribute.Where(x => x.AttributeId == item.Id).FirstOrDefault();
-                        productAttribute.Value = item.Value;
-                        await _db.SaveChangesAsync();
+                        if(productAttribute == null)
+                        {
+                            _db.ProductAttribute.Add(new ProductAttribute
+                            {
+                                ProductId = model.ProductId,
+                                AttributeId = item.Id,
+                                Value = item.Value
+                            });
+
+                            await _db.SaveChangesAsync();
+                        } else
+                        {
+                            productAttribute.Value = item.Value;
+                            await _db.SaveChangesAsync();
+                        }
                     }
                     var productFromdb = _db.Products.Where(x => x.Id == model.ProductId).FirstOrDefault();
                     if (productFromdb.Status < 1)

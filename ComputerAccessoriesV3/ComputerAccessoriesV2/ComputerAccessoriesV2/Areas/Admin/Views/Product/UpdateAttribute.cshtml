@@ -17,50 +17,108 @@
         <h3 class="box-title">Cập nhật thuộc tính sản phẩm</h3>
     </div>
     <!-- /.box-header -->
-    <!-- form start -->   
-        <input hidden asp-for="ProductId" />
-        <input hidden asp-for="CategoryId"/>
+    <!-- form start -->
+    <input hidden asp-for="ProductId" />
+    <input hidden asp-for="CategoryId" />
 
-        <div class="box-body">
-            <div class="form-group row">
-                <div class="col-lg-2">
-                    <label>Tên sản phẩm</label>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <text style="font-size:14px;"><strong>@Model.ProductName</strong></text>
-                </div>
+    <div class="box-body">
+        <div class="form-group row">
+            <div class="col-lg-2">
+                <label>Tên sản phẩm</label>
+            </div>
+            <div class="col-lg-6 text-center">
+                <text style="font-size:14px;"><strong>@Model.ProductName</strong></text>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-lg-2">
+                <label>Danh mục</label>
+            </div>
+            <div class="col-lg-6 text-center">
+                <text style="font-size:14px;"><strong>@Model.CategoryName</strong></text>
+            </div>
+        </div>
+        <br />
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <text style="font-size:18px;"><b>Danh sách thuộc tính</b></text>
             </div>
 
-            <div class="form-group row">
-                <div class="col-lg-2">
-                    <label>Danh mục</label>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <text style="font-size:14px;"><strong>@Model.CategoryName</strong></text>
-                </div>
-            </div>
-            <br />
-            <div class="form-group row">
-                <div class="col-lg-4">
-                    <text style="font-size:18px;"><b>Danh sách thuộc tính</b></text>
-                </div>
+        </div>
 
+        <div class="form-group row">
+            <div class="col-lg-2 ">
+                Tên thuộc tính
             </div>
-
-            <div class="form-group row">
-                <div class="col-lg-2 ">
-                    Tên thuộc tính
-                </div>
-                <div class="col-lg-6 text-center">
-                    Giá trị
-                </div>
+            <div class="col-lg-6 text-center">
+                Giá trị
             </div>
-            <hr />
-            @if (Model.ProductAttributes.Count == 0)
+        </div>
+        <hr />
+        @if (Model.ProductAttributes.Count == 0)
+        {
+            @if (Model.Attributes != null && Model.Attributes.Count > 0)
             {
-                @if (Model.Attributes != null && Model.Attributes.Count > 0)
+                foreach (var item in Model.Attributes)
                 {
-                    foreach (var item in Model.Attributes)
+                    string id = "att" + item.Id;
+                    <div class="form-group row">
+                        <div class="col-lg-2">
+                            <label>@item.AttributeName</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input id="@id" class="form-control" style="border-radius:50px; text-align:center" />
+                        </div>
+                    </div>
+                    <script>
+                        var id = "@item.Id";
+                        var name = "@item.AttributeName";
+                        var obj = {
+                            Id: id,
+                            Name: name
+                        };
+                        objAttribute.push(obj);
+                    </script>
+                }
+            }
+            else
+            {
+                <div class="form-group row">
+                    <div class="col-lg-4">
+                        <text style="font-size:18px;color:red"><b>Danh sách thuộc tính</b></text>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            if (Model.ProductAttributes.Count < Model.Attributes.Count)
+            {
+                foreach (var item in Model.ProductAttributes)
+                {
+                    string id = "att" + item.AttributeId;
+                    <div class="form-group row">
+                        <div class="col-lg-2">
+                            <label>@item.Attribute.AttributeName</label>
+                        </div>
+                        <div class="col-lg-6 text-center">
+                            <input id="@id" type="text" value="@item.Value" class="form-control" style="border-radius:50px;text-align:center" />
+                        </div>
+                    </div>
+                    <script>
+                        var id = "@item.AttributeId";
+                        var name = "@item.Attribute.AttributeName";
+                        var obj = {
+                            Id: id,
+                            Name: name
+                        };
+                        objAttribute.push(obj);
+                    </script>
+                };
+                foreach (var item in Model.Attributes)
+                {
+                    if (Model.ProductAttributes.Where(x => x.AttributeId == item.Id).ToList().Count == 0)
                     {
                         string id = "att" + item.Id;
                         <div class="form-group row">
@@ -81,14 +139,6 @@
                         objAttribute.push(obj);
                         </script>
                     }
-                }
-                else
-                {
-                    <div class="form-group row">
-                        <div class="col-lg-4">
-                            <text style="font-size:18px;color:red"><b>Danh sách thuộc tính</b></text>
-                        </div>
-                    </div>
                 }
             }
             else
@@ -114,18 +164,20 @@
                         objAttribute.push(obj);
                     </script>
                 }
+
             }
+        }
 
 
-        </div>   
+    </div>
 
 
-        <!-- /.box-body -->
+    <!-- /.box-body -->
 
-        <div class="box-footer">
-            <button class="btn btn-primary" id="updateAttribute">Lưu lại</button>
-            <a asp-action="ProductManagement" asp-controller="Product" class="btn btn-warning"><span><i class="fa fa-arrow-left"></i></span> Quay lại</a>
-        </div>
+    <div class="box-footer">
+        <button class="btn btn-primary" id="updateAttribute">Lưu lại</button>
+        <a asp-action="ProductManagement" asp-controller="Product" class="btn btn-warning"><span><i class="fa fa-arrow-left"></i></span> Quay lại</a>
+    </div>
 </div>
 
 @section Scripts{
@@ -170,7 +222,7 @@
                     i++;
                 });
             }
-            
+
             console.log(ArrayAttributes);
             var data = {
                 ProductId: productId,

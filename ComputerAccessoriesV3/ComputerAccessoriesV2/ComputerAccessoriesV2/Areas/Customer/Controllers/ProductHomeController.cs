@@ -31,6 +31,7 @@ namespace ComputerAccessoriesV2.Areas.Customer.Controllers
         }
         public async Task<IActionResult> ProductDetails(int productId)
         {
+            _db.Database.SetCommandTimeout(99999);
             ProductGridModel products = _db.Products
                 .Join(_db.ProductImages, x => x.Id, y => y.ProductId, (x, y) => new { x, y })
                 .Where(c => c.x.Id == productId)
