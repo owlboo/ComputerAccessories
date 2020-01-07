@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
+using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -21,10 +23,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             _db = db;
             _context = context;
         }
+
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Index()
         {
             return View();
         }
+
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult BillManagement()
         {
             return View();

@@ -147,6 +147,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }).ToList());
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [Route("/[controller]/GetCategoryDrop")]
         [HttpGet]
         public JsonResult GetCategoryDrop()
@@ -345,7 +346,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(AttributeVM);
         }
 
-        [Authorize(Policy = Policy.AdminAccess)]
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public async Task<IActionResult> EditAttributes(AttributeViewModel _params)
         {
@@ -540,6 +541,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return Json(listUser);
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         private string GetFullAddress(int provinceId, int districtId, int wardId)
         {
             var provinceName = _db.Provinces.Where(x => x.ProvinceId == provinceId).Select(x => x.ProvinceName).FirstOrDefault();
@@ -665,12 +667,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
 
         #region campain
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Campaign()
         {
             return View();
         }
         #endregion
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetAccountReport(String startDate, string endDate)
         {
@@ -714,6 +718,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return Json(result);
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetSalesReport(String startDate, string endDate)
         {
@@ -775,6 +780,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
             return String.Empty;
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditAccount(int accountId)
         {
             var userInfo = _db.AspNetUsers.Where(x => x.Id == accountId).Select(x => new AccountDetails

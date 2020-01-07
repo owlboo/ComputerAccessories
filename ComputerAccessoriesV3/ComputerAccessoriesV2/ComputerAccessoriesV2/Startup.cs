@@ -80,7 +80,7 @@ namespace ComputerAccessoriesV2
             {
                 options.AddPolicy(Policy.AdminAccess, policy =>
                 {
-                    policy.RequireRole(SD.Admin, SD.Sale, SD.SupperAdmin);
+                    policy.RequireRole(SD.Admin, SD.SupperAdmin);
                 });
 
                 options.AddPolicy(Policy.AdminModify, policy =>

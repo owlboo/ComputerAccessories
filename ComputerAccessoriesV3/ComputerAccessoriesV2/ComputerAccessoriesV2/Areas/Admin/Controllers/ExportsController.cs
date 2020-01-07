@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Helpers;
 using ComputerAccessoriesV2.Models;
+using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +33,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public async Task<IActionResult> ExportsBill(string fromDate, string toDate)
         {
             
@@ -103,12 +106,9 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 return Json(e.ToString());
                 throw;
             }
-
-
-            
-
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public async Task<IActionResult> ExportProducts(string fromDate, string toDate)
         {
             try
@@ -178,7 +178,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
-
+        [Authorize(Policy = Policy.AdminAccess)]
         public async Task<IActionResult> ExportAccount(string fromDate,string toDate)
         {
             try
@@ -243,6 +243,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public async Task<IActionResult> ExportBillDetails(int billId)
         {
 

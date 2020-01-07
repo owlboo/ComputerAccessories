@@ -31,12 +31,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Index()
         {
             return View();
         }
 
-        //[Authorize(Policy = Policy.AdminModify)]
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpGet]
         public JsonResult GetAllCampaign()
         {
@@ -200,6 +202,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return Json(_db.CampaignType.ToList());
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetAllProductForNewCampaign()
         {
@@ -218,6 +221,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return (Json(listAvailableProduct));
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetAllProductInCampaign(int campaignId)
         {
@@ -231,6 +235,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return (Json(listProduct));
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult UpdateProductInCampaignDetail([FromQuery(Name = "models")] string models)
         {
@@ -270,6 +275,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpGet]
         public JsonResult RemoveProductInCampaignDetail([FromQuery(Name = "models")] string models)
         {
@@ -310,6 +316,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public JsonResult InsertProductToExistCampaign(CampaignDetailViewModel _params)
         {
@@ -350,6 +357,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetCampaignInfo(int id)
         {

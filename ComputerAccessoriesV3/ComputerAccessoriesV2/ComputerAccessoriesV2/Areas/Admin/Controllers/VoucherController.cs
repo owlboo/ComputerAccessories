@@ -1,6 +1,8 @@
 ﻿using ComputerAccessoriesV2.Data;
 using ComputerAccessoriesV2.Models;
+using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,22 +27,26 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             _roleManager = roleManager;
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetAllVoucher()
         {
             return Json(_db.Vouchers.ToList());
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult CreateNewVoucher()
         {
             return View();
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public JsonResult CreateNewVoucher(VoucherViewModel _params)
         {
@@ -75,6 +81,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public JsonResult GetVoucherInfo(int voucherId)
         {
             var voucher = _db.Vouchers.Where(x => x.VoucherId == voucherId).FirstOrDefault();
@@ -90,6 +97,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditVoucher(int voucherId)
         {
             if(_db.Vouchers.Any(v => v.VoucherId == voucherId))
@@ -104,6 +112,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
            
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public JsonResult EditVoucher(VoucherViewModel _params)
         {

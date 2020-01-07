@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,11 +23,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         private readonly IHostingEnvironment _hostingEvironment;
         private readonly ComputerAccessoriesV2Context _db;
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult Brand()
         {
             ViewBag.controller = "Brand";
@@ -137,6 +140,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             
 
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditBrand(int? id)
         {
             if (id == null)
@@ -155,11 +160,13 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(brandViewModel);
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult CreateNewBrand()
         {
             return View();
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public async Task<IActionResult> CreateNewBrand(BrandViewModel brand)
         {
@@ -203,6 +210,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
 
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         public async Task<IActionResult> EditBrand(BrandViewModel brand)
         {

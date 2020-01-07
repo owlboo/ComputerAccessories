@@ -9,6 +9,7 @@ using ComputerAccessoriesV2.Models;
 using ComputerAccessoriesV2.Ultilities;
 using ComputerAccessoriesV2.ViewModels;
 using LinqKit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             };
             _hostEnvironment = hostEnvironment;
         }
+
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult ProductManagement()
         {
             var products = _db.Products.Include(x => x.Brand).Include(x => x.Category).ToList();
@@ -44,6 +47,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(products);
         }
 
+
+        [Authorize(Policy = Policy.AdminAccess)]
         [Route("/[controller]/GetProduct")]
         public JsonResult GetProduct(int?CategoryId,int?BrandId,string FromTime,string ToTime)
         {
@@ -106,10 +111,14 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
                 Thumnail = x.Thumnail
             }).ToList());
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult CreateNewProduct()
         {
             return View(ProductVM);
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateNewProduct(ProductViewModel model)
@@ -192,6 +201,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return RedirectToAction(nameof(ProductManagement));
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         public IActionResult ProductDetails(int? id)
         {
             if (id == null)
@@ -202,6 +212,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             ProductVM.ProductImages = _db.ProductImages.Where(x => x.ProductId == id).ToList();
             return View(ProductVM);
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         public IActionResult EditProduct(int? id)
         {
             if (id == null)
@@ -213,6 +225,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(ProductVM);
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(ProductViewModel model)
@@ -272,6 +285,8 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return RedirectToAction(nameof(ProductManagement));
 
         }
+
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [Route("Product/DeleteImage")]
         public async Task<IActionResult> DeleteImage([FromForm]int _imgId)
@@ -291,6 +306,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         //[Route("Product/UpdateMoreImages")]
         public async Task<IActionResult> UploadMoreImages(int prodId)
@@ -351,7 +367,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return RedirectToAction(nameof(EditProduct), new { id = prodId }); ;
         }
 
-
+        [Authorize(Policy = Policy.AdminModify)]
         public ActionResult UpdateAttribute(int id, int categoryId)
         {
             var listAttributes = _db.Attributes.Where(x => x.CategoryId == categoryId).ToList();
@@ -369,6 +385,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return View(model);
         }
 
+        [Authorize(Policy = Policy.AdminModify)]
         [HttpPost]
         [Route("/[controller]/SaveAttributesProduct")]
         public async Task<JsonResult> SaveAttributesProduct(AttrsStoredProductViewModel model)
@@ -442,6 +459,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
             return Json(new { code = 1, url = returnUrl });
         }
 
+        [Authorize(Policy = Policy.AdminAccess)]
         [HttpGet]
         public JsonResult GetProductOriginPrice(int id)
         {
