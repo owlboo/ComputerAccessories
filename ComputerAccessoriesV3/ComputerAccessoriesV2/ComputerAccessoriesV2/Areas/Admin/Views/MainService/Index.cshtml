@@ -9,7 +9,7 @@
             <!-- Custom Tabs -->
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
-                    <li><a href="#tab_1" data-toggle="tab">Bảng điều khiển</a></li>
+                    <li><a id="dashboardChartTab" href="#tab_1" data-toggle="tab">Bảng điều khiển</a></li>
                     <li><a href="#tab_2" data-toggle="tab">Hóa đơn</a></li>
                     <li><a href="#tab_3" data-toggle="tab">Sản phẩm</a></li>
                     <li><a href="#tab_4" data-toggle="tab">Tài khoản</a></li>
@@ -18,7 +18,7 @@
                     <div class="tab-pane" id="tab_1">
                         <div class="nav-tabs-custom">
                             <ul class="nav nav-tabs">
-                                <li id="tab_sales_wrapper"><a href="#tab_chartSalesWrapper" data-toggle="tab">Doanh số</a></li>
+                                <li id="tab_sales_wrapper"><a id="saleTab" href="#tab_chartSalesWrapper" data-toggle="tab">Doanh số</a></li>
                                 <li id="tab_account_wrapper"><a href="#tab_chartAccountWrapper" data-toggle="tab">Tài khoản</a></li>
                             </ul>
                             <div class="tab-content">
@@ -239,6 +239,9 @@
             $('#productToTime').datepicker();
             $('#accountFromTime').datepicker();
             $('#accountToTime').datepicker();
+
+            $("#dashboardChartTab").click();
+            $("#saleTab").click();
         });
 
         $('#exportBill').click(function () {
