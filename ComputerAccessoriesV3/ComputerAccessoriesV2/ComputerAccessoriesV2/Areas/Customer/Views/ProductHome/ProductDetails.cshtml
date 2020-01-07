@@ -113,16 +113,16 @@
                                     </li>
                                 </ul>
                                 <div class="tab-content reviews-tab">
-                                    <div class="tab-pane fade show active" id="tab_one" style="overflow: hidden; height: 400px">
-                                        <div class="tab-one">
+                                    <div class="tab-pane fade show active" id="tab_one">
+                                        <div class="tab-one" style="overflow: hidden; height: 400px" id="content_tab_one">
                                             @Html.Raw(Model.FullDescription)
-
+                                        </div>
+                                        <div class="text-center">
+                                            <button class="btn btn-outline-primary" id="showMore" style="color: blue; border: none;background:transparent">Hiển thị thêm</button>
+                                            <button class="btn btn-outline-primary" id="showLess" style="color: blue; border: none; background: transparent;display:none">Ẩn đi</button>
                                         </div>
                                     </div>
-                                    <div class="text-center">
-                                        <button class="btn btn-outline-primary" id="showMore" style="color: blue; border: none;background:transparent">Hiển thị thêm</button>
-                                        <button class="btn btn-outline-primary" id="showLess" style="color: blue; border: none; background: transparent;display:none">Ẩn đi</button>
-                                    </div>
+                                    
                                     <div class="tab-pane fade" id="tab_two">
                                         Select thuộc tính bỏ vào đây
                                         <table class="table table-bordered">
@@ -376,13 +376,13 @@
             //$('#more').slideToggle();
             $('#showMore').hide();
             $('#showLess').show();
-            $('#tab_one').css('height', 'auto');
+            $('#content_tab_one').css('height', '');
         });
         $('#showLess').click(function () {
             $('#more').slideToggle();
             $('#showMore').show();
             $('#showLess').hide();
-            $('#tab_one').css('height', '500px');
+            $('#content_tab_one').css('height', '400px');
         });
 
         function LoadReview(productId) {
