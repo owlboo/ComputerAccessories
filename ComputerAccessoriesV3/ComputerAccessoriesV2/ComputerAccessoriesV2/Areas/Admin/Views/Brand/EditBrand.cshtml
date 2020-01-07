@@ -14,6 +14,7 @@
     <form role="form" method="post" asp-action="EditBrand" enctype="multipart/form-data">
         <div class="box-body">
             <div class="form-group">
+                <input asp-for="Id" hidden="hidden" />
                 <label for="exampleInputEmail1">Tên Brand</label>
                 <input class="form-control" placeholder="Nhập tên Brand" asp-for="BrandName">
             </div>
