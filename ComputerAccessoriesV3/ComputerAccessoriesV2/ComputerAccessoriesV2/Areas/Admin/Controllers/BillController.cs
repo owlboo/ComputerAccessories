@@ -115,7 +115,7 @@ namespace ComputerAccessoriesV2.Areas.Admin.Controllers
         {
             //models = models.Replace(@"/", "");
             
-            var billModel = JsonConvert.DeserializeObject<List<BillModelHolders>>(models)[0];
+            var billModel = JsonConvert.DeserializeObject<BillModelHolders>(models);
 
             if (billModel.shipper.shipperId == 0)
             {
